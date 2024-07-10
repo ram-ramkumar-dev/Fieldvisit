@@ -9,7 +9,7 @@
 
 ## Installation Instruction
 - run ```git clone https://github.com/herdikayan/laravel-login.git laravel-login```
-- Create a MySQL database for the project ```laravel_login```
+- Create a MySQL database for the project ```fieldvisit```
 - From the projects root run ```cp .env.example .env```
 - Configure your ```.env``` file
 - Run ```composer update``` from the projects root folder
