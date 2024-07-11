@@ -1,8 +1,8 @@
         <div class="iq-sidebar  sidebar-default  ">
           <div class="iq-sidebar-logo d-flex align-items-end justify-content-between">
                <a href="../backend/index.html" class="header-logo">
-                  <img src="../assets/images/V-Ranger_Sidebar_Text.png" class="img-fluid rounded-normal light-logo" alt="logo">
-                  <img src="../assets/images/V-Ranger_Sidebar_Text.png" class="img-fluid rounded-normal d-none sidebar-light-img" alt="logo">
+                  <img src="{{ asset('assets/images/V-Ranger_Sidebar_Text.png') }}" class="img-fluid rounded-normal light-logo" alt="logo">
+                  <img src="{{ asset('assets/images/V-Ranger_Sidebar_Text.png') }}" class="img-fluid rounded-normal d-none sidebar-light-img" alt="logo">
                              
               </a>
               <div class="side-menu-bt-sidebar-1">
@@ -15,7 +15,7 @@
               <nav class="iq-sidebar-menu">
                   <ul id="iq-sidebar-toggle" class="side-menu">
                    
-                      <li class="active sidebar-layout">
+                      <li class="{{ $page == "Dashboard" ? 'active' : '' }} sidebar-layout">
                           <a href="{{ route('dashboard') }}" class="svg-icon">
                               <i class="">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -23,12 +23,12 @@
                                   </svg>
                               </i>
                               <span class="ml-2">Dashboard</span>
-                              <p class="mb-0 w-10 badge badge-pill badge-primary">6</p>
+                              <!--<p class="mb-0 w-10 badge badge-pill badge-primary">6</p>-->
                           </a>
                       </li>
                        
-                      @if(empty($permissions) || in_array('settings', $permissions))
-                      <li class="sidebar-layout">
+                      @if(empty($permissions) || in_array('setting', $permissions))
+                      <li class="sidebar-layout {{ $page == "Drivers" ? 'active' : '' }} ">
                           <a href="#settings" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
                               <i>
                                   <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -43,7 +43,7 @@
                           
                           <ul id="settings" class="submenu collapse" data-parent="#iq-sidebar-toggle">                        
                                
-                              <li class=" sidebar-layout">
+                              <li class="{{ $page == "Drivers" ? 'active' : '' }}  sidebar-layout">
                                   <a href="{{ route('drivers.index') }}" class="svg-icon">
                                       <i class="">
                                           <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -52,7 +52,7 @@
                                       </i><span class="">Users</span>
                                   </a>
                               </li>
-                              <li class=" sidebar-layout">
+                              <li class="{{ $page == "Clients" ? 'selected' : '' }}  sidebar-layout">
                                   <a href="{{ route('clients') }}" class="svg-icon">
                                       <i class="">
                                           <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -64,7 +64,7 @@
                           </ul>
                       </li>
                       @endif
-                      @if(empty($permissions) || in_array('administration', $permissions))
+                      @if(empty($permissions) || in_array('fieldvisit', $permissions))
                       <li class="sidebar-layout">
                           <a href="#admin" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
                               <i>
@@ -101,7 +101,7 @@
                       </li>
                       @endif
  
-                      @if(empty($permissions) || in_array('reports', $permissions))
+                      @if(empty($permissions) || in_array('report', $permissions))
                       <li class=" sidebar-layout">
                           <a href="../backend/product.html" class="svg-icon">
                               <i class="">

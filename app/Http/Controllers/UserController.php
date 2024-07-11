@@ -37,6 +37,7 @@ class UserController extends Controller
     public function dashboard()
     {       
         $data['users'] = DB::table('drivers')->get();
+        $data['page'] = 'Dashboard';
         return view('dashboard', $data);
     }
 
@@ -97,6 +98,7 @@ class UserController extends Controller
             Auth::loginUsingId($user->id);
             $request->session()->put('user_type', 'user');
             $request->session()->put('user_name', $user->username);
+            $request->session()->put('user_id', $user->id);
             $request->session()->regenerate();
             return redirect()->intended('/');
         }
@@ -107,6 +109,7 @@ class UserController extends Controller
             Auth::loginUsingId($driver->id, true); // 'true' means "remember the user"
             $request->session()->put('user_type', 'driver');
             $request->session()->put('user_name', $driver->username);
+            $request->session()->put('user_id', $driver->id);
             $request->session()->regenerate();
             return redirect()->intended('/');
         }

@@ -13,10 +13,15 @@ class Driver extends Model
     use HasApiTokens, Notifiable;
 
     protected $fillable = [
-        'username', 'name', 'email', 'password', 'permissions'
+        'username', 'name', 'phone_number', 'password', 'permissions', 'ic_number', 'app_login', 'sensitive', 'supervisor'
     ];
 
     protected $hidden = [
         'password', 'remember_token',
+    ];
+
+    protected $casts = [
+        'permissions' => 'array',
+        'supervisor' => 'array',
     ];
 }
