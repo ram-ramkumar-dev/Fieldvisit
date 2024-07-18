@@ -1,11 +1,16 @@
 @extends('layouts.app')
 
 @section('content') 
+<style>
+   p.text-secondary, h5.font-weight-bold{
+      color:white !important;
+   }
+   </style>
 <div class="container-fluid">
    <div class="row">
-      <div class="col-md-12 mb-4 mt-1">
+      <div class="col-md-12 mb-4 mt-1"  style="display:none !important;">
          <div class="d-flex flex-wrap justify-content-between align-items-center">
-             <h4 class="font-weight-bold">Overview</h4>
+             <h4 class="font-weight-bold" >Overview</h4>
              <div class="form-group mb-0 vanila-daterangepicker d-flex flex-row">
                   <div class="date-icon-set">
                      <input type="text" name="start" class="form-control" placeholder="From Date">
@@ -29,17 +34,16 @@
             </div>
          </div>
       </div>
-      <div class="col-lg-8 col-md-12">
-         <div class="row">
-         @foreach ($users as $k => $v) 
-             <div class="col-md-4">
-               <div class="card">
+      <div class="col-lg-12 col-md-12">
+         <div class="row"> 
+             <div class="col-md-2">
+               <div class="card" style="background: #80BCBD; ">
                   <div class="card-body">
                      <div class="d-flex align-items-center">
                         <div class="">
-                            <p class="mb-2 text-secondary">{{ $v->name }}</p>
+                            <p class="mb-2 text-secondary">Active Agent</p>
                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                               <h5 class="mb-0 font-weight-bold">RM 95,595</h5>
+                               <h5 class="mb-0 font-weight-bold">0</h5>
                                <p class="mb-0 ml-3 text-success font-weight-bold"></p>
                             </div>                            
                         </div>
@@ -47,8 +51,102 @@
                   </div>
                </div>   
             </div>
-            @endforeach
-  
+            <div class="col-md-2">
+               <div class="card" style="background: #A9B388; ">
+                  <div class="card-body">
+                     <div class="d-flex align-items-center">
+                        <div class="">
+                            <p class="mb-2 text-secondary">Total Batch</p>
+                            <div class="d-flex flex-wrap justify-content-start align-items-center">
+                               <h5 class="mb-0 font-weight-bold">0</h5>
+                               <p class="mb-0 ml-3 text-success font-weight-bold"></p>
+                            </div>                            
+                        </div>
+                     </div>
+                  </div>
+               </div>   
+            </div>
+            <div class="col-md-2">
+               <div class="card"  style="background: #86A789; ">
+                  <div class="card-body">
+                     <div class="d-flex align-items-center">
+                        <div class="">
+                            <p class="mb-2 text-secondary">Total Account</p>
+                            <div class="d-flex flex-wrap justify-content-start align-items-center">
+                               <h5 class="mb-0 font-weight-bold">0</h5>
+                               <p class="mb-0 ml-3 text-success font-weight-bold"></p>
+                            </div>                            
+                        </div>
+                     </div>
+                  </div>
+               </div>   
+            </div>
+            <div class="col-md-2">
+               <div class="card"  style="background: #C6A969; ">
+                  <div class="card-body">
+                     <div class="d-flex align-items-center">
+                        <div class="">
+                            <p class="mb-2 text-secondary">Completed</p>
+                            <div class="d-flex flex-wrap justify-content-start align-items-center">
+                               <h5 class="mb-0 font-weight-bold">0</h5>
+                               <p class="mb-0 ml-3 text-success font-weight-bold"></p>
+                            </div>                            
+                        </div>
+                     </div>
+                  </div>
+               </div>   
+            </div>
+            <div class="col-md-2">
+               <div class="card"  style="background: #CD8D7A; ">
+                  <div class="card-body">
+                     <div class="d-flex align-items-center">
+                        <div class="">
+                            <p class="mb-2 text-secondary">In-Complete</p>
+                            <div class="d-flex flex-wrap justify-content-start align-items-center">
+                               <h5 class="mb-0 font-weight-bold">0</h5>
+                               <p class="mb-0 ml-3 text-success font-weight-bold"></p>
+                            </div>                            
+                        </div>
+                     </div>
+                  </div>
+               </div>   
+            </div>
+            <div class="col-md-2">
+               <div class="card"   style="background: #FF8F8F; ">
+                  <div class="card-body">
+                     <div class="d-flex align-items-center">
+                        <div class="">
+                            <p class="mb-2 text-secondary">Aborted</p>
+                            <div class="d-flex flex-wrap justify-content-start align-items-center">
+                               <h5 class="mb-0 font-weight-bold">0</h5>
+                               <p class="mb-0 ml-3 text-success font-weight-bold"></p>
+                            </div>                            
+                        </div>
+                     </div>
+                  </div>
+               </div>   
+            </div>
+            
+         </div>
+      </div>   
+      <div class="col-lg-12 col-md-12"> 
+         <div class="card"> 
+                  <div class="card-body">
+                     
+                     <div class="row mt-4">
+                        @foreach ($users as $k => $v) 
+                        <div class="col-lg-2 col-md-6 text-center">
+                           <p class="bg-primary-light pt-5 pb-5 text-center rounded font-size-18">{{ $v->name }}</p>
+                        </div>
+                        @endforeach
+                        
+                     </div>
+                  </div>
+               </div> 
+                  </div> 
+      <div class="col-lg-8 col-md-12">
+         <div class="row">
+          
             <div class="col-md-12">
             <div class="card">
                 <div class="card-body">

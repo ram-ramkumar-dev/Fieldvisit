@@ -1,7 +1,9 @@
 <?php
 
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\ClientGroupController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,8 +21,8 @@ Route::get('/', [UserController::class, 'home'])->name('home');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
-    Route::get('/users', [UserController::class, 'users'])->name('users');
-    Route::get('/clients', [UserController::class, 'clients'])->name('clients');
+    //Route::get('/users', [UserController::class, 'users'])->name('users');
+    //Route::get('/clients', [UserController::class, 'clients'])->name('clients');
     Route::get('password', [UserController::class, 'password'])->name('password');
     Route::post('password', [UserController::class, 'password_action'])->name('password.action');
     Route::get('logout', [UserController::class, 'logout'])->name('logout');
@@ -40,3 +42,6 @@ Route::resource('drivers', DriverController::class);
 Route::get('/api/documentation', function () {
     return view('swagger.index');
 });
+
+Route::resource('clientgroups', ClientGroupController::class);
+Route::resource('clients', ClientController::class);

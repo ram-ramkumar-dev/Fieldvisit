@@ -12,7 +12,8 @@ class DriverController extends Controller
 {
     public function index()
     { 
-        $drivers = Driver::all();
+        $companyId = Session::get('company_id'); 
+        $drivers = Driver::where('company_id', $companyId)->get();
         $page = "Drivers";
         return view('drivers.index', compact('drivers','page'));
     }
@@ -37,6 +38,7 @@ class DriverController extends Controller
 
         //Driver::create($request->all());
         $driver = new Driver($request->all());
+        $driver->company_id = Session::get('company_id');
         $driver->password = Hash::make($request->password);
         $driver->save();
 

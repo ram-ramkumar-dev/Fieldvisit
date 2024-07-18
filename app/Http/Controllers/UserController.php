@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Driver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
 {
@@ -23,8 +25,8 @@ class UserController extends Controller
 
     public function home()
     {
-        $data['title'] = 'Home';
-        if (auth()->check()) 
+        $data['title'] = 'Home';  
+        if (Session::get('user_id')) 
         {
             return redirect()->route('dashboard');
         }
@@ -36,7 +38,8 @@ class UserController extends Controller
 
     public function dashboard()
     {       
-        $data['users'] = DB::table('drivers')->get();
+        $companyId = Session::get('company_id'); 
+        $data['users'] =  Driver::where('company_id', $companyId)->get(); 
         $data['page'] = 'Dashboard';
         return view('dashboard', $data);
     }
@@ -98,7 +101,8 @@ class UserController extends Controller
             Auth::loginUsingId($user->id);
             $request->session()->put('user_type', 'user');
             $request->session()->put('user_name', $user->username);
-            $request->session()->put('user_id', $user->id);
+            $request->session()->put('user_id', $user->id); 
+            $request->session()->put('company_id', $user->company_id);
             $request->session()->regenerate();
             return redirect()->intended('/');
         }
@@ -110,6 +114,7 @@ class UserController extends Controller
             $request->session()->put('user_type', 'driver');
             $request->session()->put('user_name', $driver->username);
             $request->session()->put('user_id', $driver->id);
+            $request->session()->put('company_id', $driver->company_id);
             $request->session()->regenerate();
             return redirect()->intended('/');
         }

@@ -13,11 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('clientgroup', function (Blueprint $table) {
-            $table->id('clientgroup_id');
-            $table->string('clientgroup_name');
-            $table->longText('clientgroup_desc');
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) { 
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('set null');
         });
     }
 
@@ -28,6 +26,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('clientgroup');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('company_id');
+        });
     }
 };

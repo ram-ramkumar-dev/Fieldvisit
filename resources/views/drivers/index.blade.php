@@ -31,8 +31,12 @@
                             </div>                            
                         </div>
                     </div>                    
-                </div>
-                
+                </div> 
+                @if ($message = Session::get('success'))
+                    <div class="alert alert-success">
+                        <p>{{ $message }}</p>
+                    </div>
+                @endif
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="card card-block card-stretch">
@@ -58,10 +62,7 @@
                                                 </th> 
                                                 <th scope="col">
                                                     <label class="text-muted mb-0" >User Name</label>
-                                                </th>
-                                                <th scope="col" >
-                                                    <label class="text-muted mb-0" >Email</label>
-                                                </th>
+                                                </th> 
                                                 <th scope="col">
                                                     <label class="text-muted mb-0" >
                                                         Status
@@ -78,8 +79,7 @@
                                             <tr class="white-space-no-wrap">
                                                 <td class=""> {{ $driver->id }} </td>
                                                 <td>{{ $driver->name }}  </td>
-                                                <td>{{ $driver->username }}  </td>
-                                                <td>{{ $driver->email }} </td>                             
+                                                <td>{{ $driver->username }}  </td>                     
                                                 <td>
                                                     <p class="mb-0 text-success font-weight-bold d-flex justify-content-start align-items-center">
                                                         <small><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">                                                

@@ -13,9 +13,8 @@
           </div>
           <div class="data-scrollbar" data-scroll="1">
               <nav class="iq-sidebar-menu">
-                  <ul id="iq-sidebar-toggle" class="side-menu">
-                   
-                      <li class="{{ $page == "Dashboard" ? 'active' : '' }} sidebar-layout">
+                  <ul id="iq-sidebar-toggle" class="side-menu"> 
+                      <li class="{{ $page == 'Dashboard' ? 'active' : '' }} sidebar-layout">
                           <a href="{{ route('dashboard') }}" class="svg-icon">
                               <i class="">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -28,7 +27,7 @@
                       </li>
                        
                       @if(empty($permissions) || in_array('setting', $permissions))
-                      <li class="sidebar-layout {{ $page == "Drivers" ? 'active' : '' }} ">
+                      <li class="sidebar-layout {{ in_array($page, ['Drivers', 'Clientgroups', 'Clients']) ? 'active' : '' }} ">
                           <a href="#settings" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
                               <i>
                                   <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -43,21 +42,33 @@
                           
                           <ul id="settings" class="submenu collapse" data-parent="#iq-sidebar-toggle">                        
                                
-                              <li class="{{ $page == "Drivers" ? 'active' : '' }}  sidebar-layout">
+                              <li class="{{ $page == 'Drivers' ? 'active' : '' }}  sidebar-layout">
                                   <a href="{{ route('drivers.index') }}" class="svg-icon">
                                       <i class="">
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                                          </svg>
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+</svg>
+
                                       </i><span class="">Users</span>
                                   </a>
                               </li>
-                              <li class="{{ $page == "Clients" ? 'selected' : '' }}  sidebar-layout">
-                                  <a href="{{ route('clients') }}" class="svg-icon">
+                              <li class="{{ $page == 'Clientgroups' ? 'active' : '' }}  sidebar-layout">
+                                  <a href="{{ route('clientgroups.index') }}" class="svg-icon">
                                       <i class="">
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                          </svg>
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+</svg>
+
+                                      </i><span class="">Client Groups</span>
+                                  </a>
+                              </li> 
+                              <li class="{{ $page == 'Clients' ? 'active' : '' }}  sidebar-layout">
+                                  <a href="{{ route('clients.index') }}" class="svg-icon">
+                                      <i class="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+</svg>
+
                                       </i><span class="">Clients</span>
                                   </a>
                               </li> 
@@ -67,9 +78,9 @@
                       @if(empty($permissions) || in_array('fieldvisit', $permissions))
                       <li class="sidebar-layout">
                           <a href="#admin" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
-                              <i>
+                          <i class="">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
                                   </svg>
                               </i>
                               <span class="ml-2">Administration</span>
@@ -82,18 +93,20 @@
                               <li class=" sidebar-layout">
                                   <a href="../backend/auth-sign-up.html" class="svg-icon">
                                       <i class="">
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                                          </svg>
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+</svg>
+
                                       </i><span class="">Batches</span>
                                   </a>
                               </li>
                               <li class=" sidebar-layout">
                                   <a href="../backend/auth-recover-pwd.html" class="svg-icon">
                                       <i class="">
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                          </svg>
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+</svg>
+
                                       </i><span class="">Status</span>
                                   </a>
                               </li> 
@@ -102,17 +115,44 @@
                       @endif
  
                       @if(empty($permissions) || in_array('report', $permissions))
-                      <li class=" sidebar-layout">
-                          <a href="../backend/product.html" class="svg-icon">
-                              <i class="">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                      <li class="sidebar-layout">
+                          <a href="#reports" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
+                              <i>
+                                  <svg class="svg-icon" id="iq-form-1" width="18" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" style="stroke-dasharray: 74, 94; stroke-dashoffset: 0;"></path>
                                   </svg>
                               </i>
                               <span class="ml-2">Reports</span>
+                              <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon iq-arrow-right arrow-active" width="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                              </svg>
                           </a>
-                      </li>
+                          <ul id="reports" class="submenu collapse" data-parent="#iq-sidebar-toggle">                        
+                               
+                              <li class=" sidebar-layout">
+                                  <a href="../backend/auth-sign-up.html" class="svg-icon">
+                                      <i class="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+</svg>
+
+                                      </i><span class="">Survey Result</span>
+                                  </a>
+                              </li>
+                              <li class=" sidebar-layout">
+                                  <a href="../backend/auth-recover-pwd.html" class="svg-icon">
+                                      <i class="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+</svg>
+
+                                      </i><span class="">Agent KPI</span>
+                                  </a>
+                              </li> 
+                          </ul>
+                      </li> 
                       @endif
+                      <!--
                       <li class=" sidebar-layout" >
                           <a href="../backend/order.html" class="svg-icon">
                               <i class="">
@@ -153,7 +193,7 @@
                               <span class="ml-2">Calendar</span>
                               <p class="mb-0 px-2 badge badge-pill badge-success">New</p>
                           </a>
-                      </li>
+                      </li>-->
                       <li class="px-3 pt-3 pb-2"   style="display:none;">
                           <span class="text-uppercase small font-weight-bold">Pages</span>
                       </li>
@@ -201,18 +241,20 @@
                               <li class=" sidebar-layout">
                                   <a href="../backend/auth-sign-up.html" class="svg-icon">
                                       <i class="">
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                                          </svg>
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+</svg>
+
                                       </i><span class="">Register</span>
                                   </a>
                               </li>
                               <li class=" sidebar-layout">
                                   <a href="../backend/auth-recover-pwd.html" class="svg-icon">
                                       <i class="">
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                          </svg>
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+</svg>
+
                                       </i><span class="">Reset Password</span>
                                   </a>
                               </li>

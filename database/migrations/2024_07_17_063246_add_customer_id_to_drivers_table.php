@@ -13,12 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tb_user', function (Blueprint $table) {
-            $table->id('user_id');
-            $table->string('name');
-            $table->string('username')->unique();
-            $table->string('password');
-            $table->timestamps();
+        Schema::table('drivers', function (Blueprint $table) {
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('set null');
         });
     }
 
@@ -29,6 +26,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_user');
+        Schema::table('drivers', function (Blueprint $table) {
+            $table->dropColumn('company_id');
+        });
     }
 };

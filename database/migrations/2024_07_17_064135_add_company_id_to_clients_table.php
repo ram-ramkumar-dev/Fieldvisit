@@ -13,10 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('drivers', function (Blueprint $table) {
-            $table->string('email')->nullable(); 
-            $table->boolean('status')->default(true)->after('supervisor'); 
-            $table->string('phone_number')->after('name'); 
+        Schema::table('clients', function (Blueprint $table) {
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('set null');
         });
     }
 
@@ -27,9 +26,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('drivers', function (Blueprint $table) {
-            $table->dropColumn('status'); 
-            $table->dropColumn('phone_number'); 
+        Schema::table('clients', function (Blueprint $table) {
+            $table->dropColumn('company_id');
         });
     }
 };
