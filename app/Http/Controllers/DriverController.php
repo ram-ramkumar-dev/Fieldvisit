@@ -40,6 +40,7 @@ class DriverController extends Controller
         $driver = new Driver($request->all());
         $driver->company_id = Session::get('company_id');
         $driver->password = Hash::make($request->password);
+        $driver->app_login = $request->input('app_login', 0);
         $driver->save();
 
         return redirect()->route('drivers.index')->with('success', 'Driver created successfully.');
@@ -77,6 +78,7 @@ class DriverController extends Controller
         if ($request->filled('password')) {
             $driver->password = Hash::make($request->password);
         }
+        $driver->app_login = $request->input('app_login', 0);
         $driver->save();
         
         return redirect()->route('drivers.index')->with('success', 'Driver updated successfully.');

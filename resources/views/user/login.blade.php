@@ -34,7 +34,6 @@
                                  <div class="form-group">
                                      <div class="d-flex justify-content-between align-items-center">
                                          <label class="text-secondary">Password <span class="text-danger">*</span></label>
-                                         <label><a href="auth-recover-pwd.html">Forgot Password?</a></label>
                                      </div>
                                     <input class="form-control" type="password" name="password"  placeholder="Enter Password">
                                  </div>

@@ -39,7 +39,7 @@
                                 <label class="form-label font-weight-bold text-muted text-uppercase" for="clientgroup_id">Client Group:</label>
                                 <select class="form-control" name="clientgroup_id" required>
                                     @foreach ($clientgroups as $clientgroup)
-                                        <option value="{{ $clientgroup->clientgroup_id }}" {{ $client->clientgroup_id == $clientgroup->clientgroup_id ? 'selected' : '' }}>{{ $clientgroup->clientgroup_name }}</option>
+                                        <option value="{{ $clientgroup->id }}" {{ $client->clientgroup_id == $clientgroup->id ? 'selected' : '' }}>{{ $clientgroup->name }}</option>
                                     @endforeach
                                 </select>
                             </div>

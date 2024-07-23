@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory; 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class Driver extends Model
+class Driver extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
+
+    protected $table = 'drivers';
 
     protected $fillable = [
         'username', 'name', 'phone_number', 'password', 'permissions', 'ic_number', 'app_login', 'sensitive', 'supervisor'
@@ -24,4 +25,4 @@ class Driver extends Model
         'permissions' => 'array',
         'supervisor' => 'array',
     ];
-}
+} 

@@ -76,11 +76,12 @@
                             </div> 
                             <div class="col-md-6 mb-3">
                                 <label for="Text7" class="form-label font-weight-bold text-muted text-uppercase">Allow FV Login</label> 
+                                <input type="hidden" name="app_login" value="0">
                                 <input type="checkbox" {{ old('app_login', $driver->app_login) ? 'checked' : '' }} class="form-control" name="app_login" id="app_login" value="1">
 
                             </div>
                              
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 mb-3"> 
                                 <label for="Text8" class="form-label font-weight-bold text-muted text-uppercase">Display Sensitive Detail</label>
                                 <select name="sensitive" id="sensitive" class="form-control">
                                     <option {{ old('sensitive', $driver->sensitive) == "yes" ? 'selected' : '' }} value="yes">Yes</option> 

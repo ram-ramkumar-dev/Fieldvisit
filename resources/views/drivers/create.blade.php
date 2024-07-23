@@ -74,29 +74,34 @@
                                 @enderror
                             </div> 
                             <div class="col-md-6 mb-3">
-                                <label for="Text7" class="form-label font-weight-bold text-muted text-uppercase">Allow FV Login</label> 
-                                <input type="checkbox" {{ old('app_login') ? 'checked' : '' }} class="form-control" name="app_login" id="app_login" value="1"> 
+                                <label for="app_login" class="form-label font-weight-bold text-muted text-uppercase">Allow FV Login</label>
+                                <input type="hidden" name="app_login" value="0">
+                                <input type="checkbox" class="form-control" name="app_login" id="app_login" value="1" {{ old('app_login') ? 'checked' : '' }}>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="Text8" class="form-label font-weight-bold text-muted text-uppercase">Display Sensitive Detail</label>
+                                <label for="sensitive" class="form-label font-weight-bold text-muted text-uppercase">Display Sensitive Detail</label>
                                 <select name="sensitive" id="sensitive" class="form-control">
-                                    <option {{ old('sensitive') == "Yes" ? 'selected' : '' }} value="yes">Yes</option> 
-                                    <option {{ old('sensitive') == "no" ? 'selected' : '' }} selected value="no">No</option>
+                                    <option value="yes" {{ old('sensitive') == "yes" ? 'selected' : '' }}>Yes</option>
+                                    <option value="no" {{ old('sensitive', 'no') == "no" ? 'selected' : '' }}>No</option>
                                 </select>
                             </div>
+
                             <div class="col-md-6 mb-3">
-                                <label for="Text8" class="form-label font-weight-bold text-muted text-uppercase">Module Access</label>
+                                <label for="permissions" class="form-label font-weight-bold text-muted text-uppercase">Module Access</label>
                                 <select name="permissions[]" id="permissions" class="multipleSelect2 form-control choicesjs" multiple="true">
-                                    <option {{ old('permissions') == "setting" ? 'selected' : '' }}value="setting">Setting</option>
-                                    <option {{ old('permissions') == "fieldvisit" ? 'selected' : '' }}value="fieldvisit">Field Visit</option>
-                                    <option {{ old('permissions') == "report" ? 'selected' : '' }}value="report">Report</option>  
+                                    <option value="setting" {{ in_array('setting', old('permissions', [])) ? 'selected' : '' }}>Setting</option>
+                                    <option value="fieldvisit" {{ in_array('fieldvisit', old('permissions', [])) ? 'selected' : '' }}>Field Visit</option>
+                                    <option value="report" {{ in_array('report', old('permissions', [])) ? 'selected' : '' }}>Report</option>  
                                 </select>
                             </div>
+
                             <div class="col-md-6 mb-3">
                                 <label for="Text8" class="form-label font-weight-bold text-muted text-uppercase">Supervisor Configuration</label>
                                 <select name="supervisor[]" id="supervisor" class="multipleSelect2 form-control choicesjs" multiple="true">
-                                @foreach($drivers as $driver)
-                                    <option {{ old('supervisor') == $driver->supervisor ? 'selected' : '' }} value="{{ $driver->name }}">{{ $driver->name }}</option> 
+                                @foreach($drivers as $driver) 
+                                    <option value="{{ $driver->name }}" {{ in_array($driver->name, old('supervisor', [])) ? 'selected' : '' }}>
+                                      {{ $driver->name }}
+                                    </option>
                                 @endforeach
                                 </select>
                             </div> 
