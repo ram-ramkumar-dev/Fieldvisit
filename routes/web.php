@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\BatchesController;
 use App\Http\Controllers\ClientGroupController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\StatusController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -45,3 +47,6 @@ Route::get('/api/documentation', function () {
 
 Route::resource('clientgroups', ClientGroupController::class);
 Route::resource('clients', ClientController::class);
+Route::resource('statuses', StatusController::class);
+Route::resource('batches', BatchesController::class);
+

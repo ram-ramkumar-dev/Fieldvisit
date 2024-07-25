@@ -9,7 +9,7 @@ class ClientGroup extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name', 'description'
+        'name', 'description','company_id'
     ];
 
     public function clients()

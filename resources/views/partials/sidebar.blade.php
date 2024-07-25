@@ -76,7 +76,7 @@
                       </li>
                       @endif
                       @if(empty($permissions) || in_array('fieldvisit', $permissions))
-                      <li class="sidebar-layout">
+                      <li class="sidebar-layout {{ in_array($page, ['Status']) ? 'active' : '' }}">
                           <a href="#admin" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
                           <i class="">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -89,16 +89,16 @@
                               </svg>
                           </a>
                           <ul id="admin" class="submenu collapse" data-parent="#iq-sidebar-toggle">                        
-                               
-                              <li class=" sidebar-layout">
-                                  <a href="#" class="svg-icon">
+                          
+                              <li class="{{ $page == 'Status' ? 'active' : '' }} sidebar-layout">
+                                  <a href="{{ route('statuses.index') }}" class="svg-icon">
                                       <i class="">
                                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
                                       </i><span class="">Status</span>
                                   </a>
                               </li> 
-                              <li class=" sidebar-layout">
-                                  <a href="#" class="svg-icon">
+                              <li class="{{ $page == 'Batches' ? 'active' : '' }} sidebar-layout">
+                                  <a href="{{ route('batches.index') }}" class="svg-icon">
                                       <i class="">
                                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
                                       </i><span class="">Add Batch</span>

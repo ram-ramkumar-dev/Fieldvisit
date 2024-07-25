@@ -17,6 +17,7 @@ class Client extends Model
         'postcode',
         'phone1',
         'client_group_id',
+        'company_id'
     ];
 
     public function clientgroup()

@@ -26,8 +26,7 @@
             </div>
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-body">
-                        <h5 class="font-weight-bold mb-3">Basic Information</h5> 
+                    <div class="card-body"> 
                         <form action="{{ route('clients.store') }}" method="POST"  class="row g-3"> 
                         @csrf 
                         <div class="col-md-6 mb-3">
@@ -101,6 +100,18 @@
                             <label class="form-label font-weight-bold text-muted text-uppercase"for="phone2">Phone 2:</label>
                             <input type="text" class="form-control" name="phone2"  value="{{ old('phone2') }}">
                         </div> 
+                         
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold text-muted text-uppercase"for="status">Status:</label>
+                            <select required class=" form-control " name="status">
+                                <option value ="">Please Select</option>
+                                <option value ='1'>Active</option>
+                                <option value ='0'>Inactive</option>
+                            </select>
+                            @error('status')
+                                    <div>{{ $message }}</div>
+                                @enderror 
+                        </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
                      </form> 
                     </div>
