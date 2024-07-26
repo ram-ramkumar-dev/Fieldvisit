@@ -32,7 +32,8 @@ Route::middleware(['auth'])->group(function () {
     // Additional routes with permission checks
     Route::get('reports', [UserController::class, 'reports'])->name('reports')->middleware('check.permissions:reports');
     Route::get('settings', [UserController::class, 'settings'])->name('settings')->middleware('check.permissions:settings');
-    Route::get('administrative', [UserController::class, 'administrative'])->name('administrative')->middleware('check.permissions:administrative');
+    Route::get('administrative', [UserController::class, 'administrative'])->name('administrative')->middleware('check.permissions:administrative'); 
+    Route::get('/batches/import', [BatchesController::class, 'import'])->name('batches.import');
 });
 
 Route::get('register', [UserController::class, 'register'])->name('register');
@@ -50,3 +51,6 @@ Route::resource('clients', ClientController::class);
 Route::resource('statuses', StatusController::class);
 Route::resource('batches', BatchesController::class);
 
+Route::get('/batches/{batch}/viewuploaded', [BatchesController::class, 'viewUploaded'])->name('batches.viewuploaded');
+Route::get('/batches/{batch}/upload', [BatchesController::class, 'showUploadForm'])->name('batches.upload');
+Route::post('/batches/{batch}/upload', [BatchesController::class, 'uploadBatchDetails'])->name('batches.upload.store');

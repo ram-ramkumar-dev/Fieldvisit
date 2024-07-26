@@ -19,4 +19,9 @@ class Batches extends Model
         return $this->belongsTo(Client::class, 'client_id');
     }
     
+    public function batchDetails()
+    {
+        return $this->hasMany(BatchDetail::class, 'batch_id');
+    }
+    
 }

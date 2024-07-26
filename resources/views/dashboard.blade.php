@@ -43,7 +43,7 @@
                         <div class="">
                             <p class="mb-2 text-secondary">Active Agent</p>
                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                               <h5 class="mb-0 font-weight-bold">0</h5>
+                               <h5 class="mb-0 font-weight-bold">{{ count($users) }}</h5>
                                <p class="mb-0 ml-3 text-success font-weight-bold"></p>
                             </div>                            
                         </div>
@@ -58,7 +58,7 @@
                         <div class="">
                             <p class="mb-2 text-secondary">Total Batch</p>
                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                               <h5 class="mb-0 font-weight-bold">0</h5>
+                               <h5 class="mb-0 font-weight-bold">{{ count($totalbatches) }}</h5>
                                <p class="mb-0 ml-3 text-success font-weight-bold"></p>
                             </div>                            
                         </div>
@@ -73,7 +73,7 @@
                         <div class="">
                             <p class="mb-2 text-secondary">Total Account</p>
                             <div class="d-flex flex-wrap justify-content-start align-items-center">
-                               <h5 class="mb-0 font-weight-bold">0</h5>
+                               <h5 class="mb-0 font-weight-bold">{{ $totalBatchDetailsCount  }}</h5>
                                <p class="mb-0 ml-3 text-success font-weight-bold"></p>
                             </div>                            
                         </div>

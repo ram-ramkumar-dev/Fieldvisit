@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Batches;
 use App\Models\User;
 use App\Models\Driver;
 use Illuminate\Http\Request;
@@ -39,7 +40,14 @@ class UserController extends Controller
     public function dashboard()
     {       
         $companyId = Session::get('company_id'); 
-        $data['users'] =  Driver::where('company_id', $companyId)->get(); 
+        $data['users'] =  Driver::where(array('company_id'=>$companyId,'status'=>1))->get(); 
+        $data['totalbatches'] = Batches::where([
+                                     'company_id' => $companyId,
+                                     'status' => 1
+                         ])->withCount('batchDetails')->get();
+        $totalBatchDetailsCount = $data['totalbatches']->sum('batch_details_count');
+        $data['totalBatchDetailsCount'] = $totalBatchDetailsCount;
+ 
         $data['page'] = 'Dashboard';
         return view('dashboard', $data);
     }
