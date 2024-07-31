@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\ClientGroup;
+use App\Models\State;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -17,7 +18,7 @@ class ClientController extends Controller
     public function index()
     {
         $page = "Clients";
-        //$clients = Client::with('clientgroup')->get(); 
+        //$clients = Client::with('clientgroup')->get();  
         $companyId = Session::get('company_id'); 
         $clients = Client::where('company_id', $companyId)->with('clientgroup')->get(); 
         return view('clients.index', compact('clients', 'page'));
@@ -31,9 +32,10 @@ class ClientController extends Controller
     public function create()
     {
         $page = "Clients"; 
+        $states = State::all();
         $companyId = Session::get('company_id'); 
         $clientgroups = ClientGroup::where('company_id', $companyId)->get(); 
-        return view('clients.create', compact('clientgroups', 'page'));
+        return view('clients.create', compact('clientgroups', 'states', 'page'));
     }
 
     /**
@@ -86,9 +88,10 @@ class ClientController extends Controller
     public function edit(Client $client)
     {
         $page = "Clients"; 
+        $states = State::all();
         $companyId = Session::get('company_id'); 
         $clientgroups = ClientGroup::where('company_id', $companyId)->get(); 
-        return view('clients.edit', compact('client', 'clientgroups', 'page'));
+        return view('clients.edit', compact('client', 'clientgroups', 'states', 'page'));
     }
 
     /**

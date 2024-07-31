@@ -11,7 +11,12 @@
                 </div>  
                 <div class="create-workform">
                     <div class="d-flex flex-wrap align-items-center justify-content-between">
-                        <div class="modal-product-search d-flex">
+                        <div class="modal-product-search d-flex">   <a href="{{ route('batches.import') }}" class="btn btn-primary btn-sm d-flex align-items-center justify-content-between ml-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="ml-2">Back</span>
+                    </a>
                             <!-- <form class="mr-3 position-relative">
                                 <div class="form-group mb-0">
                                     <input type="text" class="form-control" id="exampleInputText"  placeholder="Search Client">
@@ -23,11 +28,7 @@
                                 </div>
                             </form> -->
                             
-                            <form id="uploadForm" action="{{ route('batches.upload.store', $batch->id) }}" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <input type="file" id="fileInput" name="file" accept=".xlsx,.xls" style="display: none;" required>
-                                <button type="button" class="btn btn-primary position-relative d-flex align-items-center justify-content-between" id="uploadButton">Upload Account</button>
-                            </form>
+                           
                         </div>                            
                     </div>
                 </div>                    
@@ -56,7 +57,11 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
                                     Export
-                                </button>-->
+                                </button>--> <form id="uploadForm" action="{{ route('batches.upload.store', $batch->id) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <input type="file" id="fileInput" name="file" accept=".xlsx,.xls" style="display: none;" required>
+                                <button type="button" class="btn btn-primary position-relative d-flex align-items-center justify-content-between" id="uploadButton">Upload Account</button>
+                            </form>
                             </div>
                             <div class="table-responsive">
                             <table class="table data-table mb-0">
@@ -86,7 +91,7 @@
                                         <tbody>
         @foreach ($batchedetail as $batch)
         <tr class="white-space-no-wrap"> 
-            <td>{{ $batch->id }}</td>
+            <td>{{ $batch->fileid }}</td>
             <td>{{ $batch->district_la }}</td>
             <td>{{ $batch->taman_mmid }}</td>
             <td>1</td>

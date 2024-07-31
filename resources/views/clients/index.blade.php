@@ -56,16 +56,27 @@
                                             <th scope="col">
                                                 <label class="text-muted mb-0" >Client ID</label>
                                             </th> 
-                                            <th scope="col">
-                                                <label class="text-muted mb-0" >Name</label>
-                                            </th>
                                             <th scope="col" >
                                                 <label class="text-muted mb-0" >Client Group</label>
                                             </th>
                                             
+                                            <th scope="col">
+                                                <label class="text-muted mb-0" >Name</label>
+                                            </th>
+                                            
+                                            <th scope="col">
+                                                <label class="text-muted mb-0" >
+                                                Status
+                                                </label>
+                                            </th> 
                                             <th scope="col" >
                                                 <label class="text-muted mb-0" >Registration No</label>
                                             </th>
+                                            <th scope="col">
+                                                <label class="text-muted mb-0" >
+                                                Phone
+                                                </label>
+                                            </th>  
                                             <th scope="col">
                                                 <label class="text-muted mb-0" >
                                                 Address
@@ -86,48 +97,33 @@
                                                 Postcode
                                                 </label>
                                             </th> 
-                                            <th scope="col">
-                                                <label class="text-muted mb-0" >
-                                                Phone 1
-                                                </label>
-                                            </th> 
-                                            <th scope="col">
-                                                <label class="text-muted mb-0" >
-                                                Phone 2
-                                                </label>
-                                            </th> 
-                                            <th scope="col">
-                                                <label class="text-muted mb-0" >
-                                                Status
-                                                </label>
-                                            </th> 
                                             <th scope="col"  >
                                                 <span class="text-muted" >Action</span>
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    @foreach($clients as $client)
+                                    @foreach($clients as $client) 
                                         <tr class="white-space-no-wrap"> 
                                             <td>{{ $client->id }}</td>
-                                            <td>{{ $client->client_name }}</td>
                                             <td>{{ $client->clientgroup->name }}</td>
+                                            <td>{{ $client->client_name }}</td>
+                                            <td>{{ $client->status == '1' ? 'Active' : 'Inactive' }}</td>
                                             <td>{{ $client->registration_no }}</td>
+                                            <td>{{ $client->phone1 }}</td>   
                                             <td>{{ $client->address }}</td>
                                             <td>{{ $client->city }}</td>
-                                            <td>{{ $client->state }}</td>
-                                            <td>{{ $client->postcode }}</td>
-                                            <td>{{ $client->phone1 }}</td>
-                                            <td>{{ $client->phone2 }}</td>                         
-                                            <td>
-                                                <p class="mb-0 text-success font-weight-bold d-flex justify-content-start align-items-center">
+                                            <td>{{  $client->getStateName() ?: 'N/A'  }}</td>
+                                            <td>{{ $client->postcode }}</td>                 
+                                           
+                                            <!--   <td>  <p class="mb-0 text-success font-weight-bold d-flex justify-content-start align-items-center">
                                                     <small>
                                                         <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">                                                
                                                             <circle cx="12" cy="12" r="8" fill="#3cb72c"></circle>
                                                         </svg>
                                                     </small>Active
                                                 </p>
-                                            </td>
+                                            </td>-->
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a class="" data-toggle="tooltip" data-placement="top" title="View" href="{{ route('clients.show', $client->id) }}">

@@ -74,8 +74,13 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label font-weight-bold text-muted text-uppercase"for="state">State:</label>
-                            <input type="text" class="form-control" name="state" required value="{{ old('client_name') }}">
-                            
+                             
+                            <select id="state" class=" form-control " name="state" required>
+                                <option value="">Select State</option>
+                                @foreach($states as $state)
+                                    <option value="{{ $state->id }}">{{ $state->state_name }}</option>
+                                @endforeach
+                            </select>
                             @error('state')
                                     <div>{{ $message }}</div>
                                 @enderror

@@ -49,7 +49,8 @@ class DriverController extends Controller
     public function show($id)
     {
         $driver = Driver::findOrFail($id);
-        return view('drivers.show', compact('driver'));
+        $page = "Drivers";
+        return view('drivers.show', compact('driver' ,'page'));
     }
 
     public function edit($id)
@@ -58,7 +59,7 @@ class DriverController extends Controller
         $loggedInId = Session::get('user_id'); 
         $drivers = Driver::where('id', '!=', $loggedInId)->get();
         $page = "Drivers";
-        return view('drivers.edit', compact('driver', 'drivers','page')); 
+        return view('drivers.edit', compact('driver', 'drivers' ,'page')); 
     }
 
     public function update(Request $request, $id)

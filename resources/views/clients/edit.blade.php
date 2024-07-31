@@ -56,7 +56,12 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label font-weight-bold text-muted text-uppercase" for="state">State:</label>
-                                <input type="text" class="form-control" name="state" value="{{ $client->state }}" required>
+                                <select id="state" class=" form-control " name="state" required>
+                                    <option value="">Select State</option>
+                                    @foreach($states as $state)
+                                        <option {{ $client->state == $state->id ? 'selected' : '' }} value="{{ $state->id }}">{{ $state->state_name }}</option>
+                                    @endforeach
+                                </select> 
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label font-weight-bold text-muted text-uppercase" for="postcode">Postcode:</label>

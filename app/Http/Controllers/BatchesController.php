@@ -6,6 +6,7 @@ use App\Models\Batches;
 use App\Models\BatchDetail;
 use App\Models\Client;
 use App\Models\Status;
+use App\Models\State;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage; 
@@ -59,10 +60,12 @@ class BatchesController extends Controller
         ]); 
         // Get the company_id from the session
         $companyId = Session::get('company_id');
+        // Get the login user_id from the session
+        $userId = Session::get('user_id');
         // Merge the company_id into the request data
         $data = $request->all();
         $data['company_id'] = $companyId;
-         
+        $data['addeby'] = $userId;
         Batches::create($data);  
         return redirect()->route('batches.index')->with('success', 'Batch created successfully.');
     }
@@ -137,6 +140,7 @@ class BatchesController extends Controller
                         ->with('client')->get(); 
         return view('batches.import', compact('batches', 'page'));
     }
+
     public function viewUploaded(Batches $batch)
     {
         $page = "ImportBatch"; 
@@ -152,6 +156,8 @@ class BatchesController extends Controller
         $request->validate([
             'file' => 'required|mimes:xlsx,xls|max:2048',
         ]);
+        // Get the login user_id from the session
+        $userId = Session::get('user_id');
 
         // Store the uploaded file
         $file = $request->file('file');
@@ -179,11 +185,11 @@ class BatchesController extends Controller
                 if ($i === 0) continue; // Skip header row
 
                 // Validate row data
-                if ($this->validateRow($row)) {
+               // if ($this->validateRow($row)) {
                     // Insert valid row data into the database
                     BatchDetail::create([
                         'batch_id' => $id,
-                        'id' => $row[0],
+                        'fileid' => $row[0],
                         'name' => $row[1],
                         'ic_no' => $row[2],
                         'account_no' => $row[3],
@@ -199,10 +205,12 @@ class BatchesController extends Controller
                         'building_id' => $row[13],
                         'mail_name' => $row[14],
                         'mail_add' => $row[15],
+                        'uploadedby' => $userId,
+                        'status' => 'New'
                     ]);
-                } else {
-                    $errors[] = "Row " . ($i + 1) . " has invalid data.";
-                }
+               // } else {
+               //     $errors[] = "Row " . ($i + 1) . " has invalid data.";
+               // }
             }
 
             if (empty($errors)) {
@@ -224,5 +232,67 @@ class BatchesController extends Controller
                !empty($row[9]) && !empty($row[10]) && !empty($row[11]) && 
                !empty($row[12]) && !empty($row[13]) && !empty($row[14]) && 
                !empty($row[15]);
+    }
+
+    public function deleteBatchDetails($id)
+    {
+        try {
+            // Delete all batch details where batch_id matches the given id
+            BatchDetail::where('batch_id', $id)->delete();
+
+            // Return success message
+            return redirect()->route('batches.import')->with('success', 'Batch details deleted successfully.');
+        } catch (\Exception $e) {
+            // Handle exceptions and provide a generic error message
+            return redirect()->back()->with('error', 'An error occurred while deleting the batch details.');
+        }
+    }
+    public function AssignCase(Request $request)
+    {
+        $page = "Assign"; 
+        $states = State::all();
+        $companyId = session('company_id');  
+
+        // Fetch batches
+        $batches = Batches::where('company_id', $companyId)
+                        ->orWhereNull('company_id')
+                        ->withCount('batchDetails')
+                        ->with('client')
+                        ->get(); 
+
+        // Initialize query
+        $query = BatchDetail::query(); 
+        
+        // Apply filters based on request data
+        if ($request->filled('batch_no')) {
+            if (in_array('selectall', $request->batch_no)) {
+                $query->whereIn('batch_id', $batches->pluck('id')); 
+            } else {
+                $query->whereIn('batch_id', $request->batch_no);
+            }
+        }
+        if ($request->filled('fr_la')) {
+            $query->whereIn('district_la', $request->fr_la);
+        }
+        
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('fr_mmid')) {
+            $query->whereIn('tamna_mmid', $request->fr_mmid);
+        }
+        if ($request->filled('fr_city')) {
+            $query->where('roadname', $request->fr_city);
+        }
+        if ($request->filled('fr_postcode')) {
+            $query->where('post_code', $request->fr_postcode);
+        }
+        if ($request->filled('fr_state')) {
+            $query->whereIn('state', $request->fr_state);
+        }
+        
+        // Get filtered batch details
+        $batchDetails = $query->get(); 
+        return view('batches.assigncase', compact('batches', 'batchDetails', 'states', 'page'));
     }
 }

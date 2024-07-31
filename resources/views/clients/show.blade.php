@@ -29,7 +29,7 @@
     </div>
     <div>
         <strong>State:</strong>
-        {{ $client->state }}
+        {{ $client->getStateName() ?: 'N/A' }}
     </div>
     <div>
         <strong>Postcode:</strong>

@@ -83,8 +83,8 @@
                             <div class="col-md-6 mb-3"> 
                                 <label for="Text8" class="form-label font-weight-bold text-muted text-uppercase">Display Sensitive Detail</label>
                                 <select name="sensitive" id="sensitive" class="form-control">
-                                    <option {{ old('sensitive', $driver->sensitive) == "yes" ? 'selected' : '' }} value="yes">Yes</option> 
-                                    <option {{ old('sensitive', $driver->sensitive) == "no" ? 'selected' : '' }} value="no">No</option>
+                                    <option {{ old('sensitive', $driver->sensitive) == "Yes" ? 'selected' : '' }} value="Yes">Yes</option> 
+                                    <option {{ old('sensitive', $driver->sensitive) == "No" ? 'selected' : '' }} value="No">No</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">

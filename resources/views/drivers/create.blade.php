@@ -80,8 +80,8 @@
                             <div class="col-md-6 mb-3">
                                 <label for="sensitive" class="form-label font-weight-bold text-muted text-uppercase">Display Sensitive Detail</label>
                                 <select name="sensitive" id="sensitive" class="form-control">
-                                    <option value="yes" {{ old('sensitive') == "yes" ? 'selected' : '' }}>Yes</option>
-                                    <option value="no" {{ old('sensitive', 'no') == "no" ? 'selected' : '' }}>No</option>
+                                    <option value="Yes" {{ old('sensitive') == "Yes" ? 'selected' : '' }}>Yes</option>
+                                    <option value="No" {{ old('sensitive') == "No" ? 'selected' : '' }}>No</option>
                                 </select>
                             </div>
 

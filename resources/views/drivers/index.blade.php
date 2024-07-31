@@ -56,16 +56,25 @@
                                             <tr class="text-light">
                                                 <th scope="col">
                                                     <label class="text-muted m-0" >Id </label>
-                                                </th>
-                                                <th scope="col">
-                                                    <label class="text-muted mb-0" >Name</label>
                                                 </th> 
                                                 <th scope="col">
                                                     <label class="text-muted mb-0" >User Name</label>
                                                 </th> 
                                                 <th scope="col">
+                                                    <label class="text-muted mb-0" >Phone Number</label>
+                                                </th> 
+                                                
+                                                
+                                                <th scope="col">
+                                                    <label class="text-muted mb-0" >Display Sensitive Info</label>
+                                                </th> 
+                                                <th scope="col">
+                                                    <label class="text-muted mb-0" >Module Access</label>
+                                                </th> 
+
+                                                <th scope="col">
                                                     <label class="text-muted mb-0" >
-                                                        Status
+                                                    Supervisor Configuration
                                                     </label>
                                                 </th> 
                                                 <th scope="col"  >
@@ -78,15 +87,12 @@
         
                                             <tr class="white-space-no-wrap">
                                                 <td class=""> {{ $driver->id }} </td>
-                                                <td>{{ $driver->name }}  </td>
-                                                <td>{{ $driver->username }}  </td>                     
-                                                <td>
-                                                    <p class="mb-0 text-success font-weight-bold d-flex justify-content-start align-items-center">
-                                                        <small><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">                                                
-                                                        <circle cx="12" cy="12" r="8" fill="#3cb72c"></circle></svg>
-                                                        </small>Active
-                                                    </p>
-                                                </td>
+                                                <td>{{ $driver->username }}  </td>
+                                                <td>{{ $driver->phone_number }}  </td>
+                                                <td>{{ $driver->sensitive }}  </td>
+                                                <td>{{ implode(', ', (array) $driver->permissions) }}</td>
+                                                <td>{{ implode(', ', (array) $driver->supervisor) }}</td>                   
+                                                
                                                 <td>
                                                     <div class="d-flex align-items-center">
                                                     <a class="" data-toggle="tooltip" data-placement="top" title="" data-original-title="View" href="{{ route('drivers.show', $driver->id) }}">
