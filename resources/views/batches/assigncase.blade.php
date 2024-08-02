@@ -307,7 +307,7 @@
     
     $('#assignBtn').click(function(){
         var selectedStatus = $("#selectedStatus").val();        
-        var selectedId = $("#selectedId").val();  alert(selectedId);
+        var selectedId = $("#selectedId").val();  
         var assignedto = $("#assignedto").val();  
         if  (selectedStatus == '' || selectedId == '' || assignedto == ''){
             alert ("Please choose at least one account and agent to assign");
