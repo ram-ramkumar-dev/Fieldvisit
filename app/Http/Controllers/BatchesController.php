@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Batches;
 use App\Models\BatchDetail;
-use App\Models\Client;
+use App\Models\Client; 
+use App\Models\Driver;
 use App\Models\Status;
 use App\Models\State;
 use Illuminate\Http\Request;
@@ -247,12 +248,13 @@ class BatchesController extends Controller
             return redirect()->back()->with('error', 'An error occurred while deleting the batch details.');
         }
     }
-    public function AssignCase(Request $request)
-    {
+
+    public function AssignCase(Request $request, $batchId)
+    {  
         $page = "Assign"; 
         $states = State::all();
-        $companyId = session('company_id');  
-
+        $companyId = Session::get('company_id');  
+        $drivers = Driver::where('company_id', $companyId)->get();
         // Fetch batches
         $batches = Batches::where('company_id', $companyId)
                         ->orWhereNull('company_id')
@@ -262,37 +264,84 @@ class BatchesController extends Controller
 
         // Initialize query
         $query = BatchDetail::query(); 
-        
+            
         // Apply filters based on request data
+        $filtersApplied = false; // Flag to check if any filters are applied
+ 
         if ($request->filled('batch_no')) {
             if (in_array('selectall', $request->batch_no)) {
                 $query->whereIn('batch_id', $batches->pluck('id')); 
             } else {
                 $query->whereIn('batch_id', $request->batch_no);
             }
+            $filtersApplied = true;
         }
         if ($request->filled('fr_la')) {
             $query->whereIn('district_la', $request->fr_la);
+            $filtersApplied = true;
         }
         
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+            $filtersApplied = true;
         }
         if ($request->filled('fr_mmid')) {
             $query->whereIn('tamna_mmid', $request->fr_mmid);
+            $filtersApplied = true;
         }
         if ($request->filled('fr_city')) {
             $query->where('roadname', $request->fr_city);
+            $filtersApplied = true;
         }
         if ($request->filled('fr_postcode')) {
             $query->where('post_code', $request->fr_postcode);
+            $filtersApplied = true;
         }
         if ($request->filled('fr_state')) {
             $query->whereIn('state', $request->fr_state);
+            $filtersApplied = true;
         }
-        
-        // Get filtered batch details
-        $batchDetails = $query->get(); 
-        return view('batches.assigncase', compact('batches', 'batchDetails', 'states', 'page'));
+       
+        // Only execute the query if filters are applied
+        if ($filtersApplied) {
+            $batchDetails = $query->get(); 
+        } else { 
+            $batchDetails = BatchDetail::where('batch_id', $batchId)->get();
+        } 
+        return view('batches.assigncase', compact('batches','drivers', 'batchId', 'batchDetails', 'states', 'page'));
+    }
+
+    
+    public function BatchesList(Request $request)
+    {
+        $page = "Assign"; 
+        $companyId = Session::get('company_id');  
+        $batches = Batches::where('company_id', $companyId)
+                        ->orWhereNull('company_id')
+                        ->withCount('batchDetails')
+                        ->with('client')->get(); 
+        return view('batches.batchlist', compact('batches', 'page'));
+    }
+
+    public function assignBatchesToDrivers(Request $request){
+  
+
+        // Retrieve the form data
+        $selectedStatus = $request->input('selectedStatus');
+        $selectedId = $request->input('selectedId');
+        $assignedTo = $request->input('assignedto');
+
+        // Split the selectedId string into an array of IDs
+        $selectedIds = explode(',', $selectedId);
+
+        // Update each BatchDetail record
+        BatchDetail::whereIn('id', $selectedIds)
+                    ->update([
+                        'status' => 'Pending',
+                        'assignedto' => $assignedTo,
+                    ]);
+                            // Redirect back with a success message
+        return redirect()->back()->with('success', 'Batches assigned to driver successfully.');
+
     }
 }

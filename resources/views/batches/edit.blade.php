@@ -54,7 +54,7 @@
                             <select required class="multipleSelect2 form-control choicesjs" multiple name="status_code[]">
                             <option value="All" {{ in_array('All', $batch->status_code) ? 'selected' : '' }}>Select All</option>
                             @foreach ($status as $stat)
-                                <option value="{{ $stat->id }}" {{ in_array($stat->id, $batch->status_code) ? 'selected' : '' }}>{{ $stat->statuscode }}</option>
+                                <option value="{{ $stat->id }}" {{ in_array($stat->id, $batch->status_code) ? 'selected' : '' }}>{{ $stat->statuscode }}-{{ $stat->description }}</option>
                             @endforeach
                         </select>
                             @error('status_code')

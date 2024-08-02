@@ -55,7 +55,7 @@
                             <select required class="multipleSelect2 form-control choicesjs" multiple="true" name="status_code[]">
                                 <option value="All">Select All</option>
                                 @foreach ($status as $stat)
-                                    <option value="{{ $stat->id }}">{{ $stat->statuscode }}</option>
+                                    <option value="{{ $stat->id }}">{{ $stat->statuscode }}-{{ $stat->description }}</option>
                                 @endforeach
                             </select>
                             @error('status_code')

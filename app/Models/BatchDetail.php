@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class BatchDetail extends Model
 {
@@ -14,6 +15,13 @@ class BatchDetail extends Model
     
     public function batch()
     {
-        return $this->belongsTo(Batch::class);
+        return $this->belongsTo(Batches::class);
+    }
+    // Define the relationship to the State model
+    public function getDriverName()
+    {
+        return DB::table('drivers')
+            ->where('id', $this->assignedto) // Assuming 'state_abbreviation' is the column in 'states' table
+            ->value('name');
     }
 }

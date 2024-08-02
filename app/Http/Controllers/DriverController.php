@@ -28,17 +28,22 @@ class DriverController extends Controller
 
     public function store(Request $request)
     {
+        $companyId = Session::get('company_id');
         $request->validate([
             'name' => 'required',
          //   'email' => 'required|email|unique:drivers',
-            'username' => 'required|unique:drivers',
+            'username' => ['required',  
+                            Rule::unique('drivers')->where(function ($query) use ($companyId) {
+                                return $query->where('company_id', $companyId);
+                            }),
+                ],
             'password' => 'required',
             'password_confirmation' => 'required|same:password',
         ]);
 
         //Driver::create($request->all());
         $driver = new Driver($request->all());
-        $driver->company_id = Session::get('company_id');
+        $driver->company_id = $companyId;
         $driver->password = Hash::make($request->password);
         $driver->app_login = $request->input('app_login', 0);
         $driver->save();

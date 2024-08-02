@@ -18,7 +18,7 @@
 
             <div class="col-lg-12"><!-- resources/views/batches/assigncase.blade.php -->
   
-    <form action="{{ route('batches.assign') }}" method="GET" class="row g-3">
+    <form action="{{ route('batches.assigncase', $batchId) }}" method="GET" class="row g-3">
         
         <div class="col-md-4 mb-3">
             <label class="form-label font-weight-bold text-muted text-uppercase" for="fr_batch_file">Status</label>
@@ -30,17 +30,7 @@
                     <option value="Aborted"  {{ request('status') == "Aborted" ? 'selected' : '' }}>Aborted</option>  
             </select>
         </div>
-        <div class="col-md-4 mb-3">
-            <label class="form-label font-weight-bold text-muted text-uppercase" for="fr_batch_file">Batch File</label>
-            <select class="multipleSelect2 form-control choicesjs" multiple="true" name="batch_no[]">
-                <option value="selectall">Select All</option>
-                @foreach ($batches as $batch)
-                    <option value="{{ $batch->id }}" {{ in_array($batch->id, request('batch_no', [])) ? 'selected' : '' }}>
-                        {{ $batch->batch_no }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+        
         
         <div class="col-md-4 mb-3">
             <label class="form-label font-weight-bold text-muted text-uppercase" for="fr_la">LA (District)</label>
@@ -102,12 +92,31 @@
                             <table class="table data-table mb-0" data-ordering="false">
                                     <thead class="table-color-heading">
                                         <tr class="text-light">  
-                                        <th style="padding-left: 40px;"><input class="form-check-input check-choose" type="checkbox" name="all" id="debtorCheckUncheck" value="0"></th>
+                                        <th class="pr-0" style="width: 1px;">
+                                        <div class="d-flex justify-content-start align-items-end mb-1 ">
+                                       <div class="custom-control custom-checkbox custom-control-inline">
+                                          <input type="checkbox" class="custom-control-input m-0" name="all" id="debtorCheckUncheck" value="0">
+                                          <label class="custom-control-label" for="debtorCheckUncheck"></label>
+                                       </div>
+                                    </div> 
+                                            </th>
                                             <th>
                                                 <label class="text-muted mb-0" >ID</label>
                                             </th> 
                                             <th >
                                                 <label class="text-muted mb-0" >Account</label>
+                                            </th> 
+                                            
+                                            <th >
+                                                <label class="text-muted mb-0" >Address</label>
+                                            </th> 
+                                            
+                                            <th >
+                                                <label class="text-muted mb-0" >District</label>
+                                            </th> 
+                                            
+                                            <th >
+                                                <label class="text-muted mb-0" >Taman</label>
                                             </th> 
                                             <th >
                                                 <label class="text-muted mb-0" >
@@ -123,12 +132,24 @@
                                         <tbody>
         
         @foreach ($batchDetails as $key=>$batch)
-        <tr class="white-space-no-wrap"> 
-            <td><div class="form-check checkboxkecik"><input onclick="singlecheck()" class="form-check-input debtorCheck check-choose" type="checkbox" name="debtorID[]" id="row_{{ $key }}" value="{{ $batch->id }}"><label class="form-check-label">1</label></div></td>
+        <tr > 
+            <td class="pr-0">
+            <div class="d-flex justify-content-start align-items-end mb-1 ">
+                <div class="checkboxkecik custom-control custom-checkbox custom-control-inline">
+                    <input onclick="singlecheck()" type="checkbox" class="check-choose debtorCheck custom-control-input m-0" id="row_{{ $key }}" value="{{ $batch->id }}">
+                    <label class="custom-control-label" for="row_{{ $key }}"></label>
+                   <span style="    margin-bottom: -5px;"> {{ $loop->iteration }}</span>
+                </div>
+            </div>
+            </td>
             <td>{{ $batch->fileid }}</td>
-            <td>{{ $batch->account_no  }}-{{ $batch->name }}</td>
+            <td>{{ $batch->account_no  }}-{{ $batch->name }}</td>            
+            <td>{{ $batch->address }}</td>             
+            <td>{{ $batch->district_la }}</td>             
+            <td>{{ $batch->taman_mmid }}</td> 
             <td>{{ $batch->status }}</td> 
-            <td></td>  
+            <td>{{ ucfirst($batch->getDriverName()) ?: '-' }}
+            </td>  
         </tr>
          
         @endforeach
@@ -161,19 +182,18 @@
             </div>
             <label class="form-check-label" for="flexCheckDefault" style="margin-top:4px;">FV Agent:</label>
             <div class="col-sm-3" style="">
-            <form action="http://itgtel.vranger.com.my/fv/submitAssignment" method="post" id="assignForm">
+            <form action="{{ route('batches.assignbatchestodrivers') }}" method="post" id="assignForm">
+            @csrf <!-- Add CSRF token for security -->
                 <input type="hidden" name="selectedStatus" id="selectedStatus" value="1" required="">
                 <input type="hidden" id="selectedId" name="selectedId" class="debtorField" required="">
-                <select class="form-control form-select form-select-sm" style="background-color:white;color:black;" id="selectedAgent" name="selectedAgent" required="">
-                    <option value="">Please Choose</option>
-                                            <option value="14">DANIAL</option>
-                                            <option value="20">EMY</option>
-                                            <option value="19">JOHN</option>
-                                            <option value="22">OSAMA</option>
-                                            <option value="23">RAMKUMAR</option>
-                                            <option value="13">YASMIN</option>
-                                    </select>
-            </form></div>
+                <select class="form-control form-select form-select-sm" style="background-color:white;color:black;" id="assignedto" name="assignedto" required="">
+                    <option value="">Please Choose</option> 
+                    @foreach ($drivers as $k => $driver) 
+                    <option value="{{ $driver->id }}" >{{ ucfirst($driver->name) }}</option>
+                    @endforeach
+                    </select>
+            </form>
+            </div>
             <div class="col-sm-1" >
                 <span class="btn btn-sm btn-success mx-2" id="assignBtn">ASSIGN</span>
             </div>
@@ -198,10 +218,15 @@
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
 }
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> 
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 
-    <script>
-         function calculateChk() {
+    <script>$(document).ready( function () {
+    $('.data-table').DataTable({
+        "pageLength": 50
+    });
+});
+    function calculateChk() {
         var count = 0;
         var totChk = '';
         var checkboxes = document.getElementsByClassName('debtorCheck');
@@ -250,7 +275,7 @@
 
         $(".debtorField").val(arr);
     });
-        $("#selectCheck").click(function () {
+    $("#selectCheck").click(function () {
         $('.debtorCheck').prop('checked', false);
         var countD = $("#countDebt").val();
         var fromC = $("#fromCheck").val();
@@ -281,10 +306,10 @@
     });
     
     $('#assignBtn').click(function(){
-        var selectedStatus = $("#selectedStatus").val();
-        var selectedId = $("#selectedId").val();
-        var selectedAgent = $("#selectedAgent").val();
-        if  (selectedStatus == '' || selectedId == '' || selectedAgent == ''){
+        var selectedStatus = $("#selectedStatus").val();        
+        var selectedId = $("#selectedId").val();  alert(selectedId);
+        var assignedto = $("#assignedto").val();  
+        if  (selectedStatus == '' || selectedId == '' || assignedto == ''){
             alert ("Please choose at least one account and agent to assign");
         }else{
             $("#assignForm").submit();

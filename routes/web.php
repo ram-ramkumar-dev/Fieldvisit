@@ -34,7 +34,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings', [UserController::class, 'settings'])->name('settings')->middleware('check.permissions:settings');
     Route::get('administrative', [UserController::class, 'administrative'])->name('administrative')->middleware('check.permissions:administrative'); 
     Route::get('/batches/import', [BatchesController::class, 'import'])->name('batches.import');
-    Route::get('/batches/assign', [BatchesController::class, 'AssignCase'])->name('batches.assign'); 
+    Route::get('/batches/assign', [BatchesController::class, 'BatchesList'])->name('batches.assign'); 
 });
 
 Route::get('register', [UserController::class, 'register'])->name('register');
@@ -57,3 +57,8 @@ Route::get('/batches/{batch}/viewuploaded', [BatchesController::class, 'viewUplo
 Route::get('/batches/{batch}/upload', [BatchesController::class, 'showUploadForm'])->name('batches.upload');
 Route::post('/batches/{batch}/upload', [BatchesController::class, 'uploadBatchDetails'])->name('batches.upload.store');
 Route::delete('/batches/{id}/details', [BatchesController::class, 'deleteBatchDetails'])->name('batches.details.delete');
+Route::get('/batches/{batch}/assigncase', [BatchesController::class, 'AssignCase'])->name('batches.assigncase');
+
+Route::post('/batches/assignbatchestodrivers', [BatchesController::class, 'assignBatchesToDrivers'])->name('batches.assignbatchestodrivers');
+
+

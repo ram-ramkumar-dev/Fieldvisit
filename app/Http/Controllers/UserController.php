@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Batches;
-use App\Models\User;
+use App\Models\Batches; 
+use App\Models\BatchDetail; 
 use App\Models\Driver;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -41,13 +42,65 @@ class UserController extends Controller
     {       
         $companyId = Session::get('company_id'); 
         $data['users'] =  Driver::where(array('company_id'=>$companyId,'status'=>1))->get(); 
+ 
+        // Initialize an array to store formatted results
+        $statusCountsByDriver = [];
+        foreach ($data['users'] as $driver) {
+            $statusCountsByDriver[$driver->id] = [
+                    'id' => $driver->id,
+                    'driver_name' => $driver->name,
+                    'pending' => 0,
+                    'completed' => 0,
+                    'aborted' => 0,
+                    'all' => 0
+                ];
+        }
+
+        // Query to get the status counts grouped by driver
+        $batchDetailsByDriver = BatchDetail::select('assignedto', 'status', DB::raw('COUNT(*) as status_count'))
+        ->whereIn('assignedto', $data['users']->pluck('id'))
+        ->groupBy('assignedto', 'status')
+        ->get();
+        
+        // Populate the status counts
+        foreach ($batchDetailsByDriver as $detail) {
+            switch ($detail->status) {
+                case 'Pending':
+                $statusCountsByDriver[$detail->assignedto]['pending'] = $detail->status_count;
+                break;
+                case 'Completed':
+                $statusCountsByDriver[$detail->assignedto]['completed'] = $detail->status_count;
+                break;
+                case 'Aborted':
+                $statusCountsByDriver[$detail->assignedto]['aborted'] = $detail->status_count;
+                break;
+                }
+                 // Sum up all statuses to get the total count
+                $statusCountsByDriver[$detail->assignedto]['all'] += $detail->status_count;
+        }
+        $data['list'] = $statusCountsByDriver;
+       
         $data['totalbatches'] = Batches::where([
                                      'company_id' => $companyId,
                                      'status' => 1
                          ])->withCount('batchDetails')->get();
         $totalBatchDetailsCount = $data['totalbatches']->sum('batch_details_count');
         $data['totalBatchDetailsCount'] = $totalBatchDetailsCount;
- 
+        $counts = Batches::where('company_id', $companyId)
+                                ->withCount([
+                                    'batchDetails as completed_count' => function ($query) {
+                                        $query->where('status', 'completed');
+                                    },
+                                    'batchDetails as pending_count' => function ($query) {
+                                        $query->where('status', 'pending');
+                                    },
+                                    'batchDetails as aborted_count' => function ($query) {
+                                        $query->where('status', 'aborted');
+                                    }
+                                ])->get();
+        $data['totalCompleted'] = $counts->sum('completed_count');
+        $data['totalPending'] = $counts->sum('pending_count');
+        $data['totalAborted'] = $counts->sum('aborted_count'); 
         $data['page'] = 'Dashboard';
         return view('dashboard', $data);
     }
