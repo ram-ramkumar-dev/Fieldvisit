@@ -262,7 +262,7 @@ class AuthController extends Controller
         $batches = Batches::whereIn('id', $batchIds)
             ->select('id', 'batch_no') // Select specific columns from Batches
             ->with(['batchDetails' => function($query) use ($request) {
-                $query->select('id', 'batch_id', 'address', 'district_la', 'taman_mmid', 'assignedto') // Include 'assignedto'
+                $query->select('id', 'batch_id', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude','batchfile_longitude') // Include 'assignedto'
                     ->where('assignedto', $request->driver_id); // Filter by the driver
             }])
             ->get();
