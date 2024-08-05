@@ -14,7 +14,7 @@ class Driver extends Authenticatable
     protected $table = 'drivers';
 
     protected $fillable = [
-        'username', 'name', 'phone_number', 'password', 'permissions', 'ic_number', 'app_login', 'sensitive', 'supervisor'
+        'username', 'name', 'phone_number', 'password', 'permissions', 'ic_number', 'app_login', 'sensitive', 'supervisor', 'latitude', 'longitude', 'devicetoken'
     ];
 
     protected $hidden = [

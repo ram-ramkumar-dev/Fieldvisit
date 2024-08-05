@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage; 
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use App\Services\GeocodingService;
 
 class BatchesController extends Controller
 {
@@ -164,7 +165,10 @@ class BatchesController extends Controller
         $file = $request->file('file');
         $path = $file->storeAs('uploads', 'batch_' . $id . '.xlsx');
         $filePath = Storage::path($path);
-
+   
+        // Create an instance of the GeocodingService
+        $geocodingService = new GeocodingService();
+   
         try {
             // Load the spreadsheet
             $spreadsheet = IOFactory::load($filePath);
@@ -185,6 +189,20 @@ class BatchesController extends Controller
             foreach ($rows as $i => $row) {
                 if ($i === 0) continue; // Skip header row
 
+                $address = $row[6]; // Address column
+
+                // Get latitude and longitude from address
+                $coordinates = $geocodingService->getCoordinates($address);
+               
+                if ($coordinates && isset($coordinates['results'][0]['geometry']['location'])) {
+                    $latitude = $coordinates['results'][0]['geometry']['location']['lat'] ?? null;
+                    $longitude = $coordinates['results'][0]['geometry']['location']['lng'] ?? null;
+                } else {
+                    // If geocoding fails, use default coordinates (or skip latitude and longitude)
+                    $latitude = null;
+                    $longitude = null;
+                }
+  
                 // Validate row data
                // if ($this->validateRow($row)) {
                     // Insert valid row data into the database
@@ -206,6 +224,8 @@ class BatchesController extends Controller
                         'building_id' => $row[13],
                         'mail_name' => $row[14],
                         'mail_add' => $row[15],
+                        'batchfile_latitude' => $latitude,
+                        'batchfile_longitude' => $longitude,
                         'uploadedby' => $userId,
                         'status' => 'New'
                     ]);
@@ -219,7 +239,7 @@ class BatchesController extends Controller
             } else {
                 return redirect()->back()->with('error', implode(' ', $errors));
             }
-        } catch (\Exception $e) {
+        } catch (\Exception $e) { dd($e);
             // Handle exceptions and provide a generic error message
             return redirect()->back()->with('error', 'An error occurred while uploading the file.');
         }

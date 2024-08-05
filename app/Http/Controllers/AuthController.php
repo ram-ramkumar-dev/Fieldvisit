@@ -8,6 +8,7 @@ use App\Models\BatchDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * @OA\Info(title="API Documentation", version="1.0")
@@ -43,16 +44,27 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'username' => 'required|string',
             'password' => 'required|string',
+            'devicetoken' => 'required|string', // Validate the device_token
         ]);
-
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+    
         $driver = Driver::where('username', $request->username)->first();
-
+        
         if (!$driver || !Hash::check($request->password, $driver->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
+        // Update the device token
+        $driver->devicetoken = $request->devicetoken;
+        $driver->save();
 
         $token = $driver->createToken('auth_token')->plainTextToken;
 
@@ -60,7 +72,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
             'details' => $driver
-        ]);
+        ], 200); // Return a 200 OK status code
     }
 
     /**
@@ -82,7 +94,7 @@ class AuthController extends Controller
     {
         $request->user()->tokens()->delete();
 
-        return response()->json(['message' => 'Logged out successfully']);
+        return response()->json(['message' => 'Logged out successfully'], 200);
     }
 
      /**
@@ -173,7 +185,9 @@ class AuthController extends Controller
                             'taman_mmid' => $detail->taman_mmid, 
                             'roadname' => $detail->roadname, 
                             'state' => $detail->state, 
-                            'post_code' => $detail->post_code, 
+                            'post_code' => $detail->post_code,  
+                            'batchfile_latitude' => $detail->batchfile_latitude, 
+                            'batchfile_longitude' => $detail->batchfile_longitude, 
                         ];
                     }),
                     'completed_details' => $batch->batchDetails->where('status', 'Completed')->map(function ($detail) {
@@ -190,6 +204,8 @@ class AuthController extends Controller
                             'roadname' => $detail->roadname, 
                             'state' => $detail->state, 
                             'post_code' => $detail->post_code, 
+                            'batchfile_latitude' => $detail->batchfile_latitude, 
+                            'batchfile_longitude' => $detail->batchfile_longitude, 
                         ];
                     }),
                     'aborted_details' => $batch->batchDetails->where('status', 'Aborted')->map(function ($detail) {
@@ -206,51 +222,86 @@ class AuthController extends Controller
                             'roadname' => $detail->roadname, 
                             'state' => $detail->state, 
                             'post_code' => $detail->post_code, 
+                            'batchfile_latitude' => $detail->batchfile_latitude, 
+                            'batchfile_longitude' => $detail->batchfile_longitude, 
                         ];
                     }),
                 ];
             }),
         ];
 
-        return response()->json($response); 
+        return response()->json($response, 200); 
     }
 
     public function dashboardForDriver(Request $request)
     {
         $request->validate([
-            'driver_id' => 'required',
+            'driver_id' => 'required|integer',
         ]);
-
+    
         // Validate the token and get the driver (if needed for additional validation)
         $driver = $request->user();
         if (!$driver || $driver->id != $request->driver_id) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
-
+    
         // Get all batch IDs assigned to the driver
         $batchIds = BatchDetail::where('assignedto', $request->driver_id)
                     ->pluck('batch_id')
                     ->unique()
                     ->toArray();
-
+    
+        // Total counts
         $totalBatches = Batches::whereIn('id', $batchIds)->count();
-
-        $totalBatchDetails = BatchDetail::whereIn('batch_id', $batchIds)->count();
-
+        $totalBatchDetails = BatchDetail::whereIn('batch_id', $batchIds)->where('assignedto', $request->driver_id)->count();
         $totalCompletedBatchDetails = BatchDetail::whereIn('batch_id', $batchIds)
-            ->where('status', 'Completed')
+            ->where('status', 'Completed')  ->where('assignedto', $request->driver_id)
             ->count();
-
-        // Get the batch details without the counts
+    
+        // Get the batch details where the driver is assigned
         $batches = Batches::whereIn('id', $batchIds)
-           // ->with('batchDetails')
+            ->select('id', 'batch_no') // Select specific columns from Batches
+            ->with(['batchDetails' => function($query) use ($request) {
+                $query->select('id', 'batch_id', 'address', 'district_la', 'taman_mmid', 'assignedto') // Include 'assignedto'
+                    ->where('assignedto', $request->driver_id); // Filter by the driver
+            }])
             ->get();
-
+    
         return response()->json([
             'total_batches' => $totalBatches,
             'total_batch_details' => $totalBatchDetails,
             'total_completed_batch_details' => $totalCompletedBatchDetails,
             'batches' => $batches
-        ]); 
+        ], 200); 
+    }  
+     
+    public function updateLocation(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'driver_id' => 'required|exists:drivers,id',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $driver = Driver::find($request->driver_id);
+        if (!$driver) {
+            return response()->json(['message' => 'Driver not found'], 404);
+        }
+
+        $driver->latitude = $request->latitude;
+        $driver->longitude = $request->longitude;
+        $driver->save();
+
+        return response()->json([
+            'message' => 'Location updated successfully',
+            'driver' => $driver
+        ], 200);
     }
 }

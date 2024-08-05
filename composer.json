@@ -9,7 +9,7 @@
         "darkaonline/l5-swagger": "^8.6",
         "doctrine/dbal": "^3.8",
         "fruitcake/laravel-cors": "^2.0.5",
-        "guzzlehttp/guzzle": "^7.2",
+        "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^9.0",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.7",
