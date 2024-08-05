@@ -52,6 +52,7 @@ class AuthController extends Controller
     
         if ($validator->fails()) {
             return response()->json([
+                'status' => 'error', 
                 'message' => 'Validation errors',
                 'errors' => $validator->errors()
             ], 422);
@@ -60,7 +61,7 @@ class AuthController extends Controller
         $driver = Driver::where('username', $request->username)->first();
         
         if (!$driver || !Hash::check($request->password, $driver->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json(['status' => 'error', 'message' => 'Invalid credentials'], 401);
         }
         // Update the device token
         $driver->devicetoken = $request->devicetoken;
@@ -135,16 +136,23 @@ class AuthController extends Controller
      * )
      */
 
-    public function getBatchesForDriver(Request $request)
-    {
-        $request->validate([
+    public function getBatchesForDriverold(Request $request)
+    { 
+        $validator = Validator::make($request->all(), [
             'driver_id' => 'required',
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
         // Validate the token and get the driver (if needed for additional validation)
         $driver = $request->user();
         if (!$driver || $driver->id != $request->driver_id) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
         // Get all batch IDs assigned to the driver
@@ -153,7 +161,7 @@ class AuthController extends Controller
                     ->unique()
                     ->toArray();
 
-                    // Get the batch details
+        // Get the batch details
         $batches = Batches::whereIn('id', $batchIds)
         ->with('batchDetails') // Eager load batch details
         ->get();
@@ -235,14 +243,21 @@ class AuthController extends Controller
 
     public function dashboardForDriver(Request $request)
     {
-        $request->validate([
-            'driver_id' => 'required|integer',
+        $validator = Validator::make($request->all(), [
+            'driver_id' => 'required',
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
     
         // Validate the token and get the driver (if needed for additional validation)
         $driver = $request->user();
         if (!$driver || $driver->id != $request->driver_id) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
     
         // Get all batch IDs assigned to the driver
@@ -268,6 +283,7 @@ class AuthController extends Controller
             ->get();
     
         return response()->json([
+            'status' => 'success', 
             'total_batches' => $totalBatches,
             'total_batch_details' => $totalBatchDetails,
             'total_completed_batch_details' => $totalCompletedBatchDetails,
@@ -285,6 +301,7 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
+                'status' => 'error', 
                 'message' => 'Validation errors',
                 'errors' => $validator->errors()
             ], 422);
@@ -292,7 +309,7 @@ class AuthController extends Controller
 
         $driver = Driver::find($request->driver_id);
         if (!$driver) {
-            return response()->json(['message' => 'Driver not found'], 404);
+            return response()->json(['status' => 'error', 'message' => 'Driver not found'], 404);
         }
 
         $driver->latitude = $request->latitude;
@@ -300,8 +317,82 @@ class AuthController extends Controller
         $driver->save();
 
         return response()->json([
+            'status' => 'success',
             'message' => 'Location updated successfully',
             'driver' => $driver
+        ], 200);
+    }
+
+    public function getBatchesForDriver(Request $request)
+    {        
+        $validator = Validator::make($request->all(), [
+            'driver_id' => 'required|string', 
+        ]);
+
+        $driver_id = $request->driver_id;
+        $batch_id = $request->batch_id;
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+     
+        $batches = Batches::whereHas('batchDetails', function($query) use ($driver_id, $batch_id) {
+            $query->where('assignedto', $driver_id);
+            if ($batch_id) {
+                $query->where('batch_id', $batch_id);
+            }
+        })
+        ->select('id', 'batch_no')
+        ->get();
+
+        if ($batches->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No batch details found for the specified driver and batch.',
+                'data' => null
+            ], 404);
+        }
+
+        $response = $batches->map(function ($batch) use ($driver_id, $batch_id) {
+            $batchDetailsQuery = BatchDetail::where('assignedto', $driver_id);
+            if ($batch_id) {
+                $batchDetailsQuery->where('batch_id', $batch_id);
+            } else {
+                $batchDetailsQuery->where('batch_id', $batch->id);
+            }
+            $batchDetails = $batchDetailsQuery
+                ->select('id', 'batch_id', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude', 'status', 'batchfile_longitude') // Include 'assignedto'
+                ->get();
+
+            $pending = $batchDetails->where('status', 'Pending')->values();
+            $completed = $batchDetails->where('status', 'Completed')->values();
+            $aborted = $batchDetails->where('status', 'Aborted')->values();
+
+            // Count of each status
+            $pendingCount = $pending->count();
+            $completedCount = $completed->count();
+            $abortedCount = $aborted->count();
+
+            return [
+                'batch_id' => $batch->id,
+                'batch_no' => $batch->batch_no,
+                'pending_count' => $pendingCount,
+                'completed_count' => $completedCount,
+                'aborted_count' => $abortedCount,
+                'pending_details' => $pending,
+                'completed_details' => $completed,
+                'aborted_details' => $aborted,
+            ];
+        });
+          
+     
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Batch details retrieved successfully.',
+            'data' => $response
         ], 200);
     }
 }

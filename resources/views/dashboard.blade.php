@@ -175,7 +175,7 @@
             <div class="card">
                 <div class="card-body">
                   <div class="d-flex justify-content-between align-items-center flex-wrap">
-                     <h4 class="font-weight-bold">Visit & Survet Statistics</h4>
+                     <h4 class="font-weight-bold">Visit & Survey Statistics</h4>
                      <div class="d-flex justify-content-between align-items-center">
                         <div><svg width="24" height="24" viewBox="0 0 24 24" fill="primary" xmlns="../../../../www.w3.org/2000/svg.html">
                               <rect x="3" y="3" width="18" height="18" rx="2" fill="#3378FF" />
