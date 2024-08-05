@@ -168,24 +168,24 @@
                   </div>
                </div> 
       </div> 
-      <div class="col-lg-8 col-md-12" style="display:none;">
+      <div class="col-lg-8 col-md-12">
          <div class="row">
           
             <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
                   <div class="d-flex justify-content-between align-items-center flex-wrap">
-                     <h4 class="font-weight-bold">Sales Report</h4>
+                     <h4 class="font-weight-bold">Visit & Survet Statistics</h4>
                      <div class="d-flex justify-content-between align-items-center">
                         <div><svg width="24" height="24" viewBox="0 0 24 24" fill="primary" xmlns="../../../../www.w3.org/2000/svg.html">
                               <rect x="3" y="3" width="18" height="18" rx="2" fill="#3378FF" />
                               </svg>
-                           <span>Incomes</span>
+                           <span>Visit</span>
                         </div>
                         <div class="ml-3"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="../../../../www.w3.org/2000/svg.html">
                                           <rect x="3" y="3" width="18" height="18" rx="2" fill="#19b3b3" />
                                           </svg>
-                           <span>Expenses</span>
+                           <span>Completed</span>
                         </div>
                      </div>
                   </div>
@@ -195,76 +195,44 @@
             </div>
          </div>
       </div>
-      <div class="col-lg-4 col-md-8" style="display:none;">
+      <div class="col-lg-4 col-md-8">
          <div class="card card-block card-stretch card-height">
             <div class="card-header card-header-border d-flex justify-content-between">
                <div class="header-title">
-                  <h4 class="card-title">Top Selling Product</h4>
+                  <h4 class="card-title">Campaign Performance</h4>
                </div>
             </div>
             <div class="card-body-list">               
                <ul class="list-style-3 mb-0">
+                  
+               @foreach ($counts as $k => $batch) 
                   <li class="p-3 list-item d-flex justify-content-start align-items-center">
-                     <div class="avatar">
-                        <img class="avatar avatar-img avatar-60 rounded" src="../assets/images/products/1.jpg" alt="1.jpg">                        
-                     </div>
+                     
                      <div class="list-style-detail ml-3 mr-2">
-                        <p class="mb-0">Rockerz Bluetooth Headset</p>
+                        <p class="mb-0">{{ ucfirst($batch->batch_no) }}</p>
                      </div>
                      <div class="list-style-action d-flex justify-content-end ml-auto">                        
-                        <h6 class="font-weight-bold">RM 1,056</h6>                        
+                        <h6 class="font-weight-bold">{{ $batch->completed_count }} / {{ $batch->batch_details_count }}</h6>                        
                      </div>
-                  </li>
-                  <li class="p-3 list-item d-flex justify-content-start align-items-center">
-                     <div class="avatar">
-                        <img class="avatar avatar-img avatar-60 rounded" src="../assets/images/products/2.jpg" alt="2.jpg">                        
-                     </div>
-                     <div class="list-style-detail ml-3 mr-2">
-                        <p class="mb-0">Wifi Security Camera</p>
-                     </div>
-                     <div class="list-style-action d-flex justify-content-end ml-auto">                        
-                        <h6 class="font-weight-bold">RM 1,799</h6>                        
-                     </div>
-                  </li>
-                  <li class="p-3 list-item d-flex justify-content-start align-items-center">
-                     <div class="avatar">
-                        <img class="avatar avatar-img avatar-60 rounded" src="../assets/images/products/13.jpg" alt="3.jpg">                        
-                     </div>
-                     <div class="list-style-detail ml-3 mr-2">
-                        <p class="mb-0">Stone Bluetooth Speaker</p>
-                     </div>
-                     <div class="list-style-action d-flex justify-content-end ml-auto">                        
-                        <h6 class="font-weight-bold">RM 1,099</h6>                        
-                     </div>
-                  </li>
-                  <li class="p-3 list-item d-flex justify-content-start align-items-center">
-                     <div class="avatar">
-                        <img class="avatar avatar-img avatar-60 rounded" src="../assets/images/products/4.jpg" alt="4.jpg">                        
-                     </div>
-                     <div class="list-style-detail ml-3 mr-2">
-                        <p class="mb-0">Ryzen 5 Hexa Core 5600H</p>
-                     </div>
-                     <div class="list-style-action d-flex justify-content-end ml-auto">                        
-                        <h6 class="font-weight-bold">RM 9,999</h6>                        
-                     </div>
-                  </li>
+                  </li> 
+               @endforeach
                </ul>
             </div>
          </div>
          
       </div>
-      <div class="col-md-4" style="display:none;">
+      <div class="col-md-4">
          <div class="row">
             <div class="col-md-12">
                <div class="card bg-primary">
                    <div class="card-body">
                        <div class="d-flex align-items-center">
                            <div class="fit-icon-2 text-info text-center">
-                               <div id="circle-progress-01" class="circle-progress-01 circle-progress circle-progress-light" data-min-value="0" data-max-value="100" data-value="62" data-type="percent"></div>
+                               <div id="circle-progress-01" class="circle-progress-01 circle-progress circle-progress-light" data-min-value="0" data-max-value="100" data-value="{{ $total = ($totalBatchDetailsCount / 100) * $totalCompleted }}" data-type="percent"></div>
                            </div>
                            <div class="ml-3">
-                               <h5 class="text-white font-weight-bold">1,860 <small> /3k Target</small></h5>
-                               <small class="mb-0">Order In Period</small>
+                               <h5 class="text-white font-weight-bold">{{ $totalCompleted }} <small> / {{ $totalBatchDetailsCount }}</small></h5>
+                               <small class="mb-0">Agents Performance</small>
                            </div>
                        </div>
                    </div>
@@ -275,14 +243,16 @@
                   <div class="card-body">
                      <div class="d-flex justify-content-between align-items-center">
                         <h6 class="font-weight-bold">Active Users</h6>
-                        <div class="d-flex align-items-center">
-                           <svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                           </svg>
-                           <span class=" font-weight-bold">200</span>
+                        <div class="d-flex align-items-center"> 
+                           <select>
+                              <option>Select</option>
+                              @foreach ($users as $k => $v) 
+                                 <option value="{{ $v->id }}">{{ ucfirst($v->username) }}</option>
+                              @endforeach
+                           </select> 
                         </div>
                      </div>
-                     <p class="mb-0">Pages views per day</p>
+                     <p class="mb-0">Visits Per Day</p>
                      <div id="chart-apex-column-02" class="custom-chart"></div>
                      <div class="d-flex justify-content-between align-items-center">
                         <p class="mb-0 pt-3 ">25 June</p>
@@ -294,7 +264,7 @@
             </div>
          </div>
       </div>
-      <div class="col-lg-4 col-md-6" style="display:none;">
+      <div class="col-lg-4 col-md-6">
          <div class="card card-block card-stretch card-height">
             <div class="card-header d-flex justify-content-between">
                <div class="header-title">
@@ -334,7 +304,7 @@
                      </div>
                </div>
             </div>
-            <div class="card-body p-0" style="display:none;">
+            <div class="card-body p-0">
                <div class="table-responsive">
                   <table class="table table-spacing mb-0">
                      <tbody>
@@ -408,24 +378,49 @@
             </div>
          </div>
       </div>
-      <div class="col-lg-4 col-md-6" style="display:none;">
+      <div class="col-lg-4 col-md-6">
          <div class="card">
-            <div class="card-body">
-               <h4 class="font-weight-bold mb-3">Popular Categories</h4>
+           
+            <div class="card-header d-flex justify-content-between">
+               <div class="header-title">
+                  <h4 class="card-title">Batch Progress</h4>
+               </div>
+               <div class="card-header-toolbar d-flex align-items-center">                  
+                  <div class="dropdown">
+                        <a href="#" class="text-muted pl-3" id="dropdownMenuButton-event" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" xmlns:xlink="http://www.w3.org/1999/xlink" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
+                              <g fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                 <circle cx="12" cy="12" r="1"/>
+                                 <circle cx="19" cy="12" r="1"/>
+                                 <circle cx="5" cy="12" r="1"/></g>
+                           </svg>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-event">
+                           @foreach ($counts as $k => $batch) 
+                              <div class="dropdown-item">
+                              {{  ucfirst($batch->batch_no) }}
+                              </div>
+                           @endforeach
+                           
+                        </div>
+                     </div>
+               </div>
+            </div>
+            <div class="card-body"> 
                <div id="chart-apex-column-03" class="custom-chart"></div>
                <div class="d-flex justify-content-around align-items-center">
                   <div><svg width="24" height="24" viewBox="0 0 24 24" fill="#ffbb33" xmlns="../../../../www.w3.org/2000/svg.html">
                         <rect x="3" y="3" width="18" height="18" rx="2" fill="#ffbb33" />
                         </svg>
                         
-                        <span>Mobile</span>
+                        <span>Progress</span>
                   </div>
                   <div>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="#e60000" xmlns="../../../../www.w3.org/2000/svg.html">
                         <rect x="3" y="3" width="18" height="18" rx="2" fill="#e60000" />
                         </svg>
                         
-                        <span>Laptop</span>
+                        <span>Aborted</span>
                   </div>
                </div>
                <div class="d-flex justify-content-around align-items-center mt-3">
@@ -434,14 +429,14 @@
                         <rect x="3" y="3" width="18" height="18" rx="2" fill="#04237D" />
                         </svg>
                         
-                        <span>Electronics</span>
+                        <span>Assigned</span>
                   </div>
                   <div>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="primary" xmlns="../../../../www.w3.org/2000/svg.html">
                         <rect x="3" y="3" width="18" height="18" rx="2" fill="#8080ff" />
                         </svg>
                         
-                        <span>Others</span>
+                        <span>Completed</span>
                   </div>
                </div>
             </div>
@@ -462,5 +457,13 @@
          </div>
       </div>
 </div>
+<script>
+var chartData03 = {
+    total: <?php echo $totalBatchDetailsCount; ?>,
+    completed: <?php echo $totalCompleted; ?>,
+    pending: <?php echo $totalPending; ?>,
+    aborted: <?php echo $totalAborted; ?>
+};
+</script>
 @endsection
     <!-- Page end  -->

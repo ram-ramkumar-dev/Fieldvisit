@@ -413,10 +413,10 @@
       if(jQuery("#chart-apex-column-01").length){
         var options = {
           series: [{
-          name: 'Incomes',
+          name: 'Visit',
           data: [90, 105, 72, 90, 65, 109, 130]
         }, {
-          name: 'Expenses',
+          name: 'Completed',
           data: [115, 93, 75, 102, 144, 52, 71]
         }],
         colors: ['#1f1f7a', '#2e2eb8'],
@@ -562,14 +562,14 @@
 
       if(jQuery("#chart-apex-column-03").length){
           var options = {
-            series: [43,58,20,35],
+            series: [chartData03.total, chartData03.completed, chartData03.pending, chartData03.aborted],
             chart: {
             height:330,
             type: 'donut',
             
           },
          
-          labels: ["Mobile","Electronics", "Laptop", "Others"],
+          labels: ["Progress","Aborted", "Assigned", "Completed"],
           colors: ['#ffbb33', '#04237D', '#e60000', '#8080ff'],
           plotOptions: {
             pie: {
@@ -580,7 +580,7 @@
                 labels:{
                   show:true,
                   total:{
-                    show:true,
+                    show:false,
                     color: '#BCC1C8',
                     fontSize: '18px',
                     fontFamily: 'DM Sans',

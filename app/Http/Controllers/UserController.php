@@ -96,12 +96,14 @@ class UserController extends Controller
                                     },
                                     'batchDetails as aborted_count' => function ($query) {
                                         $query->where('status', 'aborted');
-                                    }
+                                    },
+                                    'batchDetails'
                                 ])->get();
         $data['totalCompleted'] = $counts->sum('completed_count');
         $data['totalPending'] = $counts->sum('pending_count');
         $data['totalAborted'] = $counts->sum('aborted_count'); 
         $data['page'] = 'Dashboard';
+        $data['counts'] = $counts; 
         return view('dashboard', $data);
     }
 

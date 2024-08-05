@@ -66,7 +66,7 @@
         <div class="col-md-4 mb-3">
         </div>
         <div class="col-md-4 mb-3">
-        <button type="button" onclick="location.href='{{ route('batches.assign') }}'" class="mt-2 btn btn-warning">Reset</button>
+        <button type="button" onclick="location.href='{{ route('batches.assigncase', $batchId) }}'" class="mt-2 btn btn-warning">Reset</button>
         <button type="submit" class="mt-2 btn btn-primary">Submit</button>
         </div>  
     </form>

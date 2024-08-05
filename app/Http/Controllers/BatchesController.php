@@ -324,6 +324,7 @@ class BatchesController extends Controller
        
         // Only execute the query if filters are applied
         if ($filtersApplied) {
+            $query->where('batch_id', $batchId);
             $batchDetails = $query->get(); 
         } else { 
             $batchDetails = BatchDetail::where('batch_id', $batchId)->get();
