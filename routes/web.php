@@ -1,9 +1,10 @@
 <?php
 
 use App\Http\Controllers\BatchesController;
-use App\Http\Controllers\ClientGroupController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientGroupController;
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -30,11 +31,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('logout', [UserController::class, 'logout'])->name('logout');
 
     // Additional routes with permission checks
-    Route::get('reports', [UserController::class, 'reports'])->name('reports')->middleware('check.permissions:reports');
+   // Route::get('reports', [UserController::class, 'reports'])->name('reports')->middleware('check.permissions:reports');
     Route::get('settings', [UserController::class, 'settings'])->name('settings')->middleware('check.permissions:settings');
     Route::get('administrative', [UserController::class, 'administrative'])->name('administrative')->middleware('check.permissions:administrative'); 
     Route::get('/batches/import', [BatchesController::class, 'import'])->name('batches.import');
     Route::get('/batches/assign', [BatchesController::class, 'BatchesList'])->name('batches.assign'); 
+    Route::get('/agentKpi', [ReportsController::class, 'agentKpi'])->name('reports.agentKpi');
+    Route::post('/handle-form', [ReportsController::class, 'handleForm'])->name('handle.form');
 });
 
 Route::get('register', [UserController::class, 'register'])->name('register');
@@ -60,5 +63,6 @@ Route::delete('/batches/{id}/details', [BatchesController::class, 'deleteBatchDe
 Route::get('/batches/{batch}/assigncase', [BatchesController::class, 'AssignCase'])->name('batches.assigncase');
 
 Route::post('/batches/assignbatchestodrivers', [BatchesController::class, 'assignBatchesToDrivers'])->name('batches.assignbatchestodrivers');
+
 
 

@@ -364,7 +364,7 @@ class AuthController extends Controller
                 $batchDetailsQuery->where('batch_id', $batch->id);
             }
             $batchDetails = $batchDetailsQuery
-                ->select('id', 'batch_id', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude', 'status', 'batchfile_longitude') // Include 'assignedto'
+                ->select('id', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude', 'status', 'batchfile_longitude') // Include 'assignedto'
                 ->get();
 
             $pending = $batchDetails->where('status', 'Pending')->values();

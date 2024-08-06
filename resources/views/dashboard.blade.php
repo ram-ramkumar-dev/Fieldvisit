@@ -129,45 +129,7 @@
             
          </div>
       </div>   
-      <div class="col-lg-12 col-md-12"> 
-         <div class="card"> 
-                  <div class="card-body">
-                     
-                     <div class="row mt-4">
-                        @foreach ($users as $k => $v) 
-                        <div class="col-lg-2 col-md-6 text-center">
-                           <p class="bg-primary-light pt-5 pb-5 text-center rounded font-size-18">{{ ucfirst($v->name) }}</p>
-                        </div>
-                        @endforeach
-                        
-                     </div> 
-                        <div class="table-responsive">
-                           <table class="table mb-0">
-                              <thead class="table-color-heading">
-                                 <tr class="text-secondary">
-                                    <th scope="col">Rank</th>
-                                    <th scope="col">Agent</th>
-                                    <th scope="col">Assigned Acc.</th>
-                                    <th scope="col">Completed Acc.</th>
-                                    <th scope="col">Incomplete Acc.</th>
-                                 </tr>
-                              </thead>
-                              <tbody>
-                              @foreach ($list as $k => $l) 
-                                 <tr class="white-space-no-wrap">
-                                    <td>{{ $l['id'] }}</td> 
-                                    <td>{{ ucfirst($l['driver_name']) }}</td> 
-                                    <td>{{ $l['all'] }}</td> 
-                                    <td>{{ $l['completed'] }}</td> 
-                                    <td>{{ $l['pending'] }}</td> 
-                                 </tr>   
-                              @endforeach                     
-                              </tbody>
-                           </table> 
-                        </div> 
-                  </div>
-               </div> 
-      </div> 
+     
       <div class="col-lg-8 col-md-12">
          <div class="row">
           
@@ -442,20 +404,54 @@
             </div>
          </div>
       </div>
-      <div class="col-lg-12 col-md-12">
+      <div class="col-lg-7 col-md-12">
          <div class="card">
-            
-           
-         </div>
-      </div>
-      <div class="col-lg-4 col-md-12" style="display:none;">
-         <div class="card">
-            <div class="card-body">
-               <h4 class="font-weight-bold mb-3">City Orders Statistics</h4>
+            <div class="card-body"> 
                <div id="chart-map-column-04" class="custom-chart"></div>
             </div>
          </div>
       </div>
+      <div class="col-lg-5 col-md-12">
+         <div class="card"> 
+                  <div class="card-body">
+                     
+                  <!--   <div class="row mt-4">
+                        @foreach ($users as $k => $v) 
+                        <div class="col-lg-2 col-md-6 text-center">
+                           <p class="bg-primary-light pt-5 pb-5 text-center rounded font-size-18">{{ ucfirst($v->name) }}</p>
+                        </div>
+                        @endforeach
+                        
+                     </div> -->
+                        <div class="table-responsive">
+                           <table class="table mb-0">
+                              <thead class="table-color-heading">
+                                 <tr class="text-secondary">
+                                    <th scope="col">Rank</th>
+                                    <th scope="col">Agent</th>
+                                    <th scope="col">Assigned Acc.</th>
+                                    <th scope="col">Completed Acc.</th>
+                                    <th scope="col">Incomplete Acc.</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                              @foreach ($list as $k => $l) 
+                                 <tr class="white-space-no-wrap">
+                                    <td>{{ $l['id'] }}</td> 
+                                    <td>{{ ucfirst($l['driver_name']) }}</td> 
+                                    <td>{{ $l['all'] }}</td> 
+                                    <td>{{ $l['completed'] }}</td> 
+                                    <td>{{ $l['pending'] }}</td> 
+                                 </tr>   
+                              @endforeach                     
+                              </tbody>
+                           </table> 
+                        </div> 
+                  </div> 
+           
+         </div>
+      </div>
+      
 </div>
 <script>
 var chartData03 = {

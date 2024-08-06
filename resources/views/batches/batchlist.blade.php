@@ -62,14 +62,33 @@
                                             </th> 
                                             <th scope="col">
                                                 <label class="text-muted mb-0" >
-                                                Total Account
+                                                Total Accounts
                                                 </label>
                                             </th>  
+                                            
                                             <th scope="col">
                                                 <label class="text-muted mb-0" >
-                                                Total FV
+                                                Total Pending Accounts
                                                 </label>
                                             </th>  
+                                            
+                                            <th scope="col">
+                                                <label class="text-muted mb-0" >
+                                                Total New Accounts
+                                                </label>
+                                            </th>  
+                                            
+                                            <th scope="col">
+                                                <label class="text-muted mb-0" >
+                                                Total Completed Accounts
+                                                </label>
+                                            </th>  
+                                            
+                                            <th scope="col">
+                                                <label class="text-muted mb-0" >
+                                                Total Aborted Accounts
+                                                </label>
+                                            </th>   
                                             <th scope="col"  >
                                                 <span class="text-muted" >Action</span>
                                             </th> 
@@ -80,7 +99,10 @@
             <td>{{ $batch->batch_no }}</td>
             <td>{{ $batch->created_at->format('Y-M-d') }}</td>
             <td>{{ $batch->batch_details_count }}</td> 
-            <td></td> 
+            <td>{{ $batch->pending_count }}</td> 
+            <td>{{ $batch->new_count }}</td> 
+            <td>{{ $batch->completed_count }}</td> 
+            <td>{{ $batch->aborted_count }}</td> 
             <td>
             <a class="" data-toggle="tooltip" data-placement="top" title="View" href="{{ route('batches.assigncase', $batch->id) }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="text-secondary" width="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -340,7 +340,21 @@ class BatchesController extends Controller
         $batches = Batches::where('company_id', $companyId)
                         ->orWhereNull('company_id')
                         ->withCount('batchDetails')
+                        ->withCount(['batchDetails as pending_count' => function ($query) {
+                            $query->where('status', 'Pending');
+                        }])
+                        ->withCount(['batchDetails as completed_count' => function ($query) {
+                            $query->where('status', 'Completed');
+                        }])
+                        ->withCount(['batchDetails as aborted_count' => function ($query) {
+                            $query->where('status', 'Aborted');
+                        }])
+                        
+                        ->withCount(['batchDetails as new_count' => function ($query) {
+                            $query->where('status', 'New');
+                        }])
                         ->with('client')->get(); 
+                        
         return view('batches.batchlist', compact('batches', 'page'));
     }
 
@@ -362,7 +376,6 @@ class BatchesController extends Controller
                         'assignedto' => $assignedTo,
                     ]);
                             // Redirect back with a success message
-        return redirect()->back()->with('success', 'Batches assigned to driver successfully.');
-
+        return redirect()->back()->with('success', 'Batches assigned to driver successfully.'); 
     }
 }
