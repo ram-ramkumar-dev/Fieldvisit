@@ -25,4 +25,9 @@ class Driver extends Authenticatable
         'permissions' => 'array',
         'supervisor' => 'array',
     ];
+
+    public function surveys()
+    {
+        return $this->hasMany(Survey::class);
+    }
 } 

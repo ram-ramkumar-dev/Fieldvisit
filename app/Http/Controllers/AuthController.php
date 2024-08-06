@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Driver;
 use App\Models\Batches;
 use App\Models\BatchDetail;
+use App\Models\Survey;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * @OA\Info(title="API Documentation", version="1.0")
@@ -394,5 +397,69 @@ class AuthController extends Controller
             'message' => 'Batch details retrieved successfully.',
             'data' => $response
         ], 200);
+    }
+
+
+    public function storeSurvey(Request $request)
+    {
+        // Validate the request data
+        $request->validate([
+            'batch_id' => 'required|exists:batches,id',
+            'batch_detail_id' => 'required|exists:batch_details,id',
+            'driver_id' => 'required|exists:drivers,id', 
+        ]);
+
+        $survey = new Survey();
+        $survey->batch_id = $request->batch_id;
+        $survey->batch_detail_id = $request->batch_detail_id;
+        $survey->has_water_meter = $request->has_water_meter;
+        $survey->water_meter_no = $request->water_meter_no;
+        $survey->has_water_bill = $request->has_water_bill;
+        $survey->water_bill_no = $request->water_bill_no;
+        $survey->is_correct_address = $request->is_correct_address;
+        $survey->correct_address = $request->correct_address;
+        $survey->ownership = $request->ownership;
+        $survey->contact_person_name = $request->contact_person_name;
+        $survey->contact_number = $request->contact_number;
+        $survey->email = $request->email;
+        $survey->nature_of_business_code = $request->nature_of_business_code;
+        $survey->shop_name = $request->shop_name;
+        $survey->dr_code = $request->dr_code;
+        $survey->property_code = $request->property_code;
+        $survey->occupancy = $request->occupancy; 
+        $survey->remark = $request->remark;
+        $survey->visitdate = $request->visitdate;
+        $survey->visittime = $request->visittime;  
+        // Save other survey fields here
+
+        // Handle photo uploads
+        if ($request->hasFile('photo1')) {
+            $survey->photo1 = $this->uploadPhoto($request->file('photo1'));
+        }
+        if ($request->hasFile('photo2')) {
+            $survey->photo2 = $this->uploadPhoto($request->file('photo2'));
+        }
+        if ($request->hasFile('photo3')) {
+            $survey->photo3 = $this->uploadPhoto($request->file('photo3'));
+        }
+        if ($request->hasFile('photo4')) {
+            $survey->photo4 = $this->uploadPhoto($request->file('photo4'));
+        }
+        if ($request->hasFile('photo5')) {
+            $survey->photo5 = $this->uploadPhoto($request->file('photo5'));
+        }
+
+        $survey->save();
+
+        // Return a success response
+        return response()->json(['success' => 'Survey saved successfully', 'data' => $survey], 201);
+    }
+
+
+    private function uploadPhoto($photo)
+    {
+        $filename = Str::uuid() . '.' . $photo->getClientOriginalExtension();
+        $path = $photo->storeAs('public/surveyphotos', $filename);
+        return Storage::url($path);
     }
 }

@@ -227,7 +227,7 @@ class BatchesController extends Controller
                         'batchfile_latitude' => $latitude,
                         'batchfile_longitude' => $longitude,
                         'uploadedby' => $userId,
-                        'status' => 'New'
+                        'status' => 'New',
                     ]);
                // } else {
                //     $errors[] = "Row " . ($i + 1) . " has invalid data.";
@@ -374,6 +374,7 @@ class BatchesController extends Controller
                     ->update([
                         'status' => 'Pending',
                         'assignedto' => $assignedTo,
+                        'assignedon' => now()->format('Y-m-d'),
                     ]);
                             // Redirect back with a success message
         return redirect()->back()->with('success', 'Batches assigned to driver successfully.'); 

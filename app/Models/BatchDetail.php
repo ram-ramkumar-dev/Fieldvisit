@@ -24,4 +24,9 @@ class BatchDetail extends Model
             ->where('id', $this->assignedto) // Assuming 'state_abbreviation' is the column in 'states' table
             ->value('name');
     }
+
+    public function surveys()
+    {
+        return $this->hasMany(Survey::class);
+    }
 }
