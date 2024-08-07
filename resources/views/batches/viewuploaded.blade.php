@@ -72,6 +72,9 @@
                                                 <label class="text-muted mb-0" >ID</label>
                                             </th> 
                                             <th scope="col">
+                                                <label class="text-muted mb-0" >Address</label>
+                                            </th> 
+                                            <th scope="col">
                                                 <label class="text-muted mb-0" >LA(District)</label>
                                             </th> 
                                             <th scope="col">
@@ -92,10 +95,11 @@
         @foreach ($batchedetail as $batch)
         <tr class="white-space-no-wrap"> 
             <td>{{ $batch->fileid }}</td>
+            <td>{{ $batch->address }}</td>
             <td>{{ $batch->district_la }}</td>
             <td>{{ $batch->taman_mmid }}</td>
             <td>1</td>
-            <td></td>   
+            <td>{{ $batch->status == 'Completed' ? '1' : '0' }}</td>   
         </tr>
         @endforeach
         </tbody>

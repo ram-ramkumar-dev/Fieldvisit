@@ -28,4 +28,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('dashboard', [AuthController::class, 'dashboardForDriver']);
     Route::post('updatelocation', [AuthController::class, 'updateLocation']);
     Route::post('storesurvey', [AuthController::class, 'storeSurvey']);
+    Route::post('updatebatchdetail', [AuthController::class, 'updateBatchDetail']); 
+    Route::post('getbatchdetails', [AuthController::class, 'getBatchDetails']);  
 });

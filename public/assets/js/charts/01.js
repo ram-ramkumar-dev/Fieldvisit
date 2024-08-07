@@ -560,88 +560,88 @@
         chart.render();
       }
 
-      if(jQuery("#chart-apex-column-03").length){
-          var options = {
-            series: [chartData03.pending, chartData03.completed, chartData03.pending, chartData03.aborted],
-            chart: {
-            height:330,
-            type: 'donut',
+      // if(jQuery("#chart-apex-column-03").length){
+      //     var options = {
+      //       series: [chartData03.pending, chartData03.completed, chartData03.pending, chartData03.aborted],
+      //       chart: {
+      //       height:330,
+      //       type: 'donut',
             
-          },
+      //     },
          
-          labels: ["Progress","Aborted", "Assigned", "Completed"],
-          colors: ['#ffbb33', '#04237D', '#e60000', '#8080ff'],
-          plotOptions: {
-            pie: {
-              startAngle: -90,
-              endAngle: 270,
-              donut:{
-                size: '80%',               
-                labels:{
-                  show:true,
-                  total:{
-                    show:true,
-                    color: '#BCC1C8',
-                    fontSize: '18px',
-                    fontFamily: 'DM Sans',
-                    fontWeight: 600,
-                    label: 'Total',
-                    formatter: function (w) {
-                        return chartData03.total;
-                    }
-                  },
-                  value: {
-                    show: true,
-                    fontSize: '25px',
-                    fontFamily: 'DM Sans',
-                    fontWeight: 700,
-                    color: '#8F9FBC',
-                  },
-                }
-              }
-            }
-          },
-          dataLabels: {
-            enabled: false,
-          },
-          stroke: {
-            lineCap: 'round'
-          }, 
-          grid:{
-            padding: {
+      //     labels: ["Progress","Aborted", "Assigned", "Completed"],
+      //     colors: ['#ffbb33', '#04237D', '#e60000', '#8080ff'],
+      //     plotOptions: {
+      //       pie: {
+      //         startAngle: -90,
+      //         endAngle: 270,
+      //         donut:{
+      //           size: '80%',               
+      //           labels:{
+      //             show:true,
+      //             total:{
+      //               show:true,
+      //               color: '#BCC1C8',
+      //               fontSize: '18px',
+      //               fontFamily: 'DM Sans',
+      //               fontWeight: 600,
+      //               label: 'Total',
+      //               formatter: function (w) {
+      //                   return chartData03.total;
+      //               }
+      //             },
+      //             value: {
+      //               show: true,
+      //               fontSize: '25px',
+      //               fontFamily: 'DM Sans',
+      //               fontWeight: 700,
+      //               color: '#8F9FBC',
+      //             },
+      //           }
+      //         }
+      //       }
+      //     },
+      //     dataLabels: {
+      //       enabled: false,
+      //     },
+      //     stroke: {
+      //       lineCap: 'round'
+      //     }, 
+      //     grid:{
+      //       padding: {
              
-              bottom: 0,
-          }
-          },
-          legend: {
-            position: 'bottom',
-            offsetY: 8,
-            show:true,
-          },
-          responsive: [{
-            breakpoint: 480,
-            options: {
-              chart: {
-                height:268
-              }
-            }
-          }]
-          };
+      //         bottom: 0,
+      //     }
+      //     },
+      //     legend: {
+      //       position: 'bottom',
+      //       offsetY: 8,
+      //       show:true,
+      //     },
+      //     responsive: [{
+      //       breakpoint: 480,
+      //       options: {
+      //         chart: {
+      //           height:268
+      //         }
+      //       }
+      //     }]
+      //     };
       
-          var chart = new ApexCharts(document.querySelector("#chart-apex-column-03"), options);
-          chart.render();
+      //     var chart = new ApexCharts(document.querySelector("#chart-apex-column-03"), options);
+      //     chart.render();
 
-          const body = document.querySelector('body')
-          if (body.classList.contains('dark')) {
-            apexChartUpdate(chart, {
-              dark: true
-            })
-          }
+      //     const body = document.querySelector('body')
+      //     if (body.classList.contains('dark')) {
+      //       apexChartUpdate(chart, {
+      //         dark: true
+      //       })
+      //     }
       
-          document.addEventListener('ChangeColorMode', function (e) {
-            apexChartUpdate(chart, e.detail)
-          })
-      }
+      //     document.addEventListener('ChangeColorMode', function (e) {
+      //       apexChartUpdate(chart, e.detail)
+      //     })
+      // }
 
       function generateData(baseval, count, yrange) {
         var i = 0;

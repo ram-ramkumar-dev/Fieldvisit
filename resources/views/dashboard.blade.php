@@ -357,10 +357,10 @@
                                  <circle cx="5" cy="12" r="1"/></g>
                            </svg>
                         </a>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-event">
+                        <div class="dropdown-menu" id="batchDropdownMenu" aria-labelledby="dropdownMenuButton-event">
                            @foreach ($counts as $k => $batch) 
-                              <div class="dropdown-item">
-                              {{  ucfirst($batch->batch_no) }}
+                              <div class="dropdown-item" onclick="fetchDataAndUpdateChart({{ $batch->id }})">
+                                 {{  ucfirst($batch->batch_no) }}
                               </div>
                            @endforeach
                            
@@ -453,13 +453,18 @@
       </div>
       
 </div>
+
+<script src="{{ asset('assets/js/charts/chartupdates.js')}}"></script> 
 <script>
+   
 var chartData03 = {
     total: <?php echo $totalBatchDetailsCount; ?>,
     completed: <?php echo $totalCompleted; ?>,
     pending: <?php echo $totalPending; ?>,
     aborted: <?php echo $totalAborted; ?>
 };
+var getBatchforchartData03 = '{{ route("getBatchProgressForChart03") }}';
+
 </script>
 @endsection
     <!-- Page end  -->

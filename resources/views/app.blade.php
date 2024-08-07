@@ -30,7 +30,7 @@
     <script src="{{ asset('assets/js/vector-map-custom.js')}}"></script>
     <script src="{{ asset('assets/js/chart-custom.js')}}"></script>
     <script src="{{ asset('assets/js/charts/01.js')}}"></script>
-    <script src="{{ asset('assets/js/charts/02.js')}}"></script>
+    <script src="{{ asset('assets/js/charts/02.js')}}"></script> 
     <script src="{{ asset('assets/js/slider.js')}}"></script> 
     <script src="{{ asset('assets/vendor/emoji-picker-element/index.js')}}" type="module"></script>
     <script src="{{ asset('assets/js/app.js')}}"></script> 

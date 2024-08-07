@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 /**
  * @OA\Info(title="API Documentation", version="1.0")
@@ -360,14 +361,17 @@ class AuthController extends Controller
         }
 
         $response = $batches->map(function ($batch) use ($driver_id, $batch_id) {
-            $batchDetailsQuery = BatchDetail::where('assignedto', $driver_id);
+            $batchDetailsQuery = BatchDetail::where('assignedto', $driver_id)
+            ->where('softdelete', '!=', '1') // Exclude soft deleted details
+            ->orderBy('pinned_at', 'desc'); // Order by pinned_at
+
             if ($batch_id) {
                 $batchDetailsQuery->where('batch_id', $batch_id);
             } else {
                 $batchDetailsQuery->where('batch_id', $batch->id);
             }
             $batchDetails = $batchDetailsQuery
-                ->select('id', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude', 'status', 'batchfile_longitude') // Include 'assignedto'
+                ->select('id', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude', 'status', 'batchfile_longitude', 'pinned_at') 
                 ->get();
 
             $pending = $batchDetails->where('status', 'Pending')->values();
@@ -402,16 +406,24 @@ class AuthController extends Controller
 
     public function storeSurvey(Request $request)
     {
-        // Validate the request data
-        $request->validate([
-            'batch_id' => 'required|exists:batches,id',
-            'batch_detail_id' => 'required|exists:batch_details,id',
-            'driver_id' => 'required|exists:drivers,id', 
+         
+        $validator = Validator::make($request->all(), [
+            'batch_id' => 'required',
+            'batch_detail_id' => 'required',
+            'user_id' => 'required', 
         ]);
-
+ 
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
         $survey = new Survey();
         $survey->batch_id = $request->batch_id;
-        $survey->batch_detail_id = $request->batch_detail_id;
+        $survey->batch_detail_id = $request->batch_detail_id; 
+        $survey->user_id = $request->user_id;
         $survey->has_water_meter = $request->has_water_meter;
         $survey->water_meter_no = $request->water_meter_no;
         $survey->has_water_bill = $request->has_water_bill;
@@ -455,11 +467,100 @@ class AuthController extends Controller
         return response()->json(['success' => 'Survey saved successfully', 'data' => $survey], 201);
     }
 
-
     private function uploadPhoto($photo)
     {
         $filename = Str::uuid() . '.' . $photo->getClientOriginalExtension();
         $path = $photo->storeAs('public/surveyphotos', $filename);
         return Storage::url($path);
+    }
+
+    public function updateBatchDetail(Request $request)
+    { 
+        $validator = Validator::make($request->all(), [
+            'batch_detail_id' => 'required',
+            'action' => 'required|in:pin,unpin,abort,softdelete',
+        ]);
+ 
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        $batchDetail = BatchDetail::find($request->batch_detail_id);
+
+        switch ($request->action) {
+            case 'pin':
+                $batchDetail->pinned_at = Carbon::now();
+                break;
+                
+            case 'unpin':
+                $batchDetail->pinned_at = null;
+                break;
+
+            case 'abort':
+                $batchDetail->status = 'Aborted';
+                break;
+
+            case 'softdelete':
+                $batchDetail->softdelete = '1';
+                break;
+        }
+
+        $batchDetail->save();
+
+        return response()->json(['message' => 'Batch detail updated successfully'], 201);
+    }
+
+    public function getBatchDetails(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'driver_id' => 'required',
+            'batch_id' => 'nullable|exists:batches,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $batch_id = $request->batch_id; 
+        $driver_id = $request->driver_id;
+
+        $batchDetailsQuery = BatchDetail::where('assignedto', $driver_id)->where('status', '!=', 'soft_deleted')
+        ->orderBy('pinned_at', 'desc');
+
+        if ($batch_id) {
+            $batchDetailsQuery->where('batch_id', $batch_id);
+        }
+        $batchDetails = $batchDetailsQuery
+        ->select('id', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude', 'status', 'batchfile_longitude', 'pinned_at') // 
+        ->get(); 
+
+        $pending = $batchDetails->where('status', 'Pending')->values();
+        $completed = $batchDetails->where('status', 'Completed')->values();
+        $aborted = $batchDetails->where('status', 'Aborted')->values();
+
+        // Count of each status
+        $pendingCount = $pending->count();
+        $completedCount = $completed->count();
+        $abortedCount = $aborted->count();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Batch details retrieved successfully.',
+            'data' => [
+                'pending_count' => $pendingCount,
+                'completed_count' => $completedCount,
+                'aborted_count' => $abortedCount,
+                'pending_details' => $pending,
+                'completed_details' => $completed,
+                'aborted_details' => $aborted,
+            ]
+        ], 200);
     }
 }

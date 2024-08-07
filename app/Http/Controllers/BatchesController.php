@@ -358,9 +358,7 @@ class BatchesController extends Controller
         return view('batches.batchlist', compact('batches', 'page'));
     }
 
-    public function assignBatchesToDrivers(Request $request){
-  
-
+    public function assignBatchesToDrivers(Request $request){ 
         // Retrieve the form data
         $selectedStatus = $request->input('selectedStatus');
         $selectedId = $request->input('selectedId');
@@ -378,5 +376,35 @@ class BatchesController extends Controller
                     ]);
                             // Redirect back with a success message
         return redirect()->back()->with('success', 'Batches assigned to driver successfully.'); 
+    }
+
+    public function getBatchProgressForChart03(Request $request){ 
+        $batchId = $request->input('value');  
+        $batch = Batches::where('id', $batchId)
+                                ->withCount([
+                                    'batchDetails as completed_count' => function ($query) {
+                                        $query->where('status', 'completed');
+                                    },
+                                    'batchDetails as pending_count' => function ($query) {
+                                        $query->where('status', 'pending');
+                                    },
+                                    'batchDetails as aborted_count' => function ($query) {
+                                        $query->where('status', 'aborted');
+                                    },
+                                    'batchDetails'
+                                ])->first(); // Use first() instead of get() to get a single record
+
+            // Check if batch exists
+            if (!$batch) {
+                return response()->json(['error' => 'Batch not found'], 404);
+            }
+        
+            // Return data in the expected format
+            return response()->json([
+                'total' => $batch->batch_details_count,
+                'completed' => $batch->completed_count,
+                'pending' => $batch->pending_count,
+                'aborted' => $batch->aborted_count
+            ], 200);
     }
 }
