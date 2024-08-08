@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use DB;
 
 /**
  * @OA\Info(title="API Documentation", version="1.0")
@@ -575,5 +576,27 @@ class AuthController extends Controller
                 'aborted_details' => $aborted,
             ]
         ], 200);
+    }
+
+    public function getDropDowns()
+    {
+         // Fetch data from all three tables where status is 1
+         $classification = DB::table('classification')->select('id', 'classification_name')->where('status', 1)->get(); 
+         $dr_code = DB::table('dr_code')->select('id', 'code','dr_code_name')->where('status', 1)->get();
+         $nature_of_bussiness_code = DB::table('nature_of_bussiness_code')->select('id', 'code','nature_of_bussiness_code_name')->where('status', 1)->get();
+         $occupancy_status = DB::table('occupancy_status') ->select('id', 'occupancy_status_name')->where('status', 1)->get();
+         $ownerships = DB::table('ownerships') ->select('id', 'ownershipname')->where('status', 1)->get();
+         $property_type = DB::table('property_type') ->select('id','code', 'property_type_name')->where('status', 1)->get();
+         
+         // Combine the results into a single response
+         return response()->json([
+             'status' => 'success',
+             'classification' => $classification,
+             'dr_code' => $dr_code,
+             'nature_of_bussiness_code' => $nature_of_bussiness_code,
+             'occupancy_status' => $occupancy_status,
+             'ownerships' => $ownerships,
+             'property_type' => $property_type, 
+         ], 200);
     }
 }

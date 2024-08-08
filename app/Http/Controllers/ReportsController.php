@@ -26,6 +26,7 @@ class ReportsController extends Controller
         $batchDetails = DB::table('batch_details')
             ->join('drivers', 'batch_details.assignedto', '=', 'drivers.id')
             ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+            ->where('batches.company_id',$companyId)
             ->whereBetween('batch_details.assignedon', [$startOfWeek, $endOfWeek])
             ->select(
                 'drivers.id as driver_id',
@@ -54,6 +55,7 @@ class ReportsController extends Controller
                 }),
             ];
         }); 
+         
         // Return the view with the filtered data
         return view('reports.agentkpi', compact('groupedBatchDetails', 'page', 'drivers', 'startOfWeek', 'endOfWeek'));
     }
