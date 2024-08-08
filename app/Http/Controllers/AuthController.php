@@ -599,4 +599,26 @@ class AuthController extends Controller
              'property_type' => $property_type, 
          ], 200);
     }
+    
+    public function DriversProfile(Request $request)
+    { 
+        $validator = Validator::make($request->all(), [
+            'driver_id' => 'required|string', 
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+    
+        $driver = Driver::select('id', 'username', 'name', 'phone_number', 'ic_number', 'sensitive')->where('id', $request->driver_id)->first();  
+
+        return response()->json([  
+            'status' => 'success',
+            'profile' => $driver
+        ], 200); // Return a 200 OK status code
+    }
 }
