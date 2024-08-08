@@ -57,7 +57,9 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
                                     Export
-                                </button>--> <form id="uploadForm" action="{{ route('batches.upload.store', $batch->id) }}" method="POST" enctype="multipart/form-data">
+                                </button>--> 
+                                <a href="{{ asset('assets/template/TemplateFV.xlsx') }}" download>Download Template</a>
+                                <form id="uploadForm" action="{{ route('batches.upload.store', $batch->id) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <input type="file" id="fileInput" name="file" accept=".xlsx,.xls" style="display: none;" required>
                                 <button type="button" class="btn btn-primary position-relative d-flex align-items-center justify-content-between" id="uploadButton">Upload Account</button>

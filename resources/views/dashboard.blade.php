@@ -163,9 +163,29 @@
                <div class="header-title">
                   <h4 class="card-title">Campaign Performance</h4>
                </div>
+               <div class="card-header-toolbar d-flex align-items-center">                  
+                  <div class="dropdown">
+                        <a href="#" class="text-muted pl-3" id="dropdownMenuButton-event" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" xmlns:xlink="http://www.w3.org/1999/xlink" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
+                              <g fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                 <circle cx="12" cy="12" r="1"/>
+                                 <circle cx="19" cy="12" r="1"/>
+                                 <circle cx="5" cy="12" r="1"/></g>
+                           </svg>
+                        </a>
+                        <div class="dropdown-menu" id="CampaignMenu" aria-labelledby="dropdownMenuButton-event"> 
+
+                           <div class="dropdown-item" onclick="campaigncounts('all')">All</div> 
+                           <div class="dropdown-item" onclick="campaigncounts('completed')">Completed</div> 
+                           <div class="dropdown-item" onclick="campaigncounts('pending')">Pending</div> 
+                           <div class="dropdown-item" onclick="campaigncounts('abort')">Aborted</div>
+                           
+                        </div>
+                     </div>
+               </div>
             </div>
             <div class="card-body-list">               
-               <ul class="list-style-3 mb-0">
+               <ul class="list-style-3 mb-0" id="batchList">
                   
                @foreach ($counts as $k => $batch) 
                   <li class="p-3 list-item d-flex justify-content-start align-items-center">
@@ -174,7 +194,7 @@
                         <p class="mb-0">{{ ucfirst($batch->batch_no) }}</p>
                      </div>
                      <div class="list-style-action d-flex justify-content-end ml-auto">                        
-                        <h6 class="font-weight-bold">{{ $batch->completed_count }} / {{ $batch->batch_details_count }}</h6>                        
+                        <h6 class="font-weight-bold" id="campaignnumbers"> {{ $batch->batch_details_count }}</h6>                        
                      </div>
                   </li> 
                @endforeach
@@ -404,14 +424,14 @@
             </div>
          </div>
       </div>
-      <div class="col-lg-7 col-md-12">
+      <div class="col-lg-6 col-md-12">
          <div class="card">
             <div class="card-body"> 
                <div id="chart-map-column-04" class="custom-chart"></div>
             </div>
          </div>
       </div>
-      <div class="col-lg-5 col-md-12">
+      <div class="col-lg-6 col-md-12">
          <div class="card"> 
                   <div class="card-body">
                      
@@ -429,15 +449,15 @@
                                  <tr class="text-secondary">
                                     <th scope="col">Rank</th>
                                     <th scope="col">Agent</th>
-                                    <th scope="col">Assigned Acc.</th>
-                                    <th scope="col">Completed Acc.</th>
-                                    <th scope="col">Incomplete Acc.</th>
+                                    <th scope="col">Assign</th>
+                                    <th scope="col">Complete</th>
+                                    <th scope="col">Pending</th>
                                  </tr>
                               </thead>
                               <tbody>
                               @foreach ($list as $k => $l) 
                                  <tr class="white-space-no-wrap">
-                                    <td>{{ $l['id'] }}</td> 
+                                    <td>{{ $loop->iteration }}</td> 
                                     <td>{{ ucfirst($l['driver_name']) }}</td> 
                                     <td>{{ $l['all'] }}</td> 
                                     <td>{{ $l['completed'] }}</td> 
@@ -453,10 +473,11 @@
       </div>
       
 </div>
-
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="{{ asset('assets/js/charts/chartupdates.js')}}"></script> 
 <script>
-   
+var drivers = @json($users);
 var chartData03 = {
     total: <?php echo $totalBatchDetailsCount; ?>,
     completed: <?php echo $totalCompleted; ?>,
@@ -465,6 +486,46 @@ var chartData03 = {
 };
 var getBatchforchartData03 = '{{ route("getBatchProgressForChart03") }}';
 
+</script>
+<script>
+
+       function campaigncounts(filter){ 
+
+            $.ajax({
+                url: '{{ route("getCampaignPerformance") }}', // Your API endpoint
+                type: 'GET',
+                data: { filter: filter },
+                success: function(response) {
+                    updateBatchList(response.batches);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching batch counts:', error);
+                }
+            });
+        }
+
+        function updateBatchList(batches) {
+           // Hide the dropdown menu
+           var dropdownMenu = document.getElementById('CampaignMenu');
+            if (dropdownMenu) {
+                dropdownMenu.classList.remove('show');
+            }
+            $('#batchList').empty();
+            
+            batches.forEach(function(batch) {
+                var listItem = `
+                    <li class="p-3 list-item d-flex justify-content-start align-items-center" data-batch-id="${batch.id}">
+                        <div class="list-style-detail ml-3 mr-2">
+                            <p class="mb-0">${batch.batch_no.charAt(0).toUpperCase() + batch.batch_no.slice(1)}</p>
+                        </div>
+                        <div class="list-style-action d-flex justify-content-end ml-auto">                        
+                            <h6 class="font-weight-bold" id="campaignnumbers"> ${batch.count} </h6>                        
+                        </div>
+                    </li>`;
+                
+                $('#batchList').append(listItem);
+            });
+        }
 </script>
 @endsection
     <!-- Page end  -->

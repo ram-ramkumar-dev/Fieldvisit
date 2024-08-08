@@ -37,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/batches/import', [BatchesController::class, 'import'])->name('batches.import');
     Route::get('/batches/assign', [BatchesController::class, 'BatchesList'])->name('batches.assign'); 
     Route::get('getBatchProgressForChart03', [BatchesController::class, 'getBatchProgressForChart03'])->name('getBatchProgressForChart03');  
+    Route::get('getCampaignPerformance', [BatchesController::class, 'getCampaignPerformance'])->name('getCampaignPerformance');  
     Route::get('/agentKpi', [ReportsController::class, 'agentKpi'])->name('reports.agentKpi');
     Route::post('/handle-form', [ReportsController::class, 'handleForm'])->name('handle.form');
 });

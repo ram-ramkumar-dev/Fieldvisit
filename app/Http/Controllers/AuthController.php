@@ -408,8 +408,8 @@ class AuthController extends Controller
     {
          
         $validator = Validator::make($request->all(), [
-            'batch_id' => 'required',
-            'batch_detail_id' => 'required',
+            'batch_id' => 'required|exists:batches,id',
+            'batch_detail_id' => 'required|exists:batch_details,id',
             'user_id' => 'required', 
         ]);
  
@@ -420,10 +420,18 @@ class AuthController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-        $survey = new Survey();
-        $survey->batch_id = $request->batch_id;
-        $survey->batch_detail_id = $request->batch_detail_id; 
-        $survey->user_id = $request->user_id;
+            // Check if a survey already exists for the given batch_id, batch_detail_id, and user_id
+        $survey = Survey::where('batch_id', $request->batch_id)
+        ->where('batch_detail_id', $request->batch_detail_id)
+        ->where('user_id', $request->user_id)
+        ->first();
+
+        if (!$survey) {
+            $survey = new Survey();
+            $survey->batch_id = $request->batch_id;
+            $survey->batch_detail_id = $request->batch_detail_id; 
+            $survey->user_id = $request->user_id;
+        } 
         $survey->has_water_meter = $request->has_water_meter;
         $survey->water_meter_no = $request->water_meter_no;
         $survey->has_water_bill = $request->has_water_bill;
@@ -462,6 +470,11 @@ class AuthController extends Controller
         }
 
         $survey->save();
+
+        //update batchdetails status to completed 
+        $batchDetail = BatchDetail::find($request->batch_detail_id); 
+        $batchDetail->status = 'Completed'; 
+        $batchDetail->save();
 
         // Return a success response
         return response()->json(['success' => 'Survey saved successfully', 'data' => $survey], 201);

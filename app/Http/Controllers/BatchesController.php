@@ -407,4 +407,38 @@ class BatchesController extends Controller
                 'aborted' => $batch->aborted_count
             ], 200);
     }
+
+    public function getCampaignPerformance(Request $request){ 
+        $filter = $request->input('filter');
+    
+        $companyId = Session::get('company_id');   
+        // Fetch batches based on filter
+        switch ($filter) {
+            case 'completed':
+                $batches = Batches::where('company_id', $companyId)->withCount('batchDetails')
+                    ->withCount(['batchDetails as count' => function($query) {
+                        $query->where('status', 'complete');
+                    }])->get();
+                break;
+            case 'pending':
+                $batches = Batches::where('company_id', $companyId)->withCount('batchDetails')
+                    ->withCount(['batchDetails as count' => function($query) {
+                        $query->where('status', 'pending');
+                    }])->get();
+                break;
+            case 'abort':
+                $batches = Batches::where('company_id', $companyId)->withCount('batchDetails')
+                    ->withCount(['batchDetails as count' => function($query) {
+                        $query->where('status', 'abort');
+                    }])->get();
+                break;
+            case 'all':
+            default:
+                $batches = Batches::where('company_id', $companyId)->withCount('batchDetails as count')->get();
+                break;
+        }
+    
+        return response()->json(['batches' => $batches]);
+    }
+    
 }
