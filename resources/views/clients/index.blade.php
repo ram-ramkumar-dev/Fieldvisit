@@ -108,7 +108,21 @@
                                             <td>{{ $client->id }}</td>
                                             <td>{{ $client->clientgroup->name }}</td>
                                             <td>{{ $client->client_name }}</td>
-                                            <td>{{ $client->status == '1' ? 'Active' : 'Inactive' }}</td>
+                                            <td> 
+            @php 
+                if ($client->status == '1'){ @endphp
+                    <p class="mb-0 text-success font-weight-bold d-flex justify-content-start align-items-center">
+                <small><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">                                                
+                <circle cx="12" cy="12" r="8" fill="#3cb72c"></circle></svg>
+                </small>Active</p>
+            @php }else{ @endphp
+                <p class="mb-0 text-danger font-weight-bold d-flex justify-content-start align-items-center">
+                <small><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">                                                
+                <circle cx="12" cy="12" r="8" fill="#F42B3D"></circle></svg>
+                </small>Inactive
+            </p>
+           @php } @endphp
+            </td> 
                                             <td>{{ $client->registration_no }}</td>
                                             <td>{{ $client->phone1 }}</td>   
                                             <td>{{ $client->address }}</td>

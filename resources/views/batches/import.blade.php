@@ -80,7 +80,7 @@
             <td>{{ $batch->batch_no }}</td>
             <td>{{ $batch->created_at->format('Y-M-d') }}</td>
             <td>{{ $batch->batch_details_count }}</td> 
-            <td></td> 
+            <td>{{ $batch->completed_count }}</td> 
             <td>
             <a class="" data-toggle="tooltip" data-placement="top" title="View" href="{{ route('batches.viewuploaded', $batch->id) }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="text-secondary" width="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">

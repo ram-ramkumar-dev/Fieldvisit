@@ -28,6 +28,9 @@ class BatchesController extends Controller
         $batches = Batches::where('company_id', $companyId)
                         ->orWhereNull('company_id')
                         ->withCount('batchDetails')
+                        ->withCount(['batchDetails as completed_count' => function ($query) {
+                            $query->where('status', 'Completed');
+                        }])
                         ->with('client')->get(); 
         return view('batches.index', compact('batches', 'page'));
     }
@@ -139,6 +142,9 @@ class BatchesController extends Controller
         $batches = Batches::where('company_id', $companyId)
                         ->orWhereNull('company_id')
                         ->withCount('batchDetails')
+                        ->withCount(['batchDetails as completed_count' => function ($query) {
+                            $query->where('status', 'Completed');
+                        }])
                         ->with('client')->get(); 
         return view('batches.import', compact('batches', 'page'));
     }

@@ -85,8 +85,22 @@
             <td>{{ $batch->batch_no }}</td>
             <td>{{ $batch->client->client_name }}</td>
             <td>{{ $batch->batch_details_count }}</td>
-            <td></td> 
-            <td>{{ $batch->status == '1' ? 'Active' : 'Inactive' }}</td>
+            <td>{{ $batch->completed_count }}</td> 
+            <td> 
+            @php 
+                if ($batch->status == '1'){ @endphp
+                    <p class="mb-0 text-success font-weight-bold d-flex justify-content-start align-items-center">
+                <small><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">                                                
+                <circle cx="12" cy="12" r="8" fill="#3cb72c"></circle></svg>
+                </small>Active</p>
+            @php }else{ @endphp
+                <p class="mb-0 text-danger font-weight-bold d-flex justify-content-start align-items-center">
+                <small><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">                                                
+                <circle cx="12" cy="12" r="8" fill="#F42B3D"></circle></svg>
+                </small>Inactive
+            </p>
+           @php } @endphp
+            </td>
             <td>
             <a class="" data-toggle="tooltip" data-placement="top" title="View" href="{{ route('batches.show', $batch->id) }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="text-secondary" width="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -41,6 +41,7 @@ class UserController extends Controller
     public function dashboard()
     {       
         $companyId = Session::get('company_id'); 
+        
         $data['users'] =  Driver::where(array('company_id'=>$companyId,'status'=>1))->get(); 
  
         // Initialize an array to store formatted results

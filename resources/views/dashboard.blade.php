@@ -158,7 +158,7 @@
          </div>
       </div>
       <div class="col-lg-4 col-md-8">
-         <div class="card card-block card-stretch card-height">
+         <div class="card card-block card-stretch card-height" >
             <div class="card-header card-header-border d-flex justify-content-between">
                <div class="header-title">
                   <h4 class="card-title">Campaign Performance</h4>
@@ -184,20 +184,37 @@
                      </div>
                </div>
             </div>
-            <div class="card-body-list">               
-               <ul class="list-style-3 mb-0" id="batchList">
-                  
-               @foreach ($counts as $k => $batch) 
-                  <li class="p-3 list-item d-flex justify-content-start align-items-center">
-                     
-                     <div class="list-style-detail ml-3 mr-2">
-                        <p class="mb-0">{{ ucfirst($batch->batch_no) }}</p>
-                     </div>
-                     <div class="list-style-action d-flex justify-content-end ml-auto">                        
-                        <h6 class="font-weight-bold" id="campaignnumbers"> {{ $batch->batch_details_count }}</h6>                        
-                     </div>
-                  </li> 
-               @endforeach
+            <?php 
+             $colors  = [
+               'Red', 'Blue', 'Green', 'Yellow', 'Orange', 'Purple', 'Pink', 'Brown', 'Gray', 'Black', 'White',
+               'AliceBlue', 'AntiqueWhite', 'Aqua', 'Aquamarine', 'Azure', 'Beige', 'Bisque', 'BlanchedAlmond',
+               'BlueViolet', 'BurlyWood', 'CadetBlue', 'Chartreuse', 'Chocolate', 'Coral', 'CornflowerBlue',
+               'Cornsilk', 'Crimson', 'Cyan', 'DarkBlue', 'DarkCyan', 'DarkGoldenRod', 'DarkGray', 'DarkGreen',
+               'DarkKhaki', 'DarkMagenta', 'DarkOliveGreen', 'DarkOrange', 'DarkOrchid', 'DarkRed', 'DarkSalmon',
+               'DarkSeaGreen', 'DarkSlateBlue', 'DarkSlateGray', 'DarkTurquoise', 'DarkViolet'];
+           
+           ?>
+
+            <div class="card-body-list" style="overflow: scroll;">               
+            <ul class="list-style-3 mb-0" id="batchList" style="height: 275px;">
+                  @foreach ($counts as $k => $batch) 
+                  <?php
+                                  $color = $colors[$k % count($colors)]; 
+                  ?>
+                     <li class="p-3 list-item d-flex flex-column align-items-start">
+                           <div class="d-flex justify-content-start align-items-center w-100">
+                              <div class="list-style-detail mr-2">
+                                 <p class="mb-0"  style="color: {{ $color  }};">{{ ucfirst($batch->batch_no) }}</p>
+                              </div>
+                              <div class="list-style-action ml-auto">
+                                 <h6 class="font-weight-bold"  style="color: {{ $color  }};" id="campaignnumbers">{{ $batch->batch_details_count }}</h6>
+                              </div>
+                           </div>
+                           <div class="w-100">
+                              <progress style=" accent-color: {{ $color  }};width: 100%;    height: 5px;" id="file" value="{{ $batch->batch_details_count }}" max="100">{{ $batch->batch_details_count }}%</progress>
+                           </div>
+                     </li>
+                  @endforeach
                </ul>
             </div>
          </div>
@@ -240,6 +257,7 @@
                         <p class="mb-0 pt-3 ">25 June</p>
                         <p class="mb-0 pt-3 ">26 June</p>
                         <p class="mb-0 pt-3 ">27 June</p>
+                        <p class="mb-0 pt-3 ">28 June</p>
                      </div>
                   </div>
                </div>
@@ -432,47 +450,151 @@
          </div>
       </div>
       <div class="col-lg-6 col-md-12">
-         <div class="card"> 
-                  <div class="card-body">
-                     
-                  <!--   <div class="row mt-4">
-                        @foreach ($users as $k => $v) 
-                        <div class="col-lg-2 col-md-6 text-center">
-                           <p class="bg-primary-light pt-5 pb-5 text-center rounded font-size-18">{{ ucfirst($v->name) }}</p>
-                        </div>
-                        @endforeach
-                        
-                     </div> -->
-                        <div class="table-responsive">
-                           <table class="table mb-0">
-                              <thead class="table-color-heading">
-                                 <tr class="text-secondary">
-                                    <th scope="col">Rank</th>
-                                    <th scope="col">Agent</th>
-                                    <th scope="col">Assign</th>
-                                    <th scope="col">Complete</th>
-                                    <th scope="col">Pending</th>
-                                 </tr>
-                              </thead>
-                              <tbody>
-                              @foreach ($list as $k => $l) 
-                                 <tr class="white-space-no-wrap">
-                                    <td>{{ $loop->iteration }}</td> 
-                                    <td>{{ ucfirst($l['driver_name']) }}</td> 
-                                    <td>{{ $l['all'] }}</td> 
-                                    <td>{{ $l['completed'] }}</td> 
-                                    <td>{{ $l['pending'] }}</td> 
-                                 </tr>   
-                              @endforeach                     
-                              </tbody>
-                           </table> 
-                        </div> 
-                  </div> 
-           
-         </div>
+      <div class="leaderboard">
+    <!-- <div class="leaderboard-header">
+        <h2>Leaderboard</h2>
+        <div class="driver-profile">
+            <img src="{{ asset('assets/images/user/1.jpg') }}" alt="Driver Avatar">
+            <div class="driver-info">
+                <h3>David</h3>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 100%;"></div>
+                </div>
+                <span class="progress-count">4/4</span>
+            </div>
+        </div>
+    </div> -->
+    <div class="leaderboard-body">
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Score</th>
+                    <th>Full Name</th>
+                    <th>Assign</th>
+                    <th>Completed</th>
+                    <th>Pending</th>
+                </tr>
+            </thead>
+            <tbody>
+                  @foreach ($list as $k => $l) 
+                <tr>
+                    <td>{{ $k + 1 }}</td>
+                    <td>  </td>
+                    <td>{{ $l['driver_name'] }}</td>
+                    <td>{{ $l['pending'] }}</td>
+                    <td>{{ $l['completed'] }}</td>
+                    <td>{{ $l['pending'] }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+         
       </div>
       
 </div>
+<style>
+.leaderboard {
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    padding: 20px; 
+}
+
+.leaderboard-header {
+    text-align: center;
+}
+
+.driver-profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.driver-profile img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.driver-info {
+    margin-left: 10px;
+}
+
+.driver-info h3 {
+    margin: 0;
+}
+
+.progress-bar {
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    width: 100px;
+    height: 10px;
+    position: relative;
+}
+
+.progress {
+    background-color: #4caf50;
+    height: 100%;
+    border-radius: 10px;
+}
+
+.progress-count {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.leaderboard-body {
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    text-align: center;
+    padding: 10px;
+}
+
+thead {
+    background-color: #f7f7f7;
+    font-weight: bold;
+}
+
+tbody tr {
+    background-color: #ffffff;
+    border-bottom: 1px solid #dddddd;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f7f7f7;
+}
+
+tbody tr.green {
+    background-color: #d9f5d9;
+}
+
+tbody tr.yellow {
+    background-color: #fffdd0;
+}
+
+tbody tr.red {
+    background-color: #fdd9d9;
+}
+.score-circle {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: white;
+    line-height: 30px;
+    font-weight: bold;
+    text-align: center;
+}
+   </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="{{ asset('assets/js/charts/chartupdates.js')}}"></script> 
@@ -511,15 +633,20 @@ var getBatchforchartData03 = '{{ route("getBatchProgressForChart03") }}';
                 dropdownMenu.classList.remove('show');
             }
             $('#batchList').empty();
-            
+             
             batches.forEach(function(batch) {
                 var listItem = `
-                    <li class="p-3 list-item d-flex justify-content-start align-items-center" data-batch-id="${batch.id}">
-                        <div class="list-style-detail ml-3 mr-2">
+                    <li class="p-3 list-item d-flex flex-column align-items-start" data-batch-id="${batch.id}">
+                        <div class="d-flex justify-content-start align-items-center w-100">
+                           <div class="list-style-detail mr-2">
                             <p class="mb-0">${batch.batch_no.charAt(0).toUpperCase() + batch.batch_no.slice(1)}</p>
-                        </div>
-                        <div class="list-style-action d-flex justify-content-end ml-auto">                        
+                          </div> 
+                          <div class="list-style-action ml-auto">         
                             <h6 class="font-weight-bold" id="campaignnumbers"> ${batch.count} </h6>                        
+                           </div>
+                         </div>
+                         <div class="w-100">
+                           <progress style="    width: 100%;    height: 5px;" id="file" value="${batch.count}" max="100"> ${batch.count}%</progress>
                         </div>
                     </li>`;
                 
