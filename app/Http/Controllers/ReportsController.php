@@ -373,7 +373,7 @@ class ReportsController extends Controller
                             $drawing->setName($column)
                                     ->setDescription($column)
                                     ->setPath(public_path($value)) // Path to the image
-                                    ->setCoordinatesByColumnAndRow($col, $row)
+                                    ->setCoordinates('A1') // Position the image at cell A1
                                     ->setWidth(100) // Set the width of the image
                                     ->setHeight(100); // Set the height of the image
                             $drawing->setWorksheet($sheet);
