@@ -373,7 +373,7 @@ class ReportsController extends Controller
                             $drawing->setName($column)
                                     ->setDescription($column)
                                     ->setPath(public_path($value)) // Path to the image
-                                    ->setCoordinates('A1') // Position the image at cell A1
+                                    ->setCoordinates($this->getExcelCellCoordinate($col, $row)) // Convert column and row to Excel cell reference
                                     ->setWidth(100) // Set the width of the image
                                     ->setHeight(100); // Set the height of the image
                             $drawing->setWorksheet($sheet);
@@ -415,4 +415,13 @@ class ReportsController extends Controller
         }
     }
     
-}
+    protected function getExcelCellCoordinate($col, $row)
+    {
+        $columnLetter = '';
+        while ($col > 0) {
+            $mod = ($col - 1) % 26;
+            $columnLetter = chr(65 + $mod) . $columnLetter;
+            $col = (int)(($col - $mod) / 26);
+        }
+        return $columnLetter . $row;
+    }
