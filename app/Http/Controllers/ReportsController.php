@@ -425,3 +425,4 @@ class ReportsController extends Controller
         }
         return $columnLetter . $row;
     }
+}
