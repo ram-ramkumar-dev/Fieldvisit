@@ -331,19 +331,23 @@ class AuthController extends Controller
     public function getBatchesForDriver(Request $request)
     {        
         $validator = Validator::make($request->all(), [
-            'driver_id' => 'required|string', 
+            'driver_id' => 'required|string',
+            'batch_id' => 'nullable|exists:batches,id',
+            'search' => 'nullable|string', // Add validation for the search parameter
         ]);
 
-        $driver_id = $request->driver_id;
-        $batch_id = $request->batch_id;
         if ($validator->fails()) {
             return response()->json([
-                'status' => 'error', 
+                'status' => 'error',
                 'message' => 'Validation errors',
                 'errors' => $validator->errors()
             ], 422);
         }
-     
+
+        $driver_id = $request->driver_id;
+        $batch_id = $request->batch_id;
+        $search = $request->search; // Get the search parameter
+
         $batches = Batches::whereHas('batchDetails', function($query) use ($driver_id, $batch_id) {
             $query->where('assignedto', $driver_id);
             if ($batch_id) {
@@ -361,16 +365,28 @@ class AuthController extends Controller
             ], 404);
         }
 
-        $response = $batches->map(function ($batch) use ($driver_id, $batch_id) {
+        $response = $batches->map(function ($batch) use ($driver_id, $batch_id, $search) {
             $batchDetailsQuery = BatchDetail::where('assignedto', $driver_id)
-            ->where('softdelete', '!=', '1') // Exclude soft deleted details
-            ->orderBy('pinned_at', 'desc'); // Order by pinned_at
+                ->where('softdelete', '!=', '1') // Exclude soft deleted details
+                ->orderBy('pinned_at', 'desc'); // Order by pinned_at
 
             if ($batch_id) {
                 $batchDetailsQuery->where('batch_id', $batch_id);
             } else {
                 $batchDetailsQuery->where('batch_id', $batch->id);
             }
+
+            if ($search) {
+                $batchDetailsQuery->where(function($query) use ($search) {
+                    $query->where('account_no', 'like', "%{$search}%")
+                          ->orWhere('name', 'like', "%{$search}%")
+                          ->orWhere('address', 'like', "%{$search}%")
+                          ->orWhere('taman_mmid', 'like', "%{$search}%")
+                          ->orWhere('state', 'like', "%{$search}%")
+                          ->orWhere('district_la', 'like', "%{$search}%");
+                });
+            }
+
             $batchDetails = $batchDetailsQuery
                 ->select('id', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude', 'status', 'batchfile_longitude', 'pinned_at') 
                 ->get();
@@ -395,15 +411,13 @@ class AuthController extends Controller
                 'aborted_details' => $aborted,
             ];
         });
-          
-     
+
         return response()->json([
             'status' => 'success',
             'message' => 'Batch details retrieved successfully.',
             'data' => $response
         ], 200);
     }
-
 
     public function storeSurvey(Request $request)
     {
@@ -544,6 +558,7 @@ class AuthController extends Controller
 
         $batch_id = $request->batch_id; 
         $driver_id = $request->driver_id;
+        $search = $request->search; // Get the search parameter
 
         $batchDetailsQuery = BatchDetail::where('assignedto', $driver_id)->where('status', '!=', 'soft_deleted')
         ->orderBy('pinned_at', 'desc');
@@ -551,6 +566,18 @@ class AuthController extends Controller
         if ($batch_id) {
             $batchDetailsQuery->where('batch_id', $batch_id);
         }
+        
+        if ($search) {
+            $batchDetailsQuery->where(function($query) use ($search) {
+                $query->where('account_no', 'like', "%{$search}%")
+                      ->orWhere('name', 'like', "%{$search}%")
+                      ->orWhere('address', 'like', "%{$search}%")
+                      ->orWhere('taman_mmid', 'like', "%{$search}%")
+                      ->orWhere('state', 'like', "%{$search}%")
+                      ->orWhere('district_la', 'like', "%{$search}%");
+            });
+        }
+
         $batchDetails = $batchDetailsQuery
         ->select('id', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude', 'status', 'batchfile_longitude', 'pinned_at') // 
         ->get(); 

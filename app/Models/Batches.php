@@ -24,4 +24,8 @@ class Batches extends Model
         return $this->hasMany(BatchDetail::class, 'batch_id');
     }
     
+    public function surveys()
+    {
+        return $this->hasMany(Survey::class, 'batch_id');
+    }
 }

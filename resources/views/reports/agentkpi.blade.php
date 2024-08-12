@@ -17,7 +17,7 @@
                 </div>  
                 
             </div>
-            <div class="col-lg-12"><!-- resources/views/batches/assigncase.blade.php -->
+            <div class="col-lg-12"> 
   
   <form action="{{  route('handle.form')  }}" method="POST" class="row g-3"> 
   @csrf

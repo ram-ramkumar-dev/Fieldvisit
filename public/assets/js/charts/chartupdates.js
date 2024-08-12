@@ -3,13 +3,13 @@ var chart; // Declare chart variable globally
 
 function initializeChart() {
     if(jQuery("#chart-apex-column-03").length){ var options = {
-        series: [chartData03.pending, chartData03.aborted,chartData03.pending, chartData03.completed],
+        series: [chartData03.pending, chartData03.completed,chartData03.assign, chartData03.aborted],
         chart: {
             height: 330,
             type: 'donut'
         },
-        labels: ["Progress", "Aborted", "Assigned", "Completed"],
-        colors: ['#ffbb33', '#e60000', '#04237D', '#8080ff'],
+        labels: ["Progress", "Completed", "Assigned", "Aborted"],
+        colors: ['#ffbb33', '#8080ff', '#04237D', '#e60000'],
         plotOptions: {
             pie: {
                 startAngle: -90,
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', initializeChart);
 function updateChart(newData) {
     if (window.chart) {
         chart.updateOptions({
-            series: [newData.pending, newData.completed,newData.pending, newData.aborted],
+            series: [newData.pending, newData.completed,newData.assign, newData.aborted],
             plotOptions: {
                 pie: {
                     donut: {
@@ -119,6 +119,7 @@ function fetchDataAndUpdateChart(batchId) {
             var newData = {
                 total: response.total, // Adjust based on your response structure
                 completed: response.completed,
+                assign: response.assign,
                 pending: response.pending,
                 aborted: response.aborted
             };

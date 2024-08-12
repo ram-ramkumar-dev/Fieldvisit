@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\BatchDetail;
 use App\Models\Batches;
 use App\Models\Driver;
+use App\Models\Survey;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Support\Facades\Session;
@@ -212,5 +213,205 @@ class ReportsController extends Controller
 
             return view('reports.agentkpi', compact('groupedBatchDetails', 'page', 'drivers', 'startDate', 'endDate'));
         }
+    } 
+
+    public function surveyResult()
+    {
+        $page = "surveyresult";
+        // Fetch batches and statuses for the dropdowns
+        $companyId = Session::get('company_id');   
+        // Fetch batches based on filter
+        $batches = Batches::where('company_id', $companyId)->get();
+       // $statuses = DB::table('account_statuses')->get();
+       $columnDisplayNames = [
+        'batch_no' => 'File Name',
+        'id' => 'ID',
+        'account_no' => 'Account No',
+        'name' => 'Owner Name',
+        'address' => 'Property Address',
+        'batchfile_latitude' => 'Latitude',
+        'batchfile_longitude' => 'Longitude',
+        'district_la' => 'LA (District)',
+        'taman_mmid' => 'MMID (Area)',
+        'amount' => 'Balance',
+        'occupancy' => 'Occupancy',
+        'has_water_meter' => 'Has Water Meter',
+        'water_meter_no' => 'Water Meter No',
+        'has_water_bill' => 'Has Water Bill',
+        'water_bill_no' => 'Water Bill No',
+        'is_correct_address' => 'Is Correct Address',
+        'correct_address' => 'Correct Address',
+        'ownership' => 'Ownership',
+        'contact_person_name' => 'Contact Person Name',
+        'contact_number' => 'Contact Number',
+        'email' => 'Email',
+        'nature_of_business_code' => 'Nature of Business Code',
+        'shop_name' => 'Shop Name',
+        'dr_code' => 'DR Code',
+        'property_code' => 'Property Code',
+        'remark' => 'Remark',
+        'assignedto' => 'Field Officer',
+        'assignedon' => 'Assigned Date',
+        'visitdate' => 'Visit Date',
+        'visittime' => 'Visit Time',
+        'photos' => 'Photos'
+    ];
+       $allColumns = [
+        'batch_no', 'id', 'account_no', 'name', 'address',
+        'latitude', 'longitude', 'district_la', 'taman_mmid', 'amount',
+        'occupancy', 'has_water_meter', 'water_meter_no', 'has_water_bill',
+        'water_bill_no', 'is_correct_address', 'correct_address', 'ownership',
+        'contact_person_name', 'contact_number', 'email', 'nature_of_business_code',
+        'shop_name', 'dr_code', 'property_code', 'remark', 'assignedto',
+        'assignedon', 'visitdate', 'visittime', 'photo1', 'photo2', 'photo3', 'photo4', 'photo5'
+        ];
+        $columns = array();
+        $requestbatches = '';
+        return view('reports.survey', compact('page','batches','columns','requestbatches','columnDisplayNames'));
     }
+
+    public function generateReport(Request $request)
+    {
+        $action = $request->input('action');
+        $page = "surveyresult";
+        $requestbatches = $request->input('batches');
+        $statuses = $request->input('statuses');
+        $columns = $request->input('columns', []);
+        $companyId = Session::get('company_id');  
+        $columnDisplayNames = [
+            'batch_no' => 'File Name',
+            'id' => 'ID',
+            'account_no' => 'Account No',
+            'name' => 'Owner Name',
+            'address' => 'Property Address',
+            'batchfile_latitude' => 'Latitude',
+            'batchfile_longitude' => 'Longitude',
+            'district_la' => 'LA (District)',
+            'taman_mmid' => 'MMID (Area)',
+            'amount' => 'Balance',
+            'occupancy' => 'Occupancy',
+            'has_water_meter' => 'Has Water Meter',
+            'water_meter_no' => 'Water Meter No',
+            'has_water_bill' => 'Has Water Bill',
+            'water_bill_no' => 'Water Bill No',
+            'is_correct_address' => 'Is Correct Address',
+            'correct_address' => 'Correct Address',
+            'ownership' => 'Ownership',
+            'contact_person_name' => 'Contact Person Name',
+            'contact_number' => 'Contact Number',
+            'email' => 'Email',
+            'nature_of_business_code' => 'Nature of Business Code',
+            'shop_name' => 'Shop Name',
+            'dr_code' => 'DR Code',
+            'property_code' => 'Property Code',
+            'remark' => 'Remark',
+            'assignedto' => 'Field Officer',
+            'assignedon' => 'Assigned Date',
+            'visitdate' => 'Visit Date',
+            'visittime' => 'Visit Time',
+            'photo1' => 'Photo 1',
+            'photo2' => 'Photo 2',
+            'photo3' => 'Photo 3',
+            'photo4' => 'Photo 4',
+            'photo5' => 'Photo 5'
+        ];
+
+        if (in_array('all', $columns)) {
+            $columns = [
+                'batch_no', 'id', 'account_no', 'name', 'address',
+                'batchfile_latitude', 'batchfile_longitude', 'district_la', 'taman_mmid', 'amount',
+                'occupancy', 'has_water_meter', 'water_meter_no', 'has_water_bill',
+                'water_bill_no', 'is_correct_address', 'correct_address', 'ownership',
+                'contact_person_name', 'contact_number', 'email', 'nature_of_business_code',
+                'shop_name', 'dr_code', 'property_code', 'remark', 'assignedto',
+                'assignedon', 'visitdate', 'visittime', 'photo1', 'photo2', 'photo3', 'photo4', 'photo5'
+            ];
+        } else {
+            if (in_array('photos', $columns)) {
+                $columns = array_merge($columns, ['photo1', 'photo2', 'photo3', 'photo4', 'photo5']);
+                $columns = array_diff($columns, ['photos']);
+            }
+        }
+
+        // Start building the query
+        $query = DB::table('surveys')
+            ->join('batches', 'surveys.batch_id', '=', 'batches.id')
+            ->join('batch_details', 'surveys.batch_detail_id', '=', 'batch_details.id')
+            ->join('drivers', 'drivers.id', '=', 'batch_details.assignedto')
+            ->select('surveys.*', 'batches.batch_no', 'batch_details.*', 'drivers.username as assignedto')
+            ->where('batches.company_id', $companyId);
+
+        if (!empty($requestbatches)) {
+            $query->where('surveys.batch_id', $requestbatches);
+        }
+        
+        $data = $query->get();
+         
+        if ($action === 'export') {
+            // Create new Spreadsheet object
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Add header
+            $col = 1;
+            foreach ($columns as $column) {
+                $sheet->setCellValueByColumnAndRow($col, 1, $columnDisplayNames[$column] ?? $column);
+                $col++;
+            }
+
+            // Add data
+            $row = 2;
+            foreach ($data as $item) {
+                $col = 1;
+                foreach ($columns as $column) {
+                    $value = $item->$column ?? '';
+                    if (in_array($column, ['photo1', 'photo2', 'photo3', 'photo4', 'photo5'])) {
+                        // Handle images
+                        if ($value && file_exists(public_path($value))) {
+                            $drawing = new Drawing();
+                            $drawing->setName($column)
+                                    ->setDescription($column)
+                                    ->setPath(public_path($value)) // Path to the image
+                                    ->setCoordinatesByColumnAndRow($col, $row)
+                                    ->setWidth(100) // Set the width of the image
+                                    ->setHeight(100); // Set the height of the image
+                            $drawing->setWorksheet($sheet);
+                        }
+                    } else {
+                        $sheet->setCellValueByColumnAndRow($col, $row, $value);
+                    }
+                    $col++;
+                }
+                $row++;
+            }
+
+            // Write to a temporary file
+            $writer = new Xlsx($spreadsheet);
+            $fileName = 'SurveyReport_' . now()->format('Ymd_His') . '.xlsx';
+            $filePath = storage_path('app/public/' . $fileName);
+            $writer->save($filePath);
+
+            // Return response to download the file
+            return response()->download($filePath)->deleteFileAfterSend(true);
+        } else {
+            // Default behavior to generate report view
+            $batches = Batches::where('company_id', $companyId)->get();
+            return view('reports.survey', [
+                'reportData' => $data->map(function ($item) use ($columns) {
+                    $filteredItem = [];
+                    foreach ($columns as $column) {
+                        $filteredItem[$column] = $item->$column ?? null;
+                    }
+                    return (object) $filteredItem;
+                }),
+                'page' => $page,
+                'batches' => $batches,
+                'requestbatches' => $requestbatches,
+                'statuses' => $statuses,
+                'columns' => $columns,
+                'columnDisplayNames' => $columnDisplayNames,
+            ]);
+        }
+    }
+    
 }

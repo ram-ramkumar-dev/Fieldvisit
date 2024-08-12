@@ -39,7 +39,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('getBatchProgressForChart03', [BatchesController::class, 'getBatchProgressForChart03'])->name('getBatchProgressForChart03');  
     Route::get('getCampaignPerformance', [BatchesController::class, 'getCampaignPerformance'])->name('getCampaignPerformance');  
     Route::get('/agentKpi', [ReportsController::class, 'agentKpi'])->name('reports.agentKpi');
-    Route::post('/handle-form', [ReportsController::class, 'handleForm'])->name('handle.form');
+    Route::post('/handle-form', [ReportsController::class, 'handleForm'])->name('handle.form'); 
+    Route::get('/surveyresult', [ReportsController::class, 'surveyresult'])->name('reports.surveyresult');
+    Route::post('/generateReport', [ReportsController::class, 'generateReport'])->name('reports.generate'); 
 });
 
 Route::get('register', [UserController::class, 'register'])->name('register');

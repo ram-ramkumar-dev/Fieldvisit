@@ -451,19 +451,19 @@
       </div>
       <div class="col-lg-6 col-md-12">
       <div class="leaderboard">
-    <!-- <div class="leaderboard-header">
+     <div class="leaderboard-header">
         <h2>Leaderboard</h2>
         <div class="driver-profile">
             <img src="{{ asset('assets/images/user/1.jpg') }}" alt="Driver Avatar">
             <div class="driver-info">
-                <h3>David</h3>
+                 <h3>{{ $topAgent['driver_name'] }}</h3>
                 <div class="progress-bar">
                     <div class="progress" style="width: 100%;"></div>
                 </div>
-                <span class="progress-count">4/4</span>
+                <span class="progress-count">{{ $topAgent['completed'] }}/{{ $totalSurveys }}</span>
             </div>
         </div>
-    </div> -->
+    </div>  
     <div class="leaderboard-body">
         <table>
             <thead>
@@ -478,11 +478,14 @@
             </thead>
             <tbody>
                   @foreach ($list as $k => $l) 
+                  @php  
+                   $completion_percentage = $l['assigned'] > 0 ? ($l['completed'] / $l['assigned']) * 100 : 0;
+                  @endphp
                 <tr>
-                    <td>{{ $k + 1 }}</td>
-                    <td>  </td>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $completion_percentage }}%</td>
                     <td>{{ $l['driver_name'] }}</td>
-                    <td>{{ $l['pending'] }}</td>
+                    <td>{{ $l['assigned'] }}</td>
                     <td>{{ $l['completed'] }}</td>
                     <td>{{ $l['pending'] }}</td>
                 </tr>
@@ -604,7 +607,8 @@ var chartData03 = {
     total: <?php echo $totalBatchDetailsCount; ?>,
     completed: <?php echo $totalCompleted; ?>,
     pending: <?php echo $totalPending; ?>,
-    aborted: <?php echo $totalAborted; ?>
+    aborted: <?php echo $totalAborted; ?>,
+    assign: <?php echo $totalAssigned; ?>
 };
 var getBatchforchartData03 = '{{ route("getBatchProgressForChart03") }}';
 

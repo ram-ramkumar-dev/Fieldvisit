@@ -53,7 +53,8 @@ class UserController extends Controller
                     'pending' => 0,
                     'completed' => 0,
                     'aborted' => 0,
-                    'all' => 0
+                    'all' => 0,
+                    'assigned' => 0 
                 ];
         }
 
@@ -79,8 +80,30 @@ class UserController extends Controller
                  // Sum up all statuses to get the total count
                 $statusCountsByDriver[$detail->assignedto]['all'] += $detail->status_count;
         }
-        $data['list'] = $statusCountsByDriver;
-       
+        // Query to get the assigned count for each driver
+        $assignedCounts = BatchDetail::select('assignedto', DB::raw('COUNT(*) as assigned_count'))
+        ->whereIn('assignedto', $data['users']->pluck('id'))
+        ->whereNotNull('assignedto') // Make sure the 'assignedto' column is not null
+        ->groupBy('assignedto')
+        ->get();
+        // Populate the assigned counts
+        foreach ($assignedCounts as $assigned) {
+            $statusCountsByDriver[$assigned->assignedto]['assigned'] = $assigned->assigned_count;
+        }
+
+        // Sort the list by completed surveys in descending order
+        $list = collect($statusCountsByDriver)->sortByDesc('completed')->values()->all();
+        
+        // Extract the top agent using array_shift
+        $topAgent = array_shift($list);
+        
+        // Calculate the total surveys for the top agent
+        $totalSurveys = $topAgent['completed'] + $topAgent['pending'];
+        
+        // Pass the remaining data to the view
+        $data['list'] = $list;
+        $data['topAgent'] = $topAgent;
+        $data['totalSurveys'] = $totalSurveys;
         $data['totalbatches'] = Batches::where([
                                      'company_id' => $companyId,
                                      'status' => 1
@@ -95,6 +118,9 @@ class UserController extends Controller
                                     'batchDetails as pending_count' => function ($query) {
                                         $query->where('status', 'pending');
                                     },
+                                    'batchDetails as assign_count' => function ($query) {
+                                        $query->whereNotNull('assignedto');
+                                    },
                                     'batchDetails as aborted_count' => function ($query) {
                                         $query->where('status', 'aborted');
                                     },
@@ -103,6 +129,7 @@ class UserController extends Controller
         $data['totalCompleted'] = $counts->sum('completed_count');
         $data['totalPending'] = $counts->sum('pending_count');
         $data['totalAborted'] = $counts->sum('aborted_count'); 
+        $data['totalAssigned'] = $counts->sum('assign_count'); 
         $data['page'] = 'Dashboard';
         $data['counts'] = $counts; 
         return view('dashboard', $data);

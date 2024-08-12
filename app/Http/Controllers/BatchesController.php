@@ -394,6 +394,9 @@ class BatchesController extends Controller
                                     'batchDetails as pending_count' => function ($query) {
                                         $query->where('status', 'pending');
                                     },
+                                    'batchDetails as assign_count' => function ($query) {
+                                        $query->whereNotNull('assignedto');
+                                    },
                                     'batchDetails as aborted_count' => function ($query) {
                                         $query->where('status', 'aborted');
                                     },
@@ -408,6 +411,7 @@ class BatchesController extends Controller
             // Return data in the expected format
             return response()->json([
                 'total' => $batch->batch_details_count,
+                'assign' => $batch->assign_count,
                 'completed' => $batch->completed_count,
                 'pending' => $batch->pending_count,
                 'aborted' => $batch->aborted_count
@@ -419,30 +423,22 @@ class BatchesController extends Controller
     
         $companyId = Session::get('company_id');   
         // Fetch batches based on filter
+        $batches = Batches::where('company_id', $companyId)
+    ->select('id', 'batch_no')
+    ->withCount(['batchDetails as batch_details_count', 'batchDetails as count' => function ($query) use ($filter) {
         switch ($filter) {
             case 'completed':
-                $batches = Batches::where('company_id', $companyId)->withCount('batchDetails')
-                    ->withCount(['batchDetails as count' => function($query) {
-                        $query->where('status', 'complete');
-                    }])->get();
+                $query->where('status', 'completed');
                 break;
             case 'pending':
-                $batches = Batches::where('company_id', $companyId)->withCount('batchDetails')
-                    ->withCount(['batchDetails as count' => function($query) {
-                        $query->where('status', 'pending');
-                    }])->get();
+                $query->where('status', 'pending');
                 break;
             case 'abort':
-                $batches = Batches::where('company_id', $companyId)->withCount('batchDetails')
-                    ->withCount(['batchDetails as count' => function($query) {
-                        $query->where('status', 'abort');
-                    }])->get();
-                break;
-            case 'all':
-            default:
-                $batches = Batches::where('company_id', $companyId)->withCount('batchDetails as count')->get();
+                $query->where('status', 'aborted');
                 break;
         }
+    }])
+    ->get();
     
         return response()->json(['batches' => $batches]);
     }
