@@ -96,21 +96,21 @@
               
                     @if ($loop->first)
                         <td style="border: solid 1px;">{{ $batch['batch_no'] }}</td>
-                        <td style="border: solid 1px;" class="text-center">{{ $batch['pending_count'] }}</td>
+                        <td style="border: solid 1px;" class="text-center">{{ $batch['assigned_count'] }}</td>
                         <td style="border: solid 1px;" class="text-center">{{ $batch['completed_count'] }}</td>
-                        <td style="border: solid 1px;" class="text-center">{{ $batch['aborted_count'] }}</td>
+                        <td style="border: solid 1px;" class="text-center">{{ $batch['pending_count'] }}</td>
                     @else
                         <tr>
                             <td>{{ $batch['batch_no'] }}</td>
-                            <td class="text-center">{{ $batch['pending_count'] }}</td>
+                            <td class="text-center">{{ $batch['assigned_count'] }}</td>
                             <td class="text-center">{{ $batch['completed_count'] }}</td>
-                            <td class="text-center">{{ $batch['aborted_count'] }}</td>
+                            <td class="text-center">{{ $batch['pending_count'] }}</td>
                         </tr>
                     @endif
                     @php
-                        $totalAssigned += $batch['pending_count'];
+                        $totalAssigned += $batch['assigned_count'];
                         $totalCompleted += $batch['completed_count'];
-                        $totalIncomplete += $batch['aborted_count'];
+                        $totalIncomplete += $batch['pending_count'];
                     @endphp
                     @endforeach      
                  <tr>

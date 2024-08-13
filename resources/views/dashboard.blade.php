@@ -227,7 +227,7 @@
                    <div class="card-body">
                        <div class="d-flex align-items-center">
                            <div class="fit-icon-2 text-info text-center">
-                               <div id="circle-progress-01" class="circle-progress-01 circle-progress circle-progress-light" data-min-value="0" data-max-value="100" data-value="{{ $total = ($totalBatchDetailsCount / 100) * $totalCompleted }}" data-type="percent"></div>
+                               <div id="circle-progress-01" class="circle-progress-01 circle-progress circle-progress-light" data-min-value="0" data-max-value="100" data-value="{{     $percentage = ($totalCompleted / $totalBatchDetailsCount) * 100 }}" data-type="percent"></div>
                            </div>
                            <div class="ml-3">
                                <h5 class="text-white font-weight-bold">{{ $totalCompleted }} <small> / {{ $totalBatchDetailsCount }}</small></h5>
@@ -243,21 +243,20 @@
                      <div class="d-flex justify-content-between align-items-center">
                         <h6 class="font-weight-bold">Active Users</h6>
                         <div class="d-flex align-items-center"> 
-                           <select>
+                           <!-- <select>
                               <option>Select</option>
                               @foreach ($users as $k => $v) 
                                  <option value="{{ $v->id }}">{{ ucfirst($v->username) }}</option>
                               @endforeach
-                           </select> 
+                           </select>  -->
                         </div>
                      </div>
                      <p class="mb-0">Visits Per Day</p>
                      <div id="chart-apex-column-02" class="custom-chart"></div>
                      <div class="d-flex justify-content-between align-items-center">
-                        <p class="mb-0 pt-3 ">25 June</p>
-                        <p class="mb-0 pt-3 ">26 June</p>
-                        <p class="mb-0 pt-3 ">27 June</p>
-                        <p class="mb-0 pt-3 ">28 June</p>
+                     @foreach($lastFourDaysData['dates'] as $date)
+                        <p class="mb-0 pt-3">{{ $date }}</p>
+                     @endforeach
                      </div>
                   </div>
                </div>
@@ -452,14 +451,16 @@
       <div class="col-lg-6 col-md-12">
       <div class="leaderboard">
      <div class="leaderboard-header">
-        <h2>Leaderboard</h2>
+        <h4>Leaderboard</h4>
         <div class="driver-profile">
             <img src="{{ asset('assets/images/user/1.jpg') }}" alt="Driver Avatar">
             <div class="driver-info">
-                 <h3>{{ $topAgent['driver_name'] }}</h3>
+                 <h5>{{ ucfirst($topAgent['driver_name']) }}</h5>
+                 
                 <div class="progress-bar">
                     <div class="progress" style="width: 100%;"></div>
                 </div>
+                
                 <span class="progress-count">{{ $topAgent['completed'] }}/{{ $totalSurveys }}</span>
             </div>
         </div>
@@ -484,7 +485,7 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $completion_percentage }}%</td>
-                    <td>{{ $l['driver_name'] }}</td>
+                    <td>{{ ucfirst($l['driver_name']) }}</td>
                     <td>{{ $l['assigned'] }}</td>
                     <td>{{ $l['completed'] }}</td>
                     <td>{{ $l['pending'] }}</td>
@@ -610,6 +611,13 @@ var chartData03 = {
     aborted: <?php echo $totalAborted; ?>,
     assign: <?php echo $totalAssigned; ?>
 };
+
+var chart01completed = @json($chart01completed);
+var chart01visit = @json($chart01visit);
+var chart01months = @json($chart01months);
+
+var chartData = @json($lastFourDaysData);
+
 var getBatchforchartData03 = '{{ route("getBatchProgressForChart03") }}';
 
 </script>

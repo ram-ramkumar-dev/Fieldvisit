@@ -68,6 +68,7 @@ class ReportsController extends Controller
             $query = DB::table('batch_details')
             ->join('drivers', 'batch_details.assignedto', '=', 'drivers.id')
             ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+            ->where('batches.company_id', $companyId) 
             ->whereBetween('batch_details.assignedon', [$startDate, $endDate])
             ->select(
                 'drivers.id as driver_id',
@@ -180,6 +181,7 @@ class ReportsController extends Controller
             $batchDetails = DB::table('batch_details')
                 ->join('drivers', 'batch_details.assignedto', '=', 'drivers.id')
                 ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+                ->where('batches.company_id', $companyId) 
                 ->whereBetween('batch_details.assignedon', [$startDate, $endDate])
                 ->when($driverId, function ($query) use ($driverId) {
                     return $query->where('batch_details.assignedto', $driverId);
@@ -191,7 +193,7 @@ class ReportsController extends Controller
                     'batches.batch_no',
                     DB::raw('count(case when batch_details.status = "Pending" then 1 end) as pending_count'),
                     DB::raw('count(case when batch_details.status = "Completed" then 1 end) as completed_count'),
-                    DB::raw('count(case when batch_details.status = "Aborted" then 1 end) as aborted_count')
+                    DB::raw('count(batch_details.assignedto) as assigned_count') // Count the number of times a driver is assigned
                 )
                 ->groupBy('drivers.id', 'drivers.name', 'batches.id', 'batches.batch_no')
                 ->get();
@@ -206,12 +208,12 @@ class ReportsController extends Controller
                             'batch_no' => $detail->batch_no,
                             'pending_count' => $detail->pending_count,
                             'completed_count' => $detail->completed_count,
-                            'aborted_count' => $detail->aborted_count,
+                            'assigned_count' => $detail->assigned_count,
                         ];
                     }),
                 ];
             });
-
+            
             return view('reports.agentkpi', compact('groupedBatchDetails', 'page', 'drivers', 'startDate', 'endDate'));
         }
     } 

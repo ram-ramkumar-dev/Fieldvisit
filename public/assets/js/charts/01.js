@@ -414,12 +414,12 @@
         var options = {
           series: [{
           name: 'Visit',
-          data: [90, 105, 72, 90, 65, 109, 130]
+          data: chart01visit
         }, {
           name: 'Completed',
-          data: [115, 93, 75, 102, 144, 52, 71]
+          data: chart01completed
         }],
-        colors: ['#1f1f7a', '#2e2eb8'],
+        colors: ['#3378FF', '#19b3b3'],
           chart: {
           height: 265,
           fontFamily: 'DM Sans',
@@ -461,23 +461,29 @@
           }
         },
         yaxis: {
+          min: 0,
+          max: 525,
+          tickAmount: 7,
           labels: {
-          offsetY:0,
-          minWidth: 20,
-          maxWidth: 20
+            formatter: function(value) {
+              return Math.round(value); // This rounds the values to avoid decimals
+            },
+            offsetY: 0,
+            minWidth: 20,
+            maxWidth: 20
           },
         },
         xaxis: {
-          type: 'datetime',
+          type: 'date',
           labels: {
             minHeight: 20,
             maxHeight: 20
           },
-          categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
+          categories: chart01months
         },
         tooltip: {
           x: {
-            format: 'dd/MM/yy HH:mm'
+            format: 'm'
           },
         },
         };
@@ -486,79 +492,77 @@
         chart.render();
       }
 
-      if(jQuery("#chart-apex-column-02").length){
-        var options = {
-          series: [{
-          data: [55, 42, 19, 30, 20, 65, 21, 23, 45, 60, 30, 20]
-        }],
-        colors: ['#b3cccc', '#04237D', '#4d4dff'],
-          chart: {
-          height: 183,
-          type: 'bar',
-          toolbar:{
-            show: false,
-          },
-          sparkline: {
-            enabled: true,
-          },
-          events: {
-            click: function(chart, w, e) {
-              // console.log(chart, w, e)
-            }
-          }
-        },
-        plotOptions: {
-          bar: {
-            columnWidth: '40%',
-            distributed: true,
-            borderRadius: 5,
-          }
-        },
-        dataLabels: {
-          enabled: false
-        },
-        legend: {
-          show: false
-        },
-        grid: {
-          xaxis: {
-              lines: {
-                  show: false
-              }
-          },
-          yaxis: {
-              lines: {
-                  show: false
-              }
-          }
-        },
-        yaxis: {
-          labels: {
-          offsetY:0,
-          minWidth: 10,
-          maxWidth: 10
-          },
-        },
+      // if(jQuery("#chart-apex-column-02").length){
+      //   var options = {
+      //     series: [{
+      //     data: [55, 42, 19, 30, 20, 65, 21, 23, 45, 60, 30, 20]
+      //   }],
+      //   colors: ['#b3cccc', '#04237D', '#4d4dff'],
+      //     chart: {
+      //     height: 183,
+      //     type: 'bar',
+      //     toolbar:{
+      //       show: false,
+      //     },
+      //     sparkline: {
+      //       enabled: true,
+      //     },
+      //     events: {
+      //       click: function(chart, w, e) {
+      //         // console.log(chart, w, e)
+      //       }
+      //     }
+      //   },
+      //   plotOptions: {
+      //     bar: {
+      //       columnWidth: '40%',
+      //       distributed: true,
+      //       borderRadius: 5,
+      //     }
+      //   },
+      //   dataLabels: {
+      //     enabled: false
+      //   },
+      //   legend: {
+      //     show: false
+      //   },
+      //   grid: {
+      //     xaxis: {
+      //         lines: {
+      //             show: false
+      //         }
+      //     },
+      //     yaxis: {
+      //         lines: {
+      //             show: false
+      //         }
+      //     }
+      //   },
+      //   yaxis: {
+      //     labels: {
+      //     offsetY:0,
+      //     minWidth: 10,
+      //     maxWidth: 10
+      //     },
+      //   },
         
-        xaxis: {
-          categories: [           
-            '30 Jan',
-            '25 Feb',
-            '28 Mar', 
-          ],
-          labels: {
-            minHeight: 20,
-            maxHeight: 20,
-            style: {
-              fontSize: '12px'
-            }
-          }
-        }
-        };
+      //   xaxis: {
+      //     categories: [           
+      //       '25 June', 
+      //     ],
+      //     labels: {
+      //       minHeight: 20,
+      //       maxHeight: 20,
+      //       style: {
+      //         fontSize: '12px'
+      //       }
+      //     }
+      //   }
+      //   };
 
-        var chart = new ApexCharts(document.querySelector("#chart-apex-column-02"), options);
-        chart.render();
-      }
+      //   var chart = new ApexCharts(document.querySelector("#chart-apex-column-02"), options);
+      //   chart.render();
+      // }
 
       // if(jQuery("#chart-apex-column-03").length){
       //     var options = {

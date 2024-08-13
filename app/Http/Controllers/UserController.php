@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Batches; 
 use App\Models\BatchDetail; 
 use App\Models\Driver;
@@ -132,6 +133,100 @@ class UserController extends Controller
         $data['totalAssigned'] = $counts->sum('assign_count'); 
         $data['page'] = 'Dashboard';
         $data['counts'] = $counts; 
+
+        //chart01 data
+          // Array of months
+          $months = [];
+
+          // Get the current date
+          $now = Carbon::now();
+          
+          // Iterate over the last 6 months including the current month
+          for ($i = 0; $i < 6; $i++) {
+              // Get the month for the iteration and format it as 'M' (e.g., 'Jan', 'Feb')
+              $months[] = $now->copy()->subMonths($i)->format('F'); // Including the year for clarity
+          }
+          
+          // Reverse the array to show the most recent month first
+          $months = array_reverse($months); 
+ 
+          // Query for 'completed' counts from 'batch_details' by month
+          $completedCounts = DB::table('batch_details')
+              ->select(DB::raw('MONTHNAME(assignedon) as month'), DB::raw('COUNT(*) as count'))
+              ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+              ->where('batches.company_id', $companyId) 
+              ->whereIn(DB::raw('MONTHNAME(assignedon)'), $months)
+              ->where('batch_details.status', 'Completed') // Assuming there's a 'status' column with 'completed' status
+              ->groupBy(DB::raw('MONTHNAME(assignedon)'))
+              ->orderBy(DB::raw('MONTH(assignedon)'))
+              ->pluck('count', 'month')
+              ->toArray(); 
+
+          // Query for 'visit' counts from 'survey' by month
+          $visitCounts = DB::table('surveys')
+              ->select(DB::raw('MONTHNAME(visitdate) as month'), DB::raw('COUNT(*) as count'))
+              ->whereIn(DB::raw('MONTHNAME(visitdate)'), $months)
+              ->groupBy(DB::raw('MONTHNAME(visitdate)'))
+              ->orderBy(DB::raw('MONTH(visitdate)'))
+              ->pluck('count', 'month')
+              ->toArray();
+  
+          // Ensure all months are represented, even if counts are zero
+          $completed = [];
+          $visit = [];
+  
+        foreach ($months as $month) {
+            $completed[] = $completedCounts[$month] ?? 0;
+            $visit[] = $visitCounts[$month] ?? 0;
+        }
+        $data['chart01completed'] = $completed;
+        $data['chart01visit'] = $visit;
+        $data['chart01months'] = $months;
+ 
+        //chart03 data
+   
+        $lastFourDaysData = [
+            'dates' => [],
+            'completed' => [],
+            'pending' => [],
+            'assigned' => []
+        ];
+
+        for ($i = 4; $i >= 1; $i--) {
+            $date = Carbon::now()->subDays($i)->format('Y-m-d');
+            $lastFourDaysData['dates'][] = Carbon::now()->subDays($i)->format('d M'); // For display
+
+            // Completed
+            $completedData = DB::table('batch_details')
+                ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+                ->where('batch_details.status', 'Completed')
+                ->whereDate('batch_details.assignedon', $date)
+                ->where('batches.company_id', $companyId) 
+                ->get();
+            
+            $lastFourDaysData['completed'][] = $completedData->count(); 
+
+            // Pending
+            $pendingData = DB::table('batch_details')
+                ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+                ->where('batch_details.status', 'Pending')
+                ->whereDate('batch_details.assignedon', $date)
+                ->where('batches.company_id', $companyId) 
+                ->get();
+
+            $lastFourDaysData['pending'][] = $pendingData->count(); 
+
+            // Assigned
+            $assignedData = DB::table('batch_details')
+                ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+                ->whereDate('batch_details.assignedon', $date)
+                ->where('batches.company_id', $companyId) 
+                ->get();
+
+            $assignedCount = $assignedData->count();
+            $lastFourDaysData['assigned'][] = $assignedCount; 
+        }
+        $data['lastFourDaysData'] = $lastFourDaysData; 
         return view('dashboard', $data);
     }
 

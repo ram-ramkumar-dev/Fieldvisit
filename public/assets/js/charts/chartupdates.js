@@ -79,6 +79,62 @@ function initializeChart() {
     apexChartUpdate(chart, e.detail)
     })
 }
+if(jQuery("#chart-apex-column-02").length){
+    var options = {
+        series: [
+            {
+                name: 'Completed',
+                data: chartData.completed
+            },
+            {
+                name: 'Pending',
+                data: chartData.pending
+            },
+            {
+                name: 'Assigned',
+                data: chartData.assigned
+            }
+        ],
+        chart: {
+            height: 183,
+            type: 'bar',
+            toolbar: { show: false },
+            sparkline: { enabled: true }
+        },
+        plotOptions: {
+            bar: {
+                columnWidth: '30%',
+                distributed: false,
+                borderRadius: 5
+            }
+        },
+        colors: ['#1f77b4', '#ff7f0e', '#2ca02c'], // Colors for Completed, Pending, and Assigned
+        dataLabels: { enabled: false },
+        legend: { show: true },
+        grid: {
+            xaxis: { lines: { show: false } },
+            yaxis: { lines: { show: false } }
+        },
+        xaxis: {
+            categories: chartData.dates,
+            labels: {
+                minHeight: 20,
+                maxHeight: 20,
+                style: { fontSize: '12px' }
+            }
+        },
+        yaxis: {
+            labels: {
+                offsetY: 0,
+                minWidth: 10,
+                maxWidth: 10
+            }
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#chart-apex-column-02"), options);
+    chart.render();
+}
 }
 
 // Initialize the chart when the document is ready
