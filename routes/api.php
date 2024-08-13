@@ -32,5 +32,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('updatebatchdetail', [AuthController::class, 'updateBatchDetail']); 
     Route::post('getbatchdetails', [AuthController::class, 'getBatchDetails']);   
     Route::post('driverprofile', [AuthController::class, 'DriversProfile']);  
-    
+    Route::post('driversleaderboard', [AuthController::class, 'driversLeaderBoard']);
 });

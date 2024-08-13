@@ -648,4 +648,92 @@ class AuthController extends Controller
             'profile' => $driver
         ], 200); // Return a 200 OK status code
     }
+
+    public function driversLeaderBoard(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'driver_id' => 'required|string', 
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        $loggedInDriverId = $request->input('driver_id');
+
+        // Retrieve the logged-in driver and associated company_id
+        $loggedInDriver = Driver::find($loggedInDriverId);
+
+        if (!$loggedInDriver) {
+            return response()->json(['error' => 'Driver not found.'], 404);
+        }
+
+        $companyId = $loggedInDriver->company_id;
+
+        // Get the list of other drivers excluding the logged-in driver
+        $otherDrivers = Driver::where('id', '!=', $loggedInDriverId)->pluck('id');
+
+            // Get the list of other drivers in the same company, excluding the logged-in driver
+        $otherDrivers = Driver::where('company_id', $companyId)
+                ->where('id', '!=', $loggedInDriverId)
+                ->pluck('id');
+         
+        // Get status counts for other drivers
+        $otherDriversStatusCounts = DB::table('batch_details')
+        ->select('assignedto', DB::raw('COUNT(*) as assigned_count'), DB::raw('SUM(CASE WHEN batch_details.status = "Pending" THEN 1 ELSE 0 END) as pending_count'), DB::raw('SUM(CASE WHEN batch_details.status = "Completed" THEN 1 ELSE 0 END) as completed_count'))
+        ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+        ->whereIn('assignedto', $otherDrivers)
+        ->where('batches.company_id', $companyId) // Filter by company_id
+        ->groupBy('assignedto')
+        ->get()
+            ->keyBy('assignedto');
+
+        // Format the status counts for each other driver
+        $otherDriversStatus = Driver::whereIn('id', $otherDrivers)->get()->map(function ($driver) use ($otherDriversStatusCounts) {
+            $statusCounts = $otherDriversStatusCounts->get($driver->id, collect([
+                'assigned_count' => 0,
+                'pending_count' => 0,
+                'completed_count' => 0,
+            ]));
+
+            return [
+                'driver_id' => $driver->id,
+                'driver_name' => $driver->name,
+                'status_counts' => [
+                    'pending' => $statusCounts->pending_count ?? 0,
+                    'assigned' => $statusCounts->assigned_count ?? 0,
+                    'completed' => $statusCounts->completed_count ?? 0,
+                ],
+            ];
+        });
+
+        // Get status counts for the logged-in driver
+        $loggedInDriverStatusCounts = DB::table('batch_details')
+            ->select(DB::raw('COUNT(*) as assigned_count'), DB::raw('SUM(CASE WHEN batch_details.status = "Pending" THEN 1 ELSE 0 END) as pending_count'), DB::raw('SUM(CASE WHEN batch_details.status = "Completed" THEN 1 ELSE 0 END) as completed_count'))
+            ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+            ->where('assignedto', $loggedInDriverId)
+            ->where('batches.company_id', $companyId) // Filter by company_id
+            ->first();
+
+        // Format the logged-in driver status counts
+        $loggedInDriverStatus = [
+            'driver_id' => $loggedInDriverId,
+            'driver_name' => $loggedInDriver->name,
+            'status_counts' => [
+                'pending' => $loggedInDriverStatusCounts->pending_count ?? 0,
+                'assigned' => $loggedInDriverStatusCounts->assigned_count ?? 0,
+                'completed' => $loggedInDriverStatusCounts->completed_count ?? 0,
+            ],
+        ];
+
+        // Return the response as JSON
+        return response()->json([
+            'status' => 'success',
+            'requested_driver' => $loggedInDriverStatus,
+            'other_drivers' => $otherDriversStatus,
+        ], 200);
+    }
 }
