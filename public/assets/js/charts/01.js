@@ -678,10 +678,11 @@
         //     { lat: 5.4112, lng: 100.3354, popup: "Penang" },
         //     { lat: 1.4927, lng: 103.7414, popup: "Johor Bahru" }
         // ];
+        console.log(drivers);
         drivers.forEach(driver => {
           if (driver.latitude && driver.longitude) {
            const marker = L.marker([driver.latitude, driver.longitude]).addTo(map);
-           marker.bindPopup(driver.name);
+           marker.bindPopup(driver.name.charAt(0).toUpperCase() + driver.name.slice(1));
           }
          });
         

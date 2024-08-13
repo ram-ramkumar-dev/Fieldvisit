@@ -165,6 +165,8 @@ class UserController extends Controller
           // Query for 'visit' counts from 'survey' by month
           $visitCounts = DB::table('surveys')
               ->select(DB::raw('MONTHNAME(visitdate) as month'), DB::raw('COUNT(*) as count'))
+              ->join('batches', 'surveys.batch_id', '=', 'batches.id')
+              ->where('batches.company_id', $companyId) 
               ->whereIn(DB::raw('MONTHNAME(visitdate)'), $months)
               ->groupBy(DB::raw('MONTH(visitdate)'), DB::raw('MONTHNAME(visitdate)'))
               ->orderBy(DB::raw('MONTH(visitdate)'))
@@ -226,6 +228,8 @@ class UserController extends Controller
             $assignedCount = $assignedData->count();
             $lastFourDaysData['assigned'][] = $assignedCount; 
         }
+dd($data);
+
         $data['lastFourDaysData'] = $lastFourDaysData; 
         return view('dashboard', $data);
     }

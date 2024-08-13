@@ -435,6 +435,7 @@ class AuthController extends Controller
             'batch_id' => 'required|exists:batches,id',
             'batch_detail_id' => 'required|exists:batch_details,id',
             'user_id' => 'required', 
+            'photo1' => 'required',
         ]);
  
         if ($validator->fails()) {
@@ -456,6 +457,9 @@ class AuthController extends Controller
             $survey->batch_detail_id = $request->batch_detail_id; 
             $survey->user_id = $request->user_id;
         } 
+        
+        $convertedDate = Carbon::createFromFormat('d/m/y', $request->visitdate)->format('Y-m-d');
+
         $survey->has_water_meter = $request->has_water_meter;
         $survey->water_meter_no = $request->water_meter_no;
         $survey->has_water_bill = $request->has_water_bill;
@@ -472,7 +476,7 @@ class AuthController extends Controller
         $survey->property_code = $request->property_code;
         $survey->occupancy = $request->occupancy; 
         $survey->remark = $request->remark;
-        $survey->visitdate = $request->visitdate;
+        $survey->visitdate = $convertedDate;
         $survey->visittime = $request->visittime;  
         // Save other survey fields here
 
