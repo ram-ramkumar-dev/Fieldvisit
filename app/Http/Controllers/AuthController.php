@@ -68,6 +68,15 @@ class AuthController extends Controller
         if (!$driver || !Hash::check($request->password, $driver->password)) {
             return response()->json(['status' => 'error', 'message' => 'Invalid credentials'], 401);
         }
+
+        // Check if the driver is already logged in on another device
+        if ($driver->tokens()->count() > 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are already logged in on another device. Please log out from the other device first.',
+            ], 403);
+        }
+
         // Update the device token
         $driver->devicetoken = $request->devicetoken;
         $driver->save();
