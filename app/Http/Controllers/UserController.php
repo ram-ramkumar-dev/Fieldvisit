@@ -227,9 +227,7 @@ class UserController extends Controller
 
             $assignedCount = $assignedData->count();
             $lastFourDaysData['assigned'][] = $assignedCount; 
-        }
-dd($data);
-
+        } 
         $data['lastFourDaysData'] = $lastFourDaysData; 
         return view('dashboard', $data);
     }
