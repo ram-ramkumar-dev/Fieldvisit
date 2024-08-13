@@ -157,7 +157,7 @@ class UserController extends Controller
               ->where('batches.company_id', $companyId) 
               ->whereIn(DB::raw('MONTHNAME(assignedon)'), $months)
               ->where('batch_details.status', 'Completed') // Assuming there's a 'status' column with 'completed' status
-              ->groupBy(DB::raw('MONTHNAME(assignedon)'))
+              ->groupBy(DB::raw('MONTH(assignedon)'), DB::raw('MONTHNAME(assignedon)'))
               ->orderBy(DB::raw('MONTH(assignedon)'))
               ->pluck('count', 'month')
               ->toArray(); 
@@ -166,7 +166,7 @@ class UserController extends Controller
           $visitCounts = DB::table('surveys')
               ->select(DB::raw('MONTHNAME(visitdate) as month'), DB::raw('COUNT(*) as count'))
               ->whereIn(DB::raw('MONTHNAME(visitdate)'), $months)
-              ->groupBy(DB::raw('MONTHNAME(visitdate)'))
+              ->groupBy(DB::raw('MONTH(visitdate)'), DB::raw('MONTHNAME(visitdate)'))
               ->orderBy(DB::raw('MONTH(visitdate)'))
               ->pluck('count', 'month')
               ->toArray();
