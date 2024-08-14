@@ -22,6 +22,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('login', [AuthController::class, 'login']); 
 Route::get('getdropdowns', [AuthController::class, 'getDropDowns']);  
+Route::post('forgotpassword', [AuthController::class, 'forgotPassword']);
+Route::post('verifyresetcode', [AuthController::class, 'verifyResetCode']);
+Route::post('resetpassword', [AuthController::class, 'resetPassword']);
+
 //Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
@@ -34,7 +38,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('driverprofile', [AuthController::class, 'DriversProfile']);  
     Route::post('driversleaderboard', [AuthController::class, 'driversLeaderBoard']);
     Route::post('changepassword', [AuthController::class, 'changePassword']); 
-    Route::post('forgotpassword', [AuthController::class, 'forgotPassword']);
-    Route::post('verifyresetcode', [AuthController::class, 'verifyResetCode']);
-    Route::post('resetpassword', [AuthController::class, 'resetPassword']);
 });
