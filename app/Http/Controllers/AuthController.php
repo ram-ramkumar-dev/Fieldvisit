@@ -791,7 +791,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $driver = Driver::where('phone_number', $request->mobile_number)->first();
+        $driver = Driver::where('phone_number', $request->phone_number)->first();
     
         if (!$driver) {
             return response()->json(['status' => 'error', 'message' => 'Mobile number not found'], 404);
@@ -807,7 +807,7 @@ class AuthController extends Controller
         );
     
         // Send the code via SMS (use an SMS gateway API like Twilio)
-        // Example: SMS::send($request->mobile_number, "Your password reset code is $code");
+        // Example: SMS::send($request->phone_number, "Your password reset code is $code");
     
         return response()->json(['status' => 'success','message' => 'Password reset code sent successfully'], 200);
     }
@@ -854,7 +854,7 @@ class AuthController extends Controller
             ], 422);
         }
         $record = DB::table('password_resets')
-                    ->where('phone_number', $request->mobile_number)
+                    ->where('phone_number', $request->phone_number)
                     ->where('token', $request->reset_code)
                     ->first();
 
