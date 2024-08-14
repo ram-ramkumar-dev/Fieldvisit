@@ -33,4 +33,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('getbatchdetails', [AuthController::class, 'getBatchDetails']);   
     Route::post('driverprofile', [AuthController::class, 'DriversProfile']);  
     Route::post('driversleaderboard', [AuthController::class, 'driversLeaderBoard']);
+    Route::post('changepassword', [AuthController::class, 'changePassword']); 
+    Route::post('forgotpassword', [AuthController::class, 'forgotPassword']);
+    Route::post('verifyresetcode', [AuthController::class, 'verifyResetCode']);
+    Route::post('resetpassword', [AuthController::class, 'resetPassword']);
 });

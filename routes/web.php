@@ -23,7 +23,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [UserController::class, 'home'])->name('home');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard'); 
+    Route::get('profile', [UserController::class, 'profile'])->name('profile');
     //Route::get('/users', [UserController::class, 'users'])->name('users');
     //Route::get('/clients', [UserController::class, 'clients'])->name('clients');
     Route::get('password', [UserController::class, 'password'])->name('password');

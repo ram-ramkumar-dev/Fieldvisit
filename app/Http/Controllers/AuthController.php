@@ -749,4 +749,130 @@ class AuthController extends Controller
             'other_drivers' => $otherDriversStatus,
         ], 200);
     }
+
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'driver_id' => 'required|integer',
+            'old_password' => 'required|string',
+            'new_password' => 'required|string|min:6',
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        $driver = Driver::find($request->driver_id);
+    
+        if (!$driver || !Hash::check($request->old_password, $driver->password)) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid credentials'], 401);
+        }
+    
+        $driver->password = Hash::make($request->new_password);
+        $driver->save();
+    
+        return response()->json(['status' => 'success','message' => 'Password changed successfully'], 200);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone_number' => 'required|string|min:10|max:15',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $driver = Driver::where('phone_number', $request->mobile_number)->first();
+    
+        if (!$driver) {
+            return response()->json(['status' => 'error', 'message' => 'Mobile number not found'], 404);
+        }
+    
+        // Generate a 4-digit random code
+        $code = rand(1000, 9999);
+    
+        // Store the code in the database (e.g., in a `password_resets` table or in the `drivers` table)
+        DB::table('password_resets')->updateOrInsert(
+            ['phone_number' => $request->phone_number],
+            ['token' => $code, 'created_at' => now()]
+        );
+    
+        // Send the code via SMS (use an SMS gateway API like Twilio)
+        // Example: SMS::send($request->mobile_number, "Your password reset code is $code");
+    
+        return response()->json(['status' => 'success','message' => 'Password reset code sent successfully'], 200);
+    }
+
+    public function verifyResetCode(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone_number' => 'required|string|min:10|max:15',
+            'reset_code' => 'required|string|size:4',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        $record = DB::table('password_resets')
+                    ->where('phone_number', $request->phone_number)
+                    ->where('token', $request->reset_code)
+                    ->first();
+    
+        if (!$record || Carbon::parse($record->created_at)->addMinutes(15)->isPast()) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid or expired reset code'], 400);
+        }
+    
+        return response()->json(['status' => 'success', 'message' => 'Reset code verified successfully'], 200);
+    }
+     
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone_number' => 'required|string|min:10|max:15',
+            'reset_code' => 'required|string|size:4',
+            'new_password' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        $record = DB::table('password_resets')
+                    ->where('phone_number', $request->mobile_number)
+                    ->where('token', $request->reset_code)
+                    ->first();
+
+        if (!$record || Carbon::parse($record->created_at)->addMinutes(15)->isPast()) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid or expired reset code'], 400);
+        }
+
+        $driver = Driver::where('phone_number', $request->phone_number)->first();
+        $driver->password = Hash::make($request->new_password);
+        $driver->save();
+
+        // Optionally, delete the reset record
+        DB::table('password_resets')->where('phone_number', $request->phone_number)->delete();
+
+        return response()->json(['status' => 'success','message' => 'Password reset successfully'], 200);
+    }
+
+
+
+
 }

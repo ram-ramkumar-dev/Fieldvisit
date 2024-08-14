@@ -147,7 +147,33 @@
             <td>{{ $batch->address }}</td>             
             <td>{{ $batch->district_la }}</td>             
             <td>{{ $batch->taman_mmid }}</td> 
-            <td>{{ $batch->status }}</td> 
+            <td> 
+            @php 
+                if ($batch->status == 'New'){ @endphp
+                    <p class="mb-0 text-primary font-weight-bold d-flex justify-content-start align-items-center">
+                <small><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">                                                
+                <circle cx="12" cy="12" r="8" fill="#3378ff"></circle></svg>
+                </small>New</p>
+            @php }else if ($batch->status == 'Completed'){ @endphp
+                <p class="mb-0 text-success font-weight-bold d-flex justify-content-start align-items-center">
+                <small><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">                                                
+                <circle cx="12" cy="12" r="8" fill="#3cb72c"></circle></svg>
+                </small>Completed
+            </p>
+            @php }else if ($batch->status == 'Pending'){ @endphp
+                <p class="mb-0 text-warning font-weight-bold d-flex justify-content-start align-items-center">
+                <small><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">                                                
+                <circle cx="12" cy="12" r="8" fill="#db7e06"></circle></svg>
+                </small>Pending
+            </p>
+            @php }else if ($batch->status == 'Aborted'){ @endphp
+                <p class="mb-0 text-danger font-weight-bold d-flex justify-content-start align-items-center">
+                <small><svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">                                                
+                <circle cx="12" cy="12" r="8" fill="#F42B3D"></circle></svg>
+                </small>Aborted
+            </p>
+           @php } @endphp
+            </td> 
             <td>{{ ucfirst($batch->getDriverName()) ?: '-' }}
             </td>  
         </tr>

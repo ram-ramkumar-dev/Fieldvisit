@@ -83,17 +83,28 @@ class UserController extends Controller
         }
         // Query to get the assigned count for each driver
         $assignedCounts = BatchDetail::select('assignedto', DB::raw('COUNT(*) as assigned_count'))
-        ->whereIn('assignedto', $data['users']->pluck('id'))
-        ->whereNotNull('assignedto') // Make sure the 'assignedto' column is not null
-        ->groupBy('assignedto')
-        ->get();
+                        ->whereIn('assignedto', $data['users']->pluck('id'))
+                        ->whereNotNull('assignedto') // Make sure the 'assignedto' column is not null
+                        ->groupBy('assignedto')
+                        ->get();
         // Populate the assigned counts
         foreach ($assignedCounts as $assigned) {
             $statusCountsByDriver[$assigned->assignedto]['assigned'] = $assigned->assigned_count;
         }
+        // Calculate the score for each driver (completed / assigned * 100)
+        foreach ($statusCountsByDriver as $driverId => $counts) {
+            $assigned = $counts['assigned'] ?? 0;
+            $completed = $counts['completed'] ?? 0;
 
+            // Avoid division by zero
+            if ($assigned > 0) {
+                $statusCountsByDriver[$driverId]['score'] = ($completed / $assigned) * 100;
+            } else {
+                $statusCountsByDriver[$driverId]['score'] = 0;
+            }
+        }
         // Sort the list by completed surveys in descending order
-        $list = collect($statusCountsByDriver)->sortByDesc('completed')->values()->all();
+        $list = collect($statusCountsByDriver)->sortByDesc('score')->values()->all();
         
         // Extract the top agent using array_shift
         $topAgent = array_shift($list);
@@ -329,6 +340,28 @@ class UserController extends Controller
         $user->save();
         $request->session()->regenerate();
         return back()->with('success', 'Password changed!');
+    }
+
+    public function profile(){
+        $user_type = Session::get('user_type'); 
+        $user_id = Session::get('user_id');
+        $data['page'] = 'profile';
+        if($user_type == 'user'){
+            //$data['user'] = User::find($user_id)->first();
+            $data['user'] = DB::table('users')
+                ->join('companies', 'users.company_id', '=', 'companies.id')  
+                ->where('users.id', $user_id) 
+                ->first();
+        }else{
+            //$data['user'] = Driver::find($user_id)->first();
+            $data['user'] = DB::table('drivers')
+                ->join('companies', 'drivers.company_id', '=', 'companies.id') 
+                ->where('drivers.id', $user_id) 
+                ->first();
+        }
+         
+        return view('user/profile', $data);
+
     }
 
     public function logout(Request $request)

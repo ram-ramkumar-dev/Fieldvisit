@@ -5,6 +5,30 @@
    p.text-secondary, h5.font-weight-bold{
       color:white !important;
    }
+   .table-container {
+    overflow: auto; /* Enables both horizontal and vertical scrolling */
+    max-height: 310px; /* Set a maximum height for vertical scrolling */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead th {
+    background-color: #f4f4f4;
+    text-align: left;
+}
+
+tbody td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+table th, table td {
+    white-space: nowrap; /* Prevents text from wrapping */
+}
+
    </style>
 <div class="container-fluid">
    <div class="row">
@@ -263,7 +287,127 @@
             </div>
          </div>
       </div>
+      <div class="col-lg-4 col-md-12">
+       <div class="leaderboard">
+         <div class="leaderboard-header">
+            <h4>Leaderboard</h4>
+            <div class="driver-profile">
+                  <img src="{{ asset('assets/images/user/1.jpg') }}" alt="Driver Avatar">
+                  <div class="driver-info">
+                     <h5>{{ ucfirst($topAgent['driver_name']) }}</h5>
+                     
+                     <div class="progress-bar">
+                        <div class="progress" style="width: 100%;"></div>
+                     </div>
+                     
+                     <span class="progress-count">{{ $topAgent['completed'] }}/{{ $totalSurveys }}</span>
+                  </div>
+            </div>
+         </div>  
+         <div class="leaderboard-body">
+         <div class="table-container">
+            <table>
+                  <thead>
+                     <tr>
+                        <th>No</th>
+                        <th>Score</th>
+                        <th>Full Name</th>
+                        <th>Assign</th>
+                        <th>Completed</th>
+                        <th>Pending</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                        @foreach ($list as $k => $l)  
+                     <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ number_format($l['score'], 0) }}%</td> <!-- Display the score -->
+                        <td>{{ ucfirst($l['driver_name']) }}</td>
+                        <td>{{ $l['assigned'] }}</td>
+                        <td>{{ $l['completed'] }}</td>
+                        <td>{{ $l['pending'] }}</td>
+                     </tr>
+                     @endforeach
+                  </tbody>
+            </table>
+            </div>
+         </div>
+        </div>
+         
+      </div>
       <div class="col-lg-4 col-md-6">
+         <div class="card">
+           
+            <div class="card-header d-flex justify-content-between">
+               <div class="header-title">
+                  <h4 class="card-title">Batch Progress</h4>
+               </div>
+               <div class="card-header-toolbar d-flex align-items-center">                  
+                  <div class="dropdown">
+                        <a href="#" class="text-muted pl-3" id="dropdownMenuButton-event" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" xmlns:xlink="http://www.w3.org/1999/xlink" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
+                              <g fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                 <circle cx="12" cy="12" r="1"/>
+                                 <circle cx="19" cy="12" r="1"/>
+                                 <circle cx="5" cy="12" r="1"/></g>
+                           </svg>
+                        </a>
+                        <div class="dropdown-menu" id="batchDropdownMenu" aria-labelledby="dropdownMenuButton-event">
+                           @foreach ($counts as $k => $batch) 
+                              <div class="dropdown-item" onclick="fetchDataAndUpdateChart({{ $batch->id }})">
+                                 {{  ucfirst($batch->batch_no) }}
+                              </div>
+                           @endforeach
+                           
+                        </div>
+                     </div>
+               </div>
+            </div>
+            <div class="card-body"> 
+               <div id="chart-apex-column-03" class="custom-chart"></div>
+               <div class="d-flex justify-content-around align-items-center">
+                  <div><svg width="24" height="24" viewBox="0 0 24 24" fill="#ffbb33" xmlns="../../../../www.w3.org/2000/svg.html">
+                        <rect x="3" y="3" width="18" height="18" rx="2" fill="#ffbb33" />
+                        </svg>
+                        
+                        <span>Progress</span>
+                  </div>
+                  <div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#e60000" xmlns="../../../../www.w3.org/2000/svg.html">
+                        <rect x="3" y="3" width="18" height="18" rx="2" fill="#e60000" />
+                        </svg>
+                        
+                        <span>Aborted</span>
+                  </div>
+               </div>
+               <div class="d-flex justify-content-around align-items-center mt-3">
+                  <div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="primary" xmlns="../../../../www.w3.org/2000/svg.html">
+                        <rect x="3" y="3" width="18" height="18" rx="2" fill="#04237D" />
+                        </svg>
+                        
+                        <span>Assigned</span>
+                  </div>
+                  <div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="primary" xmlns="../../../../www.w3.org/2000/svg.html">
+                        <rect x="3" y="3" width="18" height="18" rx="2" fill="#8080ff" />
+                        </svg>
+                        
+                        <span>Completed</span>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="col-lg-12 col-md-12">
+         <div class="card">
+            <div class="card-body"> 
+               <div id="chart-map-column-04" class="custom-chart"></div>
+            </div>
+         </div>
+      </div>
+      
+      <div class="col-lg-4 col-md-6"  style="display:none;">
          <div class="card card-block card-stretch card-height">
             <div class="card-header d-flex justify-content-between">
                <div class="header-title">
@@ -376,126 +520,6 @@
                   </div>
             </div>
          </div>
-      </div>
-      <div class="col-lg-4 col-md-6">
-         <div class="card">
-           
-            <div class="card-header d-flex justify-content-between">
-               <div class="header-title">
-                  <h4 class="card-title">Batch Progress</h4>
-               </div>
-               <div class="card-header-toolbar d-flex align-items-center">                  
-                  <div class="dropdown">
-                        <a href="#" class="text-muted pl-3" id="dropdownMenuButton-event" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" xmlns:xlink="http://www.w3.org/1999/xlink" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
-                              <g fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                 <circle cx="12" cy="12" r="1"/>
-                                 <circle cx="19" cy="12" r="1"/>
-                                 <circle cx="5" cy="12" r="1"/></g>
-                           </svg>
-                        </a>
-                        <div class="dropdown-menu" id="batchDropdownMenu" aria-labelledby="dropdownMenuButton-event">
-                           @foreach ($counts as $k => $batch) 
-                              <div class="dropdown-item" onclick="fetchDataAndUpdateChart({{ $batch->id }})">
-                                 {{  ucfirst($batch->batch_no) }}
-                              </div>
-                           @endforeach
-                           
-                        </div>
-                     </div>
-               </div>
-            </div>
-            <div class="card-body"> 
-               <div id="chart-apex-column-03" class="custom-chart"></div>
-               <div class="d-flex justify-content-around align-items-center">
-                  <div><svg width="24" height="24" viewBox="0 0 24 24" fill="#ffbb33" xmlns="../../../../www.w3.org/2000/svg.html">
-                        <rect x="3" y="3" width="18" height="18" rx="2" fill="#ffbb33" />
-                        </svg>
-                        
-                        <span>Progress</span>
-                  </div>
-                  <div>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#e60000" xmlns="../../../../www.w3.org/2000/svg.html">
-                        <rect x="3" y="3" width="18" height="18" rx="2" fill="#e60000" />
-                        </svg>
-                        
-                        <span>Aborted</span>
-                  </div>
-               </div>
-               <div class="d-flex justify-content-around align-items-center mt-3">
-                  <div>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="primary" xmlns="../../../../www.w3.org/2000/svg.html">
-                        <rect x="3" y="3" width="18" height="18" rx="2" fill="#04237D" />
-                        </svg>
-                        
-                        <span>Assigned</span>
-                  </div>
-                  <div>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="primary" xmlns="../../../../www.w3.org/2000/svg.html">
-                        <rect x="3" y="3" width="18" height="18" rx="2" fill="#8080ff" />
-                        </svg>
-                        
-                        <span>Completed</span>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-      <div class="col-lg-6 col-md-12">
-         <div class="card">
-            <div class="card-body"> 
-               <div id="chart-map-column-04" class="custom-chart"></div>
-            </div>
-         </div>
-      </div>
-      <div class="col-lg-6 col-md-12">
-      <div class="leaderboard">
-     <div class="leaderboard-header">
-        <h4>Leaderboard</h4>
-        <div class="driver-profile">
-            <img src="{{ asset('assets/images/user/1.jpg') }}" alt="Driver Avatar">
-            <div class="driver-info">
-                 <h5>{{ ucfirst($topAgent['driver_name']) }}</h5>
-                 
-                <div class="progress-bar">
-                    <div class="progress" style="width: 100%;"></div>
-                </div>
-                
-                <span class="progress-count">{{ $topAgent['completed'] }}/{{ $totalSurveys }}</span>
-            </div>
-        </div>
-    </div>  
-    <div class="leaderboard-body">
-        <table>
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Score</th>
-                    <th>Full Name</th>
-                    <th>Assign</th>
-                    <th>Completed</th>
-                    <th>Pending</th>
-                </tr>
-            </thead>
-            <tbody>
-                  @foreach ($list as $k => $l) 
-                  @php  
-                   $completion_percentage = $l['assigned'] > 0 ? ($l['completed'] / $l['assigned']) * 100 : 0;
-                  @endphp
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $completion_percentage }}%</td>
-                    <td>{{ ucfirst($l['driver_name']) }}</td>
-                    <td>{{ $l['assigned'] }}</td>
-                    <td>{{ $l['completed'] }}</td>
-                    <td>{{ $l['pending'] }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
-         
       </div>
       
 </div>

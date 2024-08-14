@@ -227,50 +227,41 @@ class ReportsController extends Controller
         $batches = Batches::where('company_id', $companyId)->get();
        // $statuses = DB::table('account_statuses')->get();
        $columnDisplayNames = [
-        'batch_no' => 'File Name',
-        'id' => 'ID',
-        'account_no' => 'Account No',
-        'name' => 'Owner Name',
-        'address' => 'Property Address',
-        'batchfile_latitude' => 'Latitude',
-        'batchfile_longitude' => 'Longitude',
-        'district_la' => 'LA (District)',
-        'taman_mmid' => 'MMID (Area)',
-        'amount' => 'Balance',
-        'occupancy' => 'Occupancy',
-        'has_water_meter' => 'Has Water Meter',
-        'water_meter_no' => 'Water Meter No',
-        'has_water_bill' => 'Has Water Bill',
-        'water_bill_no' => 'Water Bill No',
-        'is_correct_address' => 'Is Correct Address',
-        'correct_address' => 'Correct Address',
-        'ownership' => 'Ownership',
-        'contact_person_name' => 'Contact Person Name',
-        'contact_number' => 'Contact Number',
-        'email' => 'Email',
-        'nature_of_business_code' => 'Nature of Business Code',
-        'shop_name' => 'Shop Name',
-        'dr_code' => 'DR Code',
-        'property_code' => 'Property Code',
-        'remark' => 'Remark',
-        'assignedto' => 'Field Officer',
-        'assignedon' => 'Assigned Date',
-        'visitdate' => 'Visit Date',
-        'visittime' => 'Visit Time',
-        'photos' => 'Photos'
-    ];
-       $allColumns = [
-        'batch_no', 'id', 'account_no', 'name', 'address',
-        'latitude', 'longitude', 'district_la', 'taman_mmid', 'amount',
-        'occupancy', 'has_water_meter', 'water_meter_no', 'has_water_bill',
-        'water_bill_no', 'is_correct_address', 'correct_address', 'ownership',
-        'contact_person_name', 'contact_number', 'email', 'nature_of_business_code',
-        'shop_name', 'dr_code', 'property_code', 'remark', 'assignedto',
-        'assignedon', 'visitdate', 'visittime', 'photo1', 'photo2', 'photo3', 'photo4', 'photo5'
+            'batch_no' => 'File Name',
+            'id' => 'ID',
+            'account_no' => 'Account No',
+            'name' => 'Owner Name',
+            'address' => 'Property Address',
+            'batchfile_latitude' => 'Latitude',
+            'batchfile_longitude' => 'Longitude',
+            'district_la' => 'LA (District)',
+            'taman_mmid' => 'MMID (Area)',
+            'amount' => 'Balance',
+            'occupancy' => 'Occupancy',
+            'has_water_meter' => 'Has Water Meter',
+            'water_meter_no' => 'Water Meter No',
+            'has_water_bill' => 'Has Water Bill',
+            'water_bill_no' => 'Water Bill No',
+            'is_correct_address' => 'Is Correct Address',
+            'correct_address' => 'Correct Address',
+            'ownership' => 'Ownership',
+            'contact_person_name' => 'Contact Person Name',
+            'contact_number' => 'Contact Number',
+            'email' => 'Email',
+            'nature_of_business_code' => 'Nature of Business Code',
+            'shop_name' => 'Shop Name',
+            'dr_code' => 'DR Code',
+            'property_code' => 'Property Code',
+            'remark' => 'Remark',
+            'assignedto' => 'Field Officer',
+            'assignedon' => 'Assigned Date',
+            'visitdate' => 'Visit Date',
+            'visittime' => 'Visit Time',
+            'photos' => 'Photos'
         ];
-        $columns = array();
-        $requestbatches = '';
-        return view('reports.survey', compact('page','batches','columns','requestbatches','columnDisplayNames'));
+        
+        $columns = array(); 
+        return view('reports.survey', compact('page','batches','columns', 'columnDisplayNames'));
     }
 
     public function generateReport(Request $request)
@@ -278,9 +269,13 @@ class ReportsController extends Controller
         $action = $request->input('action');
         $page = "surveyresult";
         $requestbatches = $request->input('batches');
-        $statuses = $request->input('statuses');
-        $columns = $request->input('columns', []);
+        $status = $request->input('status');
+        $columns = $request->input('columns', []); 
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
         $companyId = Session::get('company_id');  
+
         $columnDisplayNames = [
             'batch_no' => 'File Name',
             'id' => 'ID',
@@ -318,6 +313,7 @@ class ReportsController extends Controller
             'photo4' => 'Photo 4',
             'photo5' => 'Photo 5'
         ];
+       
 
         if (in_array('all', $columns)) {
             $columns = [
@@ -334,20 +330,28 @@ class ReportsController extends Controller
                 $columns = array_merge($columns, ['photo1', 'photo2', 'photo3', 'photo4', 'photo5']);
                 $columns = array_diff($columns, ['photos']);
             }
-        }
-
+        }   
         // Start building the query
-        $query = DB::table('surveys')
-            ->join('batches', 'surveys.batch_id', '=', 'batches.id')
-            ->join('batch_details', 'surveys.batch_detail_id', '=', 'batch_details.id')
-            ->join('drivers', 'drivers.id', '=', 'batch_details.assignedto')
+        $query = DB::table('batch_details')
+            ->join('batches', 'batch_details.batch_id', '=', 'batches.id','left')
+            ->join('surveys', 'batch_details.id', '=', 'surveys.batch_detail_id','left')
+            ->join('drivers', 'drivers.id', '=', 'batch_details.assignedto','left')
             ->select('surveys.*', 'batches.batch_no', 'batch_details.*', 'drivers.username as assignedto')
             ->where('batches.company_id', $companyId);
 
         if (!empty($requestbatches)) {
-            $query->where('surveys.batch_id', $requestbatches);
+            $query->where('batch_details.batch_id', $requestbatches);
         }
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('surveys.visitdate', [$startDate, $endDate]);
+        } 
         
+        if (!empty($status)) {
+            if($status != 'All'){
+                $query->where('batch_details.status', $status);
+            } 
+        }  
         $data = $query->get();
          
         if ($action === 'export') {
@@ -359,6 +363,8 @@ class ReportsController extends Controller
             $col = 1;
             foreach ($columns as $column) {
                 $sheet->setCellValueByColumnAndRow($col, 1, $columnDisplayNames[$column] ?? $column);
+                // Set column width for headers
+                $sheet->getColumnDimensionByColumn($col)->setAutoSize(true);
                 $col++;
             }
 
@@ -375,10 +381,18 @@ class ReportsController extends Controller
                             $drawing->setName($column)
                                     ->setDescription($column)
                                     ->setPath(public_path($value)) // Path to the image
-                                    ->setCoordinates($this->getExcelCellCoordinate($col, $row)) // Convert column and row to Excel cell reference
-                                    ->setWidth(100) // Set the width of the image
-                                    ->setHeight(100); // Set the height of the image
+                                    ->setCoordinates($this->getExcelCellCoordinate($col, $row)) // Convert column and row to Excel cell reference 
+                                    ->setHeight(120); // Set the height of the image
+                         
+                            // Adjust row height to fit the image in portrait mode
+                            $sheet->getRowDimension($row)->setRowHeight(150);
+
+                            // Optionally, adjust the column width as well
+                            $sheet->getColumnDimensionByColumn($col)->setWidth(150);
                             $drawing->setWorksheet($sheet);
+                        } else {
+                            // Handle missing image case by optionally using a placeholder or leaving it blank
+                            $sheet->setCellValueByColumnAndRow($col, $row, '-'); // Optionally add a message
                         }
                     } else {
                         $sheet->setCellValueByColumnAndRow($col, $row, $value);
@@ -398,6 +412,7 @@ class ReportsController extends Controller
             return response()->download($filePath)->deleteFileAfterSend(true);
         } else {
             // Default behavior to generate report view
+            
             $batches = Batches::where('company_id', $companyId)->get();
             return view('reports.survey', [
                 'reportData' => $data->map(function ($item) use ($columns) {
@@ -408,9 +423,8 @@ class ReportsController extends Controller
                     return (object) $filteredItem;
                 }),
                 'page' => $page,
-                'batches' => $batches,
-                'requestbatches' => $requestbatches,
-                'statuses' => $statuses,
+                'batches' => $batches, 
+                'status' => $status,
                 'columns' => $columns,
                 'columnDisplayNames' => $columnDisplayNames,
             ]);
