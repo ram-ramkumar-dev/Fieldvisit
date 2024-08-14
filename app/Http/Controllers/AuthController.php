@@ -798,8 +798,8 @@ class AuthController extends Controller
         }
     
         // Generate a 4-digit random code
-        $code = rand(1000, 9999);
-    
+        // $code = rand(1000, 9999);
+        $code = '1234';
         // Store the code in the database (e.g., in a `password_resets` table or in the `drivers` table)
         DB::table('password_resets')->updateOrInsert(
             ['phone_number' => $request->phone_number],
