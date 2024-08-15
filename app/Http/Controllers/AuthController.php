@@ -69,12 +69,18 @@ class AuthController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Invalid credentials'], 401);
         }
 
-        // Check if the driver is already logged in on another device
-        if ($driver->tokens()->count() > 0) {
+         // Check if the driver is already logged in with a different device token
+        if ($driver->devicetoken && $driver->devicetoken !== $request->devicetoken) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'You are already logged in on another device. Please log out from the other device first.',
             ], 403);
+        }
+
+        // If the driver was logged in on the same device before but with a different token (e.g., after reinstallation)
+        if ($driver->tokens()->count() > 0) {
+            // Log out from the previous session
+            $driver->tokens()->delete();
         }
 
         // Update the device token
