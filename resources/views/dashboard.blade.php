@@ -15,8 +15,7 @@ table {
     border-collapse: collapse;
 }
 
-thead th {
-    background-color: #f4f4f4;
+thead th { 
     text-align: left;
 }
 
@@ -524,8 +523,7 @@ table th, table td {
       
 </div>
 <style>
-.leaderboard {
-    background-color: #f0f0f0;
+.leaderboard { 
     border-radius: 10px;
     padding: 20px; 
 }
@@ -587,18 +585,15 @@ th, td {
     padding: 10px;
 }
 
-thead {
-    background-color: #f7f7f7;
+thead { 
     font-weight: bold;
 }
 
-tbody tr {
-    background-color: #ffffff;
+tbody tr { 
     border-bottom: 1px solid #dddddd;
 }
 
-tbody tr:nth-child(even) {
-    background-color: #f7f7f7;
+tbody tr:nth-child(even) { 
 }
 
 tbody tr.green {

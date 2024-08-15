@@ -30,7 +30,7 @@
                     <option value="Aborted"  {{ request('status') == "Aborted" ? 'selected' : '' }}>Aborted</option>  
             </select>
         </div>
-        
+<!--         
         
         <div class="col-md-4 mb-3">
             <label class="form-label font-weight-bold text-muted text-uppercase" for="fr_la">LA (District)</label>
@@ -40,7 +40,7 @@
         <div class="col-md-4 mb-3">
             <label class="form-label font-weight-bold text-muted text-uppercase" for="fr_mmid">MMID (Area)</label>
             
-        </div>
+        </div> -->
 
         <div class="col-md-4 mb-3">
             <label class="form-label font-weight-bold text-muted text-uppercase" for="fr_city">City:</label>
