@@ -287,7 +287,7 @@ table th, table td {
          </div>
       </div>
       <div class="col-lg-4 col-md-12">
-       <div class="leaderboard">
+       <div class="card leaderboard">
          <div class="leaderboard-header">
             <h4>Leaderboard</h4>
             <div class="driver-profile">

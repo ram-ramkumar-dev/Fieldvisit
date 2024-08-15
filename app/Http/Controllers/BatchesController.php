@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage; 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Services\GeocodingService;
+use App\Services\FcmNotificationService;
 
 class BatchesController extends Controller
 {
@@ -139,7 +140,7 @@ class BatchesController extends Controller
     {
         $page = "ImportBatch"; 
         $companyId = Session::get('company_id');  
-        $batches = Batches::where('company_id', $companyId)
+        $batches = Batches::where(array('status'=>1, 'company_id' => $companyId))
                         ->orWhereNull('company_id')
                         ->withCount('batchDetails')
                         ->withCount(['batchDetails as completed_count' => function ($query) {
@@ -282,7 +283,7 @@ class BatchesController extends Controller
         $companyId = Session::get('company_id');  
         $drivers = Driver::where('company_id', $companyId)->get();
         // Fetch batches
-        $batches = Batches::where('company_id', $companyId)
+        $batches = Batches::where(array('status'=>1, 'company_id' => $companyId))
                         ->orWhereNull('company_id')
                         ->withCount('batchDetails')
                         ->with('client')
@@ -343,7 +344,7 @@ class BatchesController extends Controller
     {
         $page = "Assign"; 
         $companyId = Session::get('company_id');  
-        $batches = Batches::where('company_id', $companyId)
+        $batches = Batches::where(array('status'=>1, 'company_id' => $companyId))
                         ->orWhereNull('company_id')
                         ->withCount('batchDetails')
                         ->withCount(['batchDetails as pending_count' => function ($query) {
@@ -380,7 +381,15 @@ class BatchesController extends Controller
                         'assignedto' => $assignedTo,
                         'assignedon' => now()->format('Y-m-d'),
                     ]);
-                            // Redirect back with a success message
+
+        // Send notification to driver
+        $driver = Driver::find($assignedTo); // Assuming assignedTo is the driver's ID
+        $deviceToken = $driver->devicetoken; // Ensure this is the correct field name
+
+        $fcmService = new FcmNotificationService();
+        $fcmService->sendNotification($deviceToken, 'Batches Assigned', 'You have been assigned new batches.');
+
+        // Redirect back with a success message
         return redirect()->back()->with('success', 'Batches assigned to driver successfully.'); 
     }
 

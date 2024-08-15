@@ -37,7 +37,7 @@ class ReportsController extends Controller
                 'batches.batch_no',
                 DB::raw('count(case when batch_details.status = "Pending" then 1 end) as pending_count'),
                 DB::raw('count(case when batch_details.status = "Completed" then 1 end) as completed_count'),
-                DB::raw('count(case when batch_details.status = "Aborted" then 1 end) as aborted_count')
+                DB::raw('count(batch_details.assignedto) as assigned_count') // Count the number of times a driver is assigned
             )
             ->groupBy('drivers.id', 'drivers.name', 'batches.id', 'batches.batch_no')
             ->get();
@@ -52,7 +52,7 @@ class ReportsController extends Controller
                         'batch_no' => $detail->batch_no,
                         'pending_count' => $detail->pending_count,
                         'completed_count' => $detail->completed_count,
-                        'aborted_count' => $detail->aborted_count,
+                        'assigned_count' => $detail->assigned_count,
                     ];
                 }),
             ];
@@ -64,6 +64,7 @@ class ReportsController extends Controller
  
     public function exportAgentKpiReports($driverId, $startDate, $endDate)
     {
+            $companyId = Session::get('company_id');  
         // Query the BatchDetails with conditional driver filtering
             $query = DB::table('batch_details')
             ->join('drivers', 'batch_details.assignedto', '=', 'drivers.id')
@@ -77,7 +78,7 @@ class ReportsController extends Controller
                 'batches.batch_no',
                 DB::raw('count(case when batch_details.status = "Pending" then 1 end) as pending_count'),
                 DB::raw('count(case when batch_details.status = "Completed" then 1 end) as completed_count'),
-                DB::raw('count(case when batch_details.status = "Aborted" then 1 end) as aborted_count')
+                DB::raw('count(batch_details.assignedto) as assigned_count') // Count the number of times a driver is assigned
             )
             ->groupBy('drivers.id', 'drivers.name', 'batches.id', 'batches.batch_no');
             
@@ -97,7 +98,7 @@ class ReportsController extends Controller
                             'batch_no' => $detail->batch_no,
                             'pending_count' => $detail->pending_count,
                             'completed_count' => $detail->completed_count,
-                            'aborted_count' => $detail->aborted_count,
+                            'assigned_count' => $detail->assigned_count,
                         ];
                     }),
                 ];
@@ -125,13 +126,13 @@ class ReportsController extends Controller
                     $sheet->setCellValue('A' . $row, $no++);
                     $sheet->setCellValue('B' . $row, $driver['driver_name']);
                     $sheet->setCellValue('C' . $row, $batch['batch_no']);
-                    $sheet->setCellValue('D' . $row, $batch['pending_count']);
+                    $sheet->setCellValue('D' . $row, $batch['assigned_count']);
                     $sheet->setCellValue('E' . $row, $batch['completed_count']);
-                    $sheet->setCellValue('F' . $row, $batch['aborted_count']);
+                    $sheet->setCellValue('F' . $row, $batch['pending_count']);
                     
-                    $totalAssigned += $batch['pending_count'];
+                    $totalAssigned += $batch['assigned_count'];
                     $totalCompleted += $batch['completed_count'];
-                    $totalIncomplete += $batch['aborted_count']; 
+                    $totalIncomplete += $batch['pending_count']; 
                     $row++;
                 }
                 

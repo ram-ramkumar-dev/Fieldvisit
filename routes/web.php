@@ -69,5 +69,7 @@ Route::get('/batches/{batch}/assigncase', [BatchesController::class, 'AssignCase
 
 Route::post('/batches/assignbatchestodrivers', [BatchesController::class, 'assignBatchesToDrivers'])->name('batches.assignbatchestodrivers');
 
+Route::get('streetmap', [DriverController::class, 'streetmap'])->name('drivers/streetmap');
+
 
 

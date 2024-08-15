@@ -190,3 +190,16 @@ function fetchDataAndUpdateChart(batchId) {
     });
 
 } 
+
+function apexChartUpdate(chart, detail) {
+        let color = getComputedStyle(document.documentElement).getPropertyValue('--dark');
+        if (detail.dark) {
+          color = getComputedStyle(document.documentElement).getPropertyValue('--white');
+        }
+      
+        chart.updateOptions({
+          chart: {
+            foreColor: color
+          }
+        })
+    }

@@ -20,9 +20,9 @@ class DriverController extends Controller
     }
 
     public function create()
-    {
-        $loggedInId = Session::get('user_id'); 
-        $drivers = Driver::where('id', '!=', $loggedInId)->get();
+    {        
+        $companyId = Session::get('company_id'); 
+        $drivers = Driver::where('company_id', $companyId)->get();
         $page = "Drivers";
         return view('drivers.create', compact('drivers','page'));
     }
@@ -62,8 +62,9 @@ class DriverController extends Controller
     public function edit($id)
     {
         $driver = Driver::findOrFail($id);
-        $loggedInId = Session::get('user_id'); 
-        $drivers = Driver::where('id', '!=', $loggedInId)->get();
+        $companyId = Session::get('company_id'); 
+        $drivers = Driver::where('company_id', $companyId)
+                    ->where('id', '!=', $id)->get();
         $page = "Drivers";
         return view('drivers.edit', compact('driver', 'drivers' ,'page')); 
     }
@@ -96,6 +97,12 @@ class DriverController extends Controller
         $driver = Driver::findOrFail($id);
         $driver->delete();
         return redirect()->route('drivers.index')->with('success', 'Driver deleted successfully.');
+    }
+    
+    public function streetmap()
+    { 
+        $page = "streetmap";
+        return view('streetmap.streetmap', compact('page')); 
     }
 }
 

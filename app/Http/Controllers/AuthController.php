@@ -289,7 +289,8 @@ class AuthController extends Controller
     
         // Get the batch details where the driver is assigned
         $batches = Batches::whereIn('id', $batchIds)
-            ->select('id', 'batch_no') // Select specific columns from Batches
+            ->select('id', 'batch_no')
+            ->where('softdelete', '!=', '1') // Select specific columns from Batches
             ->with(['batchDetails' => function($query) use ($request) {
                 $query->select('id', 'batch_id', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude','batchfile_longitude') // Include 'assignedto'
                     ->where('assignedto', $request->driver_id); // Filter by the driver
@@ -358,14 +359,16 @@ class AuthController extends Controller
         $search = $request->search; // Get the search parameter
 
         $batches = Batches::whereHas('batchDetails', function($query) use ($driver_id, $batch_id) {
+            $query->where('batches.softdelete', '!=', '1');
             $query->where('assignedto', $driver_id);
             if ($batch_id) {
                 $query->where('batch_id', $batch_id);
             }
+            
         })
         ->select('id', 'batch_no')
         ->get();
-
+         
         if ($batches->isEmpty()) {
             return response()->json([
                 'status' => 'error',
@@ -376,7 +379,7 @@ class AuthController extends Controller
 
         $response = $batches->map(function ($batch) use ($driver_id, $batch_id, $search) {
             $batchDetailsQuery = BatchDetail::where('assignedto', $driver_id)
-                ->where('softdelete', '!=', '1') // Exclude soft deleted details
+              //  ->where('softdelete', '!=', '1') // Exclude soft deleted details
                 ->orderBy('pinned_at', 'desc'); // Order by pinned_at
 
             if ($batch_id) {
@@ -519,7 +522,7 @@ class AuthController extends Controller
     { 
         $validator = Validator::make($request->all(), [
             'batch_detail_id' => 'required',
-            'action' => 'required|in:pin,unpin,abort,softdelete',
+            'action' => 'required|in:pin,unpin,abort',
         ]);
  
         if ($validator->fails()) {
@@ -544,14 +547,41 @@ class AuthController extends Controller
                 $batchDetail->status = 'Aborted';
                 break;
 
-            case 'softdelete':
-                $batchDetail->softdelete = '1';
-                break;
+            // case 'softdelete':
+            //     $batchDetail->softdelete = '1';
+            //     break;
         }
 
         $batchDetail->save();
 
         return response()->json(['message' => 'Batch detail updated successfully'], 201);
+    }
+
+    public function updateBatch(Request $request)
+    { 
+        $validator = Validator::make($request->all(), [
+            'batch_id' => 'required',
+            'action' => 'required|in:softdelete',
+        ]);
+ 
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        $batch = Batches::find($request->batch_id);
+
+        switch ($request->action) { 
+             case 'softdelete':
+                 $batch->softdelete = '1';
+                 break;
+        }
+
+        $batch->save();
+
+        return response()->json(['message' => 'Batch updated successfully'], 201);
     }
 
     public function getBatchDetails(Request $request)
