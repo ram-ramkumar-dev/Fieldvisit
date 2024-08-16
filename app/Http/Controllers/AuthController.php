@@ -276,6 +276,11 @@ class AuthController extends Controller
     
         // Get all batch IDs assigned to the driver
         $batchIds = BatchDetail::where('assignedto', $request->driver_id)
+                    ->whereIn('batch_id', function($query) {
+                        $query->select('id')
+                            ->from('batches')
+                            ->where('softdelete', '!=', '1');
+                    })
                     ->pluck('batch_id')
                     ->unique()
                     ->toArray();
@@ -292,7 +297,7 @@ class AuthController extends Controller
             ->select('id', 'batch_no')
             ->where('softdelete', '!=', '1') // Select specific columns from Batches
             ->with(['batchDetails' => function($query) use ($request) {
-                $query->select('id', 'batch_id', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude','batchfile_longitude') // Include 'assignedto'
+                $query->select('id', 'status', 'batch_id', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude','batchfile_longitude') // Include 'assignedto'
                     ->where('assignedto', $request->driver_id); // Filter by the driver
             }])
             ->get();
