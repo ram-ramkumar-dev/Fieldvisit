@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3a40ddde63645fa8e88f08edebcdf251",
+    "content-hash": "32837a34d111d0e9f64183df3ae7eaf5",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -512,16 +512,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "3.8.7",
+            "version": "3.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "2093d670ca17f634f3c095ec10a20687eccebd99"
+                "reference": "d8f68ea6cc00912e5313237130b8c8decf4d28c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/2093d670ca17f634f3c095ec10a20687eccebd99",
-                "reference": "2093d670ca17f634f3c095ec10a20687eccebd99",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/d8f68ea6cc00912e5313237130b8c8decf4d28c6",
+                "reference": "d8f68ea6cc00912e5313237130b8c8decf4d28c6",
                 "shasum": ""
             },
             "require": {
@@ -605,7 +605,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/3.8.7"
+                "source": "https://github.com/doctrine/dbal/tree/3.9.0"
             },
             "funding": [
                 {
@@ -621,7 +621,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-08-07T11:57:25+00:00"
+            "time": "2024-08-15T07:34:42+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -2230,16 +2230,16 @@
         },
         {
             "name": "google/gax",
-            "version": "v1.34.0",
+            "version": "v1.34.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/gax-php.git",
-                "reference": "28aa3e95969a75b278606a88448992a6396a119e"
+                "reference": "173f0a97323284f91fd453c4ed7ed8317ecf6cfa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/gax-php/zipball/28aa3e95969a75b278606a88448992a6396a119e",
-                "reference": "28aa3e95969a75b278606a88448992a6396a119e",
+                "url": "https://api.github.com/repos/googleapis/gax-php/zipball/173f0a97323284f91fd453c4ed7ed8317ecf6cfa",
+                "reference": "173f0a97323284f91fd453c4ed7ed8317ecf6cfa",
                 "shasum": ""
             },
             "require": {
@@ -2281,9 +2281,9 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/gax-php/issues",
-                "source": "https://github.com/googleapis/gax-php/tree/v1.34.0"
+                "source": "https://github.com/googleapis/gax-php/tree/v1.34.1"
             },
-            "time": "2024-05-30T00:35:13+00:00"
+            "time": "2024-08-15T18:00:58+00:00"
         },
         {
             "name": "google/grpc-gcp",
@@ -10826,7 +10826,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.0"
+        "php": ">=8.0.0"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"
