@@ -281,7 +281,7 @@ class AuthController extends Controller
                     ->toArray();
     
         // Total counts
-        $totalBatches = Batches::whereIn('id', $batchIds)->count();
+        $totalBatches = Batches::whereIn('id', $batchIds)->where('softdelete', '!=', '1')->count();
         $totalBatchDetails = BatchDetail::whereIn('batch_id', $batchIds)->where('assignedto', $request->driver_id)->count();
         $totalCompletedBatchDetails = BatchDetail::whereIn('batch_id', $batchIds)
             ->where('status', 'Completed')  ->where('assignedto', $request->driver_id)
