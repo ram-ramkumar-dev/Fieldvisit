@@ -554,7 +554,7 @@ class AuthController extends Controller
 
         $batchDetail->save();
 
-        return response()->json(['message' => 'Batch detail updated successfully'], 201);
+        return response()->json(['status' => 'success', 'message' => 'Batch detail updated successfully'], 201);
     }
 
     public function updateBatch(Request $request)
@@ -581,7 +581,7 @@ class AuthController extends Controller
 
         $batch->save();
 
-        return response()->json(['message' => 'Batch updated successfully'], 201);
+        return response()->json(['status' => 'success', 'message' => 'Batch updated successfully'], 201);
     }
 
     public function getBatchDetails(Request $request)

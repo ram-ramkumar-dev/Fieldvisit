@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('updatelocation', [AuthController::class, 'updateLocation']);
     Route::post('storesurvey', [AuthController::class, 'storeSurvey']);
     Route::post('updatebatchdetail', [AuthController::class, 'updateBatchDetail']); 
+    Route::post('updatebatch', [AuthController::class, 'updateBatch']); 
     Route::post('getbatchdetails', [AuthController::class, 'getBatchDetails']);   
     Route::post('driverprofile', [AuthController::class, 'DriversProfile']);  
     Route::post('driversleaderboard', [AuthController::class, 'driversLeaderBoard']);

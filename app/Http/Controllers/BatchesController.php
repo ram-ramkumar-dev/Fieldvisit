@@ -386,8 +386,8 @@ class BatchesController extends Controller
         $driver = Driver::find($assignedTo); // Assuming assignedTo is the driver's ID
         $deviceToken = $driver->devicetoken; // Ensure this is the correct field name
 
-        $fcmService = new FcmNotificationService();
-        $fcmService->sendNotification($deviceToken, 'Batches Assigned', 'You have been assigned new batches.');
+       // $fcmService = new FcmNotificationService();
+       // $fcmService->sendNotification($deviceToken, 'Batches Assigned', 'You have been assigned new batches.');
 
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Batches assigned to driver successfully.'); 
