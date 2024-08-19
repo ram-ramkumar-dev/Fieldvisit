@@ -27,7 +27,7 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body"> 
-                        <form action="{{ route('drivers.store') }}" method="POST"  class="row g-3"> 
+                        <form autocomplete="off" action="{{ route('drivers.store') }}" method="POST"  class="row g-3"> 
                         @csrf
                             <div class="col-md-6 mb-3">
                                 <label for="Text1" class="form-label font-weight-bold text-muted text-uppercase">Full Name</label>
@@ -53,7 +53,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="Text4" class="form-label font-weight-bold text-muted text-uppercase">Username</label>
-                                <input type="text" required class="form-control" autocomplete="off" name="username" id="username" value="{{ old('username') }}" placeholder="Enter Username">
+                                <input type="text" required class="form-control" autocomplete="off" name="username" id="username" value="{{ old('username') }}" placeholder="Enter Username" style="text-transform: uppercase;">
                                 @error('username')
                                     <div>{{ $message }}</div>
                                 @enderror

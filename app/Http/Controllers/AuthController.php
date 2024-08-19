@@ -107,6 +107,24 @@ class AuthController extends Controller
      */ 
     public function logout(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'driver_id' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+    
+        $driver = Driver::where('id', $request->driver_id)->first();
+       
+        if ($driver) {
+            $driver->update(['devicetoken' => null]);
+        }
+
         $request->user()->tokens()->delete();
 
         return response()->json(['message' => 'Logged out successfully'], 200);
@@ -441,7 +459,8 @@ class AuthController extends Controller
          
         $validator = Validator::make($request->all(), [
             'batch_id' => 'required|exists:batches,id',
-            'batch_detail_id' => 'required|exists:batch_details,id',
+            'batch_detail_id' => 'required|array', // Expecting an array of IDs
+            'batch_detail_id' => 'exists:batch_details,id',
             'user_id' => 'required', 
             'photo1' => 'required',
         ]);
@@ -453,64 +472,69 @@ class AuthController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-            // Check if a survey already exists for the given batch_id, batch_detail_id, and user_id
-        $survey = Survey::where('batch_id', $request->batch_id)
-        ->where('batch_detail_id', $request->batch_detail_id)
-        ->where('user_id', $request->user_id)
-        ->first();
 
-        if (!$survey) {
-            $survey = new Survey();
-            $survey->batch_id = $request->batch_id;
-            $survey->batch_detail_id = $request->batch_detail_id; 
-            $survey->user_id = $request->user_id;
-        } 
-        
         $convertedDate = Carbon::createFromFormat('d/m/y', $request->visitdate)->format('Y-m-d');
 
-        $survey->has_water_meter = $request->has_water_meter;
-        $survey->water_meter_no = $request->water_meter_no;
-        $survey->has_water_bill = $request->has_water_bill;
-        $survey->water_bill_no = $request->water_bill_no;
-        $survey->is_correct_address = $request->is_correct_address;
-        $survey->correct_address = $request->correct_address;
-        $survey->ownership = $request->ownership;
-        $survey->contact_person_name = $request->contact_person_name;
-        $survey->contact_number = $request->contact_number;
-        $survey->email = $request->email;
-        $survey->nature_of_business_code = $request->nature_of_business_code;
-        $survey->shop_name = $request->shop_name;
-        $survey->dr_code = $request->dr_code;
-        $survey->property_code = $request->property_code;
-        $survey->occupancy = $request->occupancy; 
-        $survey->remark = $request->remark;
-        $survey->visitdate = $convertedDate;
-        $survey->visittime = $request->visittime;  
-        // Save other survey fields here
+        // Loop through each batch_detail_id and create a survey entry
+        foreach ($request->batch_detail_id as $batchDetailId) {
+            // Check if a survey already exists for the given batch_id, batch_detail_id, and user_id
+            $survey = Survey::where('batch_id', $request->batch_id)
+            ->where('batch_detail_id', $batchDetailId)
+            ->where('user_id', $request->user_id)
+            ->first();
 
-        // Handle photo uploads
-        if ($request->hasFile('photo1')) {
-            $survey->photo1 = $this->uploadPhoto($request->file('photo1'));
-        }
-        if ($request->hasFile('photo2')) {
-            $survey->photo2 = $this->uploadPhoto($request->file('photo2'));
-        }
-        if ($request->hasFile('photo3')) {
-            $survey->photo3 = $this->uploadPhoto($request->file('photo3'));
-        }
-        if ($request->hasFile('photo4')) {
-            $survey->photo4 = $this->uploadPhoto($request->file('photo4'));
-        }
-        if ($request->hasFile('photo5')) {
-            $survey->photo5 = $this->uploadPhoto($request->file('photo5'));
-        }
+            if (!$survey) {
+                $survey = new Survey();
+                $survey->batch_id = $request->batch_id;
+                $survey->batch_detail_id = $batchDetailId; 
+                $survey->user_id = $request->user_id;
+            }
+        
 
-        $survey->save();
+            $survey->has_water_meter = $request->has_water_meter;
+            $survey->water_meter_no = $request->water_meter_no;
+            $survey->has_water_bill = $request->has_water_bill;
+            $survey->water_bill_no = $request->water_bill_no;
+            $survey->is_correct_address = $request->is_correct_address;
+            $survey->correct_address = $request->correct_address;
+            $survey->ownership = $request->ownership;
+            $survey->contact_person_name = $request->contact_person_name;
+            $survey->contact_number = $request->contact_number;
+            $survey->email = $request->email;
+            $survey->nature_of_business_code = $request->nature_of_business_code;
+            $survey->shop_name = $request->shop_name;
+            $survey->dr_code = $request->dr_code;
+            $survey->property_code = $request->property_code;
+            $survey->occupancy = $request->occupancy; 
+            $survey->remark = $request->remark;
+            $survey->visitdate = $convertedDate;
+            $survey->visittime = $request->visittime;  
+            // Save other survey fields here
 
-        //update batchdetails status to completed 
-        $batchDetail = BatchDetail::find($request->batch_detail_id); 
-        $batchDetail->status = 'Completed'; 
-        $batchDetail->save();
+            // Handle photo uploads
+            if ($request->hasFile('photo1')) {
+                $survey->photo1 = $this->uploadPhoto($request->file('photo1'));
+            }
+            if ($request->hasFile('photo2')) {
+                $survey->photo2 = $this->uploadPhoto($request->file('photo2'));
+            }
+            if ($request->hasFile('photo3')) {
+                $survey->photo3 = $this->uploadPhoto($request->file('photo3'));
+            }
+            if ($request->hasFile('photo4')) {
+                $survey->photo4 = $this->uploadPhoto($request->file('photo4'));
+            }
+            if ($request->hasFile('photo5')) {
+                $survey->photo5 = $this->uploadPhoto($request->file('photo5'));
+            }
+
+            $survey->save();
+
+            //update batchdetails status to completed 
+            $batchDetail = BatchDetail::find($batchDetailId); 
+            $batchDetail->status = 'Completed'; 
+            $batchDetail->save();
+        }
 
         // Return a success response
         return response()->json(['success' => 'Survey saved successfully', 'data' => $survey], 201);
@@ -606,9 +630,12 @@ class AuthController extends Controller
 
         $batch_id = $request->batch_id; 
         $driver_id = $request->driver_id;
+        $driver_lat = $request->driver_latitude;
+        $driver_long = $request->driver_longitude;
         $search = $request->search; // Get the search parameter
 
         $batchDetailsQuery = BatchDetail::where('assignedto', $driver_id)->where('status', '!=', 'soft_deleted')
+        ->select('id', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude', 'batchfile_longitude', 'status', 'pinned_at')
         ->orderBy('pinned_at', 'desc');
 
         if ($batch_id) {
@@ -626,9 +653,15 @@ class AuthController extends Controller
             });
         }
 
-        $batchDetails = $batchDetailsQuery
-        ->select('id', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude', 'status', 'batchfile_longitude', 'pinned_at') // 
-        ->get(); 
+        $batchDetails = $batchDetailsQuery->get();
+
+        if ($driver_lat && $driver_long) {
+            // Calculate distance and sort by distance
+            $batchDetails = $batchDetails->map(function($batchDetail) use ($driver_lat, $driver_long) {
+                $batchDetail->distance = $this->calculateDistance($driver_lat, $driver_long, $batchDetail->batchfile_latitude, $batchDetail->batchfile_longitude);
+                return $batchDetail;
+            })->sortBy('distance')->values();
+        }
 
         $pending = $batchDetails->where('status', 'Pending')->values();
         $completed = $batchDetails->where('status', 'Completed')->values();
@@ -905,6 +938,31 @@ class AuthController extends Controller
         DB::table('password_resets')->where('phone_number', $request->phone_number)->delete();
 
         return response()->json(['status' => 'success','message' => 'Password reset successfully'], 200);
+    }
+
+    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        $earthRadius = 6371000; // Radius of the Earth in meters
+
+        $lat1 = deg2rad($lat1);
+        $lon1 = deg2rad($lon1);
+        $lat2 = deg2rad($lat2);
+        $lon2 = deg2rad($lon2);
+
+        $dLat = $lat2 - $lat1;
+        $dLon = $lon2 - $lon1;
+
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+            cos($lat1) * cos($lat2) *
+            sin($dLon / 2) * sin($dLon / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        $distanceInMeters = $earthRadius * $c;
+
+        $distanceInKilometers = $distanceInMeters / 1000;
+
+        return $distanceInKilometers;
     }
 
 

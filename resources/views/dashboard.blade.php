@@ -293,10 +293,23 @@ table th, table td {
             <div class="driver-profile">
                   <img src="{{ asset('assets/images/user/1.jpg') }}" alt="Driver Avatar">
                   <div class="driver-info">
-                     <h5>{{ ucfirst($topAgent['driver_name']) }}</h5>
-                     
+                     <h5 style="text-transform: uppercase;">
+                     @php if ($topAgent['devicetoken']) { @endphp
+                           <span class="d-flex align-items-center">
+                              <svg  xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="8" fill="#3cb72c"></circle>
+                              </svg>
+                              {{ $topAgent['driver_name'] }}
+                           </span>
+                           @php } else { @endphp
+                              {{ $topAgent['driver_name'] }}
+                           @php } @endphp </h5>
+                           @php
+                           $width = ($topAgent['completed'] / $totalSurveys) * 100;
+                           @endphp
+
                      <div class="progress-bar">
-                        <div class="progress" style="width: 100%;"></div>
+                        <div class="progress" style="width: {{ $width }}%;"></div>
                      </div>
                      
                      <span class="progress-count">{{ $topAgent['completed'] }}/{{ $totalSurveys }}</span>
@@ -321,7 +334,18 @@ table th, table td {
                      <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ number_format($l['score'], 0) }}%</td> <!-- Display the score -->
-                        <td>{{ ucfirst($l['driver_name']) }}</td>
+                        <td style="text-transform: uppercase;">
+                           @php if ($l['devicetoken']) { @endphp
+                           <span class="d-flex align-items-center">
+                              <svg  xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="8" fill="#3cb72c"></circle>
+                              </svg>
+                              {{ $l['driver_name'] }}
+                           </span>
+                           @php } else { @endphp
+                              {{ $l['driver_name'] }}
+                           @php } @endphp
+                        </td>
                         <td>{{ $l['assigned'] }}</td>
                         <td>{{ $l['completed'] }}</td>
                         <td>{{ $l['pending'] }}</td>
@@ -664,25 +688,27 @@ var getBatchforchartData03 = '{{ route("getBatchProgressForChart03") }}';
                 dropdownMenu.classList.remove('show');
             }
             $('#batchList').empty();
-             
-            batches.forEach(function(batch) {
-                var listItem = `
-                    <li class="p-3 list-item d-flex flex-column align-items-start" data-batch-id="${batch.id}">
-                        <div class="d-flex justify-content-start align-items-center w-100">
-                           <div class="list-style-detail mr-2">
-                            <p class="mb-0">${batch.batch_no.charAt(0).toUpperCase() + batch.batch_no.slice(1)}</p>
-                          </div> 
-                          <div class="list-style-action ml-auto">         
-                            <h6 class="font-weight-bold" id="campaignnumbers"> ${batch.count} </h6>                        
-                           </div>
-                         </div>
-                         <div class="w-100">
-                           <progress style="    width: 100%;    height: 5px;" id="file" value="${batch.count}" max="100"> ${batch.count}%</progress>
+            var colors = <?php echo json_encode($colors); ?>; 
+            batches.forEach(function(batch, index) {
+            var color = colors[index % colors.length];
+            
+            var listItem = `
+               <li class="p-3 list-item d-flex flex-column align-items-start" data-batch-id="${batch.id}">
+                     <div class="d-flex justify-content-start align-items-center w-100">
+                        <div class="list-style-detail mr-2">
+                           <p class="mb-0" style="color: ${color};">${batch.batch_no.charAt(0).toUpperCase() + batch.batch_no.slice(1)}</p>
                         </div>
-                    </li>`;
-                
-                $('#batchList').append(listItem);
-            });
+                        <div class="list-style-action ml-auto">
+                           <h6 class="font-weight-bold" style="color: ${color};" id="campaignnumbers">${batch.count}</h6>
+                        </div>
+                     </div>
+                     <div class="w-100">
+                        <progress style="accent-color: ${color}; width: 100%; height: 5px;" id="file" value="${batch.count}" max="100">${batch.count}%</progress>
+                     </div>
+               </li>`;
+            
+            $('#batchList').append(listItem);
+         });
         }
 </script>
 @endsection

@@ -78,6 +78,7 @@ class DriverController extends Controller
            // 'password' => 'nullable',
 
         ]);
+        $permissions = $request->input('permissions', []);
 
         //$driver = Driver::findOrFail($id);
         //$driver->update($request->all());
@@ -87,6 +88,11 @@ class DriverController extends Controller
             $driver->password = Hash::make($request->password);
         }
         $driver->app_login = $request->input('app_login', 0);
+        if (in_array('null', $permissions)) {
+            $permissions = null;
+        } 
+        // Save or update the driver with the permissions
+        $driver->permissions = $permissions;
         $driver->save();
         
         return redirect()->route('drivers.index')->with('success', 'Driver updated successfully.');

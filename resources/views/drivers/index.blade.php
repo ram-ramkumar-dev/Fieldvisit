@@ -87,7 +87,7 @@
         
                                             <tr class="white-space-no-wrap">
                                                 <td class=""> {{ $loop->iteration }} </td>
-                                                <td>{{ $driver->username }}  </td>
+                                                <td style="text-transform: uppercase;">{{ $driver->username }}  </td>
                                                 <td>{{ $driver->phone_number }}  </td>
                                                 <td>{{ $driver->sensitive }}  </td>
                                                 <td>{{ implode(', ', (array) $driver->permissions) }}</td>

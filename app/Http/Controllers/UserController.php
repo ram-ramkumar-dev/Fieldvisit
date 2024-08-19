@@ -51,6 +51,7 @@ class UserController extends Controller
             $statusCountsByDriver[$driver->id] = [
                     'id' => $driver->id,
                     'driver_name' => $driver->name,
+                    'devicetoken' => $driver->devicetoken, 
                     'pending' => 0,
                     'completed' => 0,
                     'aborted' => 0,

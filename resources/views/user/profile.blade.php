@@ -9,8 +9,8 @@
             <div class="profile-box">
                <div class="profile-card rounded">
                   <img src="../assets/images/user/1.jpg" alt="profile-bg" class="avatar-100 rounded d-block mx-auto img-fluid mb-3">
-                  <h3 class="font-600 text-white text-center mb-0">{{ ucfirst($user->name) }} </h3>
-                  <p class="text-white text-center mb-5">{{ ucfirst($user->company_name) }}</p>
+                  <h3 class="font-600 text-white text-center mb-0" style="text-transform:uppercase">{{ $user->name }} </h3>
+                  <p class="text-white text-center mb-5" style="text-transform:uppercase">{{ $user->company_name }}</p>
                </div>
                <div class="pro-content rounded">
                   <div class="d-flex align-items-center mb-3">

@@ -15,7 +15,7 @@
             margin: 10px 0;
         }
     </style>
-    <input id="search-input" class="controls" type="text" placeholder="Search for a location">
+    <input id="search-input" class="form-control controls" type="text" placeholder="Search for a location">
     <div id="map"></div>
     <div id="pano"></div>
  <!-- Asynchronous loading of the Google Maps API -->

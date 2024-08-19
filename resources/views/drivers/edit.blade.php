@@ -54,7 +54,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="Text4" class="form-label font-weight-bold text-muted text-uppercase">Username</label>
-                                <input type="text" required class="form-control" autocomplete="off" name="username" id="username" value="{{ old('username', $driver->username) }}" placeholder="Enter Username">
+                                <input type="text" required class="form-control" autocomplete="off" name="username" id="username" value="{{ old('username', $driver->username) }}" placeholder="Enter Username" style="text-transform: uppercase;">
                                 @error('username')
                                     <div>{{ $message }}</div>
                                 @enderror
@@ -89,6 +89,10 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="Text8" class="form-label font-weight-bold text-muted text-uppercase">Module Access</label>
+                              <!-- Hidden input to send null if no options are selected -->
+                                <input type="hidden" name="permissions[]" value="null">
+
+                                <!-- The select dropdown -->
                                 <select name="permissions[]" id="permissions" class="multipleSelect2 form-control choicesjs" multiple="true">
                                     @php
                                         $permissions = old('permissions', $driver->permissions) ?: [];

@@ -5,14 +5,10 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <title>{{ config('app.name', 'TRUE COLLECT') }}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap CSS --> 
-          <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}" />
-      
-      <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
-      <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-       
-    <title>@yield('title', $title)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> 
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}" /> 
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}"> 
 </head>
 
 <body class=""> 

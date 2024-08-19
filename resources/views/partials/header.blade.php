@@ -178,7 +178,7 @@
                               <li class="nav-item nav-icon dropdown">
                                   <a href="#" class="nav-item nav-icon dropdown-toggle pr-0 search-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                                       <img src="{{ asset('assets/images/user/1.jpg') }}" class="img-fluid avatar-rounded" alt="user">
-                                      <span class="mb-0 ml-2 user-name">{{ session('user_name') }}</span>
+                                      <span class="mb-0 ml-2 user-name" style="text-transform:uppercase">{{ session('user_name') }}</span>
                                   </a>
                                   <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                                       <li class="dropdown-item d-flex svg-icon">
