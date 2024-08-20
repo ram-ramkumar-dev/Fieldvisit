@@ -660,6 +660,12 @@ class AuthController extends Controller
                 $batchDetail->distance = $this->calculateDistance($driver_lat, $driver_long, $batchDetail->batchfile_latitude, $batchDetail->batchfile_longitude);
                 return $batchDetail;
             })->sortBy('distance')->values();
+        } else {
+            // Set distance to null if lat and long are not provided
+            $batchDetails = $batchDetails->map(function($batchDetail) {
+                $batchDetail->distance = "";
+                return $batchDetail;
+            });
         }
 
         $pending = $batchDetails->where('status', 'Pending')->values();
