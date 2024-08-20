@@ -26,29 +26,48 @@
             </div>
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-body">
-                    <div class="col-md-6 mb-3">
-                        <strong>Batch No:</strong>
-                        {{ $batch->batch_no }}
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <strong>Client:</strong>
-                        {{ $batch->client->client_name }}
-                    </div>
-                    
-                    <div class="col-md-6 mb-3">
-                        <strong>DR Code:</strong>
-                        {{ implode(', ', (array) $batch->status_code) }}
-                        </div>
-                               
-                    
-                    <div class="col-md-6 mb-3">
-                        <strong>Status:</strong>
-                        {{ $batch->status == '1' ? 'Active' : 'Inactive' }}
-                    </div>
-                               
-                                        
-                    </div>
+                    <ul class="list-group list-group-flush">
+                        
+                        <li class="list-group-item">
+                            <table class="table table-borderless mb-0">
+                                <tbody><tr>
+                                    <td class="p-0">
+                                        <p class="mb-0 text-muted">Batch No:</p>                                        
+                                    </td>
+                                    <td>
+                                        <p class="mb-0 ">{{ $batch->batch_no }}</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-0">
+                                        <p class="mb-0 text-muted">Client:</p>          
+                                    </td>
+                                    <td>
+                                        <p class="mb-0 "> {{ $batch->client->client_name }}     </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-0">
+                                        <p class="mb-0 text-muted">DR Code:</p>                                        
+                                    </td>
+                                    <td>
+                                        <p class="mb-0 "> {{ $batch->getStatusDetails() ?: 'N/A' }}</p>
+                                    </td>
+                                </tr>
+                                <tr>  
+                                    <td class="p-0">
+                                        <p class="mb-0 text-muted">Status:</p>                                        
+                                    </td>
+                                    <td>
+                                        <p class="mb-0 ">
+                                        {{ $batch->status == '1' ? 'Active' : 'Inactive' }}</p>
+                                    </td>
+                                </tr>
+                                 
+                            </tbody></table>
+                        </li>
+                      
+                    </ul> 
                 </div> 
             </div>
         </div>

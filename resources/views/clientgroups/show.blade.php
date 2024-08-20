@@ -26,17 +26,33 @@
             </div>
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-body">
-                    <div class="col-md-6 mb-3">
-                        <strong>Name:</strong>
-                        {{ $clientgroup->name }}
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <strong>Description:</strong>
-                        {{ $clientgroup->description }}
-                    </div>
-                                        
-                    </div>
+                <ul class="list-group list-group-flush">
+                        
+                        <li class="list-group-item">
+                            <table class="table table-borderless mb-0">
+                                <tbody><tr>  
+                                    <td class="p-0">
+                                        <p class="mb-0 text-muted">Name:</p>                                        
+                                    </td>
+                                    <td>
+                                        <p class="mb-0 ">{{ $clientgroup->name  }}</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-0">
+                                        <p class="mb-0 text-muted">Description:</p>          
+                                    </td>
+                                    <td>
+                                        <p class="mb-0 "> {{ $clientgroup->description }}     </p>
+                                    </td>
+                                </tr>
+                                 
+                                 
+                            </tbody></table>
+                        </li>
+                      
+                    </ul> 
+                     
                 </div> 
             </div>
         </div>

@@ -460,7 +460,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'batch_id' => 'required|exists:batches,id',
             'batch_detail_id' => 'required|array', // Expecting an array of IDs
-            'batch_detail_id' => 'exists:batch_details,id',
+            'batch_detail_id.*' => 'exists:batch_details,id',
             'user_id' => 'required', 
             'photo1' => 'required',
         ]);
