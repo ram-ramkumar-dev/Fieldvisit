@@ -456,7 +456,6 @@ class AuthController extends Controller
 
     public function storeSurvey(Request $request)
     {
-         
         $validator = Validator::make($request->all(), [
             'batch_id' => 'required|exists:batches,id',
             'batch_detail_id' => 'required', 
@@ -471,12 +470,12 @@ class AuthController extends Controller
                 'message' => 'Validation errors',
                 'errors' => $validator->errors()
             ], 422);
-        }
-
+        } 
+        $batchDetailIds = json_decode($request->batch_detail_id, true); 
         $convertedDate = Carbon::createFromFormat('d/m/y', $request->visitdate)->format('Y-m-d');
 
         // Loop through each batch_detail_id and create a survey entry
-        foreach ($request->batch_detail_id as $batchDetailId) {
+        foreach ($batchDetailIds as $batchDetailId) {
             // Check if a survey already exists for the given batch_id, batch_detail_id, and user_id
             $survey = Survey::where('batch_id', $request->batch_id)
             ->where('batch_detail_id', $batchDetailId)
