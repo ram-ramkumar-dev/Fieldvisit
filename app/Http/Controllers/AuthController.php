@@ -657,7 +657,7 @@ class AuthController extends Controller
         if ($driver_lat && $driver_long) {
             // Calculate distance and sort by distance
             $batchDetails = $batchDetails->map(function($batchDetail) use ($driver_lat, $driver_long) {
-                $batchDetail->distance = $this->calculateDistance($driver_lat, $driver_long, $batchDetail->batchfile_latitude, $batchDetail->batchfile_longitude);
+                $batchDetail->distance = $this->calculateDrivingDistance($driver_lat, $driver_long, $batchDetail->batchfile_latitude, $batchDetail->batchfile_longitude);
                 return $batchDetail;
             })->sortBy('distance')->values();
         } else {
@@ -970,7 +970,27 @@ class AuthController extends Controller
         return $distanceInKilometers;
     }
 
-
+    private function calculateDrivingDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        $apiKey =  env('GOOGLE_MAPS_API_KEY'); // Replace with your Google Maps API key
+        $origin = "{$lat1},{$lon1}";
+        $destination = "{$lat2},{$lon2}";
+        
+        $url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins={$origin}&destinations={$destination}&mode=driving&key={$apiKey}";
+    
+        $response = file_get_contents($url);
+        $data = json_decode($response, true);
+    
+        if (isset($data['rows'][0]['elements'][0]['status']) && $data['rows'][0]['elements'][0]['status'] == 'OK') {
+            $distanceInMeters = $data['rows'][0]['elements'][0]['distance']['value'];
+            $distanceInKilometers = $distanceInMeters / 1000;
+            return $distanceInKilometers;
+        }
+    
+        // Return null or handle errors if the API request fails
+        return null;
+    }
+    
 
 
 }
