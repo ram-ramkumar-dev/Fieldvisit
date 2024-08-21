@@ -72,17 +72,8 @@ class FcmNotificationService
         $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
         
         // Fetch the access token with assertion
-        //$client->fetchAccessTokenWithAssertion();
+        $client->fetchAccessTokenWithAssertion();
 
-        //return $client->getAccessToken()['access_token'];
-        // Set the token's issued time (iat) and expiration time (exp)
-        $now = time();
-        $client->setIssuedAt($now);
-        $client->setExpiresAt($now + 3600); // Expiration time set to 1 hour from now
-
-        // Fetch the access token
-        $accessToken = $client->fetchAccessTokenWithAssertion();
-
-        return $accessToken['access_token'];
+        return $client->getAccessToken()['access_token'];
     }
 }
