@@ -2,32 +2,24 @@
 
 namespace App\Services;
 
-use Google\Auth\Credentials\ServiceAccountCredentials;
 use Google_Client;
-use Google_Service_FirebaseCloudMessaging;
+use Google\Auth\Credentials\ServiceAccountCredentials;
 
 class FcmNotificationService
 {
-    private $auth;
-    private $projectId;
+    private $client;
 
     public function __construct()
     {
-        $this->projectId = 'vranger-13d92'; // Replace with your project ID
-        
-        // Path to the service account JSON file
-        $serviceAccountPath = public_path('vrangerAccountKey.json'); 
-
-        // Initialize the Service Account Credentials
-        $this->auth = new ServiceAccountCredentials(
-            'https://www.googleapis.com/auth/firebase.messaging',
-            $serviceAccountPath
-        );
+        $this->client = new Google_Client();
+        $this->client->setAuthConfig(public_path('vrangerAccountKey.json'));
+        $this->client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+        $this->client->setSubject('firebase-adminsdk-htevm@vranger-13d92.iam.gserviceaccount.com');
     }
 
     public function sendNotification($deviceToken, $title, $message)
     {
-        $url = 'https://fcm.googleapis.com/v1/projects/' . $this->projectId . '/messages:send';
+        $url = 'https://fcm.googleapis.com/v1/projects/your-project-id/messages:send';
 
         $headers = [
             'Authorization: Bearer ' . $this->getAccessToken(),
@@ -66,14 +58,7 @@ class FcmNotificationService
 
     private function getAccessToken()
     {
-        // Create a new Google Client instance
-        $client = new Google_Client();
-        $client->setAuthConfig(public_path('vrangerAccountKey.json')); // Correct path to your service account key
-        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
-        
-        // Fetch the access token with assertion
-        $client->fetchAccessTokenWithAssertion();
-
-        return $client->getAccessToken()['access_token'];
+        $token = $this->client->fetchAccessTokenWithAssertion();
+        return $token['access_token'];
     }
 }
