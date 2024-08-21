@@ -75,19 +75,14 @@ class FcmNotificationService
         //$client->fetchAccessTokenWithAssertion();
 
         //return $client->getAccessToken()['access_token'];
+        // Set the token's issued time (iat) and expiration time (exp)
         $now = time();
-        $claims = [
-            'iss' => $client->getClientEmail(),
-            'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
-            'aud' => 'https://oauth2.googleapis.com/token',
-            'iat' => $now,
-            'exp' => $now + 3600, // Set to expire in 1 hour
-        ];
+        $client->setIssuedAt($now);
+        $client->setExpiresAt($now + 3600); // Expiration time set to 1 hour from now
 
-        // Manually create a JWT
-        $jwt = $client->fetchAccessTokenWithAssertion($claims);
+        // Fetch the access token
+        $accessToken = $client->fetchAccessTokenWithAssertion();
 
-        $accessToken = $jwt['access_token'];
-        return $accessToken;
+        return $accessToken['access_token'];
     }
 }
