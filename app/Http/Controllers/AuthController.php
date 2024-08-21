@@ -472,7 +472,6 @@ class AuthController extends Controller
             ], 422);
         } 
         $batchDetailIds = json_decode($request->batch_detail_id, true); 
-        $convertedDate = Carbon::createFromFormat('d/m/y', $request->visitdate)->format('Y-m-d');
 
         // Loop through each batch_detail_id and create a survey entry
         foreach ($batchDetailIds as $batchDetailId) {
@@ -489,7 +488,7 @@ class AuthController extends Controller
                 $survey->user_id = $request->user_id;
             }
         
-
+            $convertedDate = Carbon::createFromFormat('d/m/y', $request->visitdate)->format('Y-m-d');
             $survey->has_water_meter = $request->has_water_meter;
             $survey->water_meter_no = $request->water_meter_no;
             $survey->has_water_bill = $request->has_water_bill;
@@ -512,19 +511,19 @@ class AuthController extends Controller
 
             // Handle photo uploads
             if ($request->hasFile('photo1')) {
-                $survey->photo1 = $this->uploadPhoto($request->file('photo1'));
+                $survey->photo1 = $this->uploadPhoto($request->file('photo1'), $request->batch_id, $batchDetailId, 'PHOTO1');
             }
             if ($request->hasFile('photo2')) {
-                $survey->photo2 = $this->uploadPhoto($request->file('photo2'));
+                $survey->photo2 = $this->uploadPhoto($request->file('photo2'), $request->batch_id, $batchDetailId, 'PHOTO2');
             }
             if ($request->hasFile('photo3')) {
-                $survey->photo3 = $this->uploadPhoto($request->file('photo3'));
+                $survey->photo3 = $this->uploadPhoto($request->file('photo3'), $request->batch_id, $batchDetailId, 'PHOTO3');
             }
             if ($request->hasFile('photo4')) {
-                $survey->photo4 = $this->uploadPhoto($request->file('photo4'));
+                $survey->photo4 = $this->uploadPhoto($request->file('photo4'), $request->batch_id, $batchDetailId, 'PHOTO4');
             }
             if ($request->hasFile('photo5')) {
-                $survey->photo5 = $this->uploadPhoto($request->file('photo5'));
+                $survey->photo5 = $this->uploadPhoto($request->file('photo5'), $request->batch_id, $batchDetailId, 'PHOTO5');
             }
 
             $survey->save();
@@ -536,13 +535,43 @@ class AuthController extends Controller
         }
 
         // Return a success response
-        return response()->json(['success' => 'Survey saved successfully', 'data' => $survey], 201);
+        return response()->json(['success' => 'Survey saved successfully'], 201);
     }
-
-    private function uploadPhoto($photo)
+    private function uploadPhoto($photo, $batchId, $batchDetailId, $photoLabel)
     {
-        $filename = Str::uuid() . '.' . $photo->getClientOriginalExtension();
-        $path = $photo->storeAs('public/surveyphotos', $filename);
+        // Get the company name from the company associated with the batch
+        $companyName = \DB::table('companies')
+        ->join('batches', 'companies.id', '=', 'batches.company_id')
+        ->where('batches.id', $batchId)
+        ->value('companies.company_name');
+
+        // Ensure company name is not null or empty
+        if (!$companyName) {
+            throw new \Exception("Company name not found for batch ID: {$batchId}");
+        }
+
+        $batchDetailsQuery = BatchDetail::where('id', $batchDetailId) 
+        ->select('fileid', 'account_no')->first();
+
+        
+        // Get the current date to create a folder
+        $dateFolder = now()->format('Y-m-d');
+        
+        // Define the path to the date-based folder
+        $folderPath = "public/surveyphotos/{$dateFolder}";
+        
+        // Ensure the folder exists
+        if (!Storage::exists($folderPath)) {
+            Storage::makeDirectory($folderPath);
+        }
+        
+        // Define the filename with the desired format 
+        $filename = strtoupper("{$companyName}_{$batchDetailsQuery->fileid}_{$batchDetailsQuery->account_no}_{$photoLabel}.{$photo->getClientOriginalExtension()}");
+
+        // Store the photo in the date-based folder
+        $path = $photo->storeAs($folderPath, $filename);
+        
+        // Return the URL to the stored photo
         return Storage::url($path);
     }
 
