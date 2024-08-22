@@ -104,6 +104,17 @@ class DriverController extends Controller
         $driver->delete();
         return redirect()->route('drivers.index')->with('success', 'Driver deleted successfully.');
     }
+
+    public function cleartoken($id)
+    {
+        $deleted = DB::table('personal_access_tokens')->where('tokenable_id', $id)->delete();
+        if ($deleted) { 
+          return redirect()->route('drivers.index')->with('success', 'Token Cleared successfully.');
+        } else {
+           
+          return redirect()->route('drivers.index')->with('error', 'Token not found.'); 
+        }
+    }
     
     public function streetmap()
     { 

@@ -82,12 +82,10 @@
             <td>{{ $batch->batch_details_count }}</td> 
             <td>{{ $batch->completed_count }}</td> 
             <td>
-            <a class="" data-toggle="tooltip" data-placement="top" title="View" href="{{ route('batches.viewuploaded', $batch->id) }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="text-secondary" width="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-            </a>
+            <a class="" data-toggle="tooltip" data-placement="top" title="Upload" href="{{ route('batches.viewuploaded', $batch->id) }}">
+            <button class="btn btn-info btn-sm mr-2"  >Upload </button>
+            </a> 
+            
             <form id="delete-batch-{{ $batch->id }}" class="mx-4" action="{{ route('batches.details.delete', $batch->id) }}" method="POST" style="display:inline-block;">
             @csrf
             @method('DELETE')

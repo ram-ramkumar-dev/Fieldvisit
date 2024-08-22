@@ -1,11 +1,6 @@
 @extends('layouts.app')
 
-@section('content')
- <style>
- .choices__inner{
-    height: 10px;    overflow: scroll;
- }
-</style>
+@section('content') 
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-12">

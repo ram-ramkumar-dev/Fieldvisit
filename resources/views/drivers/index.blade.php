@@ -37,6 +37,12 @@
                         <p>{{ $message }}</p>
                     </div>
                 @endif
+                
+                @if ($message = Session::get('error'))
+                    <div class="alert alert-danger">
+                        <p>{{ $message }}</p>
+                    </div>
+                @endif
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="card card-block card-stretch">
@@ -115,8 +121,14 @@
         </svg>
     </a>
 </form>
+<form id="cleartoken-driver-{{ $driver->id }}" action="{{ route('drivers.cleartoken', $driver->id) }}" method="POST" style="display:inline-block;">
+    @csrf 
+    <button class="btn btn-info btn-sm mr-2" onclick="event.preventDefault(); if(confirm('Are you sure you want to clear the token for this driver?')) { document.getElementById('cleartoken-driver-{{ $driver->id }}').submit(); }" style="    margin-left: 10px;">Clear Token </button>
+</form>
 
                                                     </div>
+
+
                                                 </td>
                                             </tr>  
                                          @endforeach

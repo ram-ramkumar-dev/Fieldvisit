@@ -43,6 +43,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/handle-form', [ReportsController::class, 'handleForm'])->name('handle.form'); 
     Route::get('/surveyresult', [ReportsController::class, 'surveyresult'])->name('reports.surveyresult');
     Route::post('/generateReport', [ReportsController::class, 'generateReport'])->name('reports.generate'); 
+    Route::get('/surveyphotos', [ReportsController::class, 'surveyphotos'])->name('reports.surveyphotos');
+    Route::post('/surveyPhotosGenerate', [ReportsController::class, 'surveyPhotosGenerate'])->name('reports.surveyphotosgenerate');  
 });
 
 Route::get('register', [UserController::class, 'register'])->name('register');
@@ -61,6 +63,7 @@ Route::resource('clients', ClientController::class);
 Route::resource('drivers', DriverController::class);
 Route::resource('statuses', StatusController::class);
 
+Route::post('/drivers/{driver}/cleartoken', [DriverController::class, 'cleartoken'])->name('drivers.cleartoken');
 Route::get('/batches/{batch}/viewuploaded', [BatchesController::class, 'viewUploaded'])->name('batches.viewuploaded');
 Route::get('/batches/{batch}/upload', [BatchesController::class, 'showUploadForm'])->name('batches.upload');
 Route::post('/batches/{batch}/upload', [BatchesController::class, 'uploadBatchDetails'])->name('batches.upload.store');

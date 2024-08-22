@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Session;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use Illuminate\Support\Facades\Storage;
+use ZipArchive;
 
 class ReportsController extends Controller
 {
@@ -442,4 +444,80 @@ class ReportsController extends Controller
         }
         return $columnLetter . $row;
     }
+
+    public function surveyphotos()
+    {
+        $page = "surveyphotos";
+        // Fetch batches and statuses for the dropdowns
+        $companyId = Session::get('company_id');   
+        // Fetch batches based on filter
+        $batches = Batches::where('company_id', $companyId)->get();
+       // $statuses = DB::table('account_statuses')->get(); 
+        return view('reports.surveyphotos', compact('page','batches'));
+    }
+
+    public function surveyPhotosGenerate(Request $request)
+    {
+        $action = $request->input('action');
+        $page = "surveyphotos";
+        $requestbatches = $request->input('batches'); 
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $companyId = Session::get('company_id');  
+ 
+        // Start building the query
+        $query = DB::table('surveys') 
+            ->join('batches', 'surveys.batch_id', '=', 'batches.id','left') 
+            ->select('surveys.photo1','surveys.photo2', 'surveys.photo3', 'surveys.photo4', 'surveys.photo5')
+            ->where('batches.company_id', $companyId);
+
+        if (!empty($requestbatches)) {
+            $query->where('surveys.batch_id', $requestbatches);
+        }
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('surveys.visitdate', [$startDate, $endDate]);
+        } 
+         
+        $data = $query->get();
+        if ($action === 'export') {
+            $zip = new ZipArchive();
+            $zipFileName = 'Photos.zip';
+            $zipFilePath = public_path($zipFileName);
+            
+           
+            // Create a new ZIP file
+            if ($zip->open($zipFilePath, ZipArchive::CREATE) === TRUE) { 
+                foreach ($data as $item) {
+                    // Process each photo
+                    $photos = [$item->photo1, $item->photo2, $item->photo3, $item->photo4, $item->photo5];
+                    foreach ($photos as $photo) {
+                        if ($photo) {
+                            $photoPath = public_path($photo);
+    
+                            if (file_exists($photoPath)) {
+                                $zip->addFile($photoPath, basename($photoPath));
+                            }
+                        }
+                    }
+                } 
+                $zip->close();
+    
+                // Return the ZIP file as a response
+                return response()->download($zipFilePath)->deleteFileAfterSend(true);
+            } else {
+                return response()->json(['error' => 'Could not create ZIP file'], 500);
+            }
+        } else {
+            // Default behavior to generate report view
+            
+            $batches = Batches::where('company_id', $companyId)->get();
+            return view('reports.surveyphotos', [
+                'reportData' => $data,
+                'page' => $page,
+                'batches' => $batches,  
+            ]);
+        }
+    }    
 }
