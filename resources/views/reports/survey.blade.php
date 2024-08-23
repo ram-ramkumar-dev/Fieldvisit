@@ -107,6 +107,8 @@
                         <td>
                             @if($data->$column)
                                 <img src="{{ asset($data->$column) }}" alt="{{ $columnDisplayNames[$column] ?? 'Photo' }}" style="max-width: 150px; height: auto;">
+                                <br>
+                                <p>{{ basename($data->$column) }}</p>
                             @else
                                 -
                             @endif

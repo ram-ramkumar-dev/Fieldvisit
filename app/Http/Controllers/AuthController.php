@@ -315,7 +315,7 @@ class AuthController extends Controller
             ->select('id', 'batch_no')
             ->where('softdelete', '!=', '1') // Select specific columns from Batches
             ->with(['batchDetails' => function($query) use ($request) {
-                $query->select('id', 'status', 'batch_id', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude','batchfile_longitude') // Include 'assignedto'
+                $query->select('id', 'status', 'batch_id', 'address', 'district_la', 'taman_mmid', 'state', 'post_code', 'roadname', 'assignedto', 'batchfile_latitude','batchfile_longitude') // Include 'assignedto'
                     ->where('assignedto', $request->driver_id); // Filter by the driver
             }])
             ->get();
@@ -414,6 +414,7 @@ class AuthController extends Controller
             if ($search) {
                 $batchDetailsQuery->where(function($query) use ($search) {
                     $query->where('account_no', 'like', "%{$search}%")
+                          ->orWhere('id', 'like', "%{$search}%") 
                           ->orWhere('name', 'like', "%{$search}%")
                           ->orWhere('address', 'like', "%{$search}%")
                           ->orWhere('taman_mmid', 'like', "%{$search}%")
@@ -423,7 +424,7 @@ class AuthController extends Controller
             }
 
             $batchDetails = $batchDetailsQuery
-                ->select('id', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude', 'status', 'batchfile_longitude', 'pinned_at') 
+                ->select('id', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'state', 'post_code', 'roadname', 'assignedto', 'batchfile_latitude', 'status', 'batchfile_longitude', 'pinned_at') 
                 ->get();
 
             $pending = $batchDetails->where('status', 'Pending')->values();
@@ -663,7 +664,7 @@ class AuthController extends Controller
         $search = $request->search; // Get the search parameter
 
         $batchDetailsQuery = BatchDetail::where('assignedto', $driver_id)->where('status', '!=', 'soft_deleted')
-        ->select('id', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'assignedto', 'batchfile_latitude', 'batchfile_longitude', 'status', 'pinned_at')
+        ->select('id', 'fileid', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'state', 'post_code', 'roadname', 'assignedto', 'batchfile_latitude', 'batchfile_longitude', 'status', 'pinned_at')
         ->orderBy('pinned_at', 'desc');
 
         if ($batch_id) {
@@ -672,7 +673,8 @@ class AuthController extends Controller
         
         if ($search) {
             $batchDetailsQuery->where(function($query) use ($search) {
-                $query->where('account_no', 'like', "%{$search}%")
+                $query->where('account_no', 'like', "%{$search}%") 
+                      ->orWhere('id', 'like', "%{$search}%") 
                       ->orWhere('name', 'like', "%{$search}%")
                       ->orWhere('address', 'like', "%{$search}%")
                       ->orWhere('taman_mmid', 'like', "%{$search}%")
@@ -1001,23 +1003,41 @@ class AuthController extends Controller
 
     private function calculateDrivingDistance($lat1, $lon1, $lat2, $lon2)
     {
-        $apiKey =  env('GOOGLE_MAPS_API_KEY'); // Replace with your Google Maps API key
-        $origin = "{$lat1},{$lon1}";
-        $destination = "{$lat2},{$lon2}";
+         $apiKey =  env('GOOGLE_MAPS_API_KEY'); // Replace with your Google Maps API key
+         $origin = "{$lat1},{$lon1}";
+         $destination = "{$lat2},{$lon2}";
         
-        $url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins={$origin}&destinations={$destination}&mode=driving&key={$apiKey}";
+        // $url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins={$origin}&destinations={$destination}&mode=driving&key={$apiKey}";
     
+        // $response = file_get_contents($url);
+        // $data = json_decode($response, true);
+    
+        // if (isset($data['rows'][0]['elements'][0]['status']) && $data['rows'][0]['elements'][0]['status'] == 'OK') {
+        //     $distanceInMeters = $data['rows'][0]['elements'][0]['distance']['value'];
+        //     $distanceInKilometers = $distanceInMeters / 1000;
+        //     return $distanceInKilometers;
+        // }
+    
+        // // Return null or handle errors if the API request fails
+        // return null;
+        $url = "https://maps.googleapis.com/maps/api/directions/json?origin={$origin}&destination={$destination}&mode=driving&key={$apiKey}";
         $response = file_get_contents($url);
         $data = json_decode($response, true);
-    
-        if (isset($data['rows'][0]['elements'][0]['status']) && $data['rows'][0]['elements'][0]['status'] == 'OK') {
-            $distanceInMeters = $data['rows'][0]['elements'][0]['distance']['value'];
-            $distanceInKilometers = $distanceInMeters / 1000;
-            return $distanceInKilometers;
-        }
-    
-        // Return null or handle errors if the API request fails
+
+        // Check if the response contains a route
+        if (isset($data['routes'][0]['legs'][0]['distance']['value'])) {
+            // Distance in meters
+            $distanceInMeters = $data['routes'][0]['legs'][0]['distance']['value'];
+            
+            // Convert meters to kilometers
+            $distanceInKm = $distanceInMeters / 1000;
+            
+            // Display the distance in kilometers
+            return $distanceInKm;
+        } 
+
         return null;
+
     }
     
 
