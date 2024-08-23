@@ -884,7 +884,7 @@ class AuthController extends Controller
     public function forgotPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'phone_number' => 'required|string|min:10|max:15',
+            'phone_number' => 'required|string',
         ]);
     
         if ($validator->fails()) {
@@ -919,7 +919,7 @@ class AuthController extends Controller
     public function verifyResetCode(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'phone_number' => 'required|string|min:10|max:15',
+            'phone_number' => 'required|string',
             'reset_code' => 'required|string|size:4',
         ]);
 
@@ -945,7 +945,7 @@ class AuthController extends Controller
     public function resetPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'phone_number' => 'required|string|min:10|max:15',
+            'phone_number' => 'required|string',
             'reset_code' => 'required|string|size:4',
             'new_password' => 'required|string|min:6',
         ]);
