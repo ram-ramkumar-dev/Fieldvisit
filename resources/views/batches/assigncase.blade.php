@@ -249,7 +249,7 @@
 
     <script>$(document).ready( function () {
     $('.data-table').DataTable({
-        "pageLength": 50
+        "pageLength": <?php echo count($batchDetails); ?>
     });
 });
     function calculateChk() {

@@ -465,7 +465,11 @@ class ReportsController extends Controller
         $endDate = $request->input('end_date');
 
         $companyId = Session::get('company_id');  
- 
+        //get company name 
+        $companyname = DB::table('companies')  
+        ->select('company_name')
+        ->where('id', $companyId)->first();
+
         // Start building the query
         $query = DB::table('surveys') 
             ->join('batches', 'surveys.batch_id', '=', 'batches.id','left') 
@@ -483,7 +487,9 @@ class ReportsController extends Controller
         $data = $query->get();
         if ($action === 'export') {
             $zip = new ZipArchive();
-            $zipFileName = 'Photos.zip';
+          //  $zipFileName = 'Photos.zip';
+            $zipFileName = "{$companyname}_Photos_{$startDate->format('Ymd')}_to_{$endDate->format('Ymd')}.zip";
+
             $zipFilePath = public_path($zipFileName);
             
            
