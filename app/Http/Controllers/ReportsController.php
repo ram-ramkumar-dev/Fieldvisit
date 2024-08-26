@@ -488,7 +488,7 @@ class ReportsController extends Controller
         if ($action === 'export') {
             $zip = new ZipArchive();
           //  $zipFileName = 'Photos.zip';
-            $zipFileName = "{$companyname->company_name}_Photos_{$startDate->format('Ymd')}_to_{$endDate->format('Ymd')}.zip";
+            $zipFileName = "{$companyname->company_name}_Photos.zip";
 
             $zipFilePath = public_path($zipFileName);
             
