@@ -1,7 +1,28 @@
 @extends('layouts.app')
 
 @section('content')
-
+<style>
+#fullScreenLoader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; /* Ensure it appears above all other content */
+    flex-direction: column;
+}
+</style>
+<!-- Full-Screen Loader (hidden by default) -->
+<div id="fullScreenLoader" style="display: none;">
+    <div class="spinner-border text-light" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+    <p class="text-light mt-2">Uploading...</p>
+</div>
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
@@ -121,6 +142,7 @@
 
         document.getElementById('fileInput').addEventListener('change', function() {
             if (this.files.length > 0) {
+                document.getElementById('fullScreenLoader').style.display = 'flex';
                 document.getElementById('uploadForm').submit();
             }
         });

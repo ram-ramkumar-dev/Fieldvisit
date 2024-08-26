@@ -161,6 +161,12 @@ class BatchesController extends Controller
 
     public function uploadBatchDetails(Request $request, $id)
     {
+            // Increase the memory limit
+            ini_set('memory_limit', '512M'); // Adjust as needed
+
+            // Increase the maximum execution time
+            set_time_limit(300); // 5 minutes, adjust as needed
+
         // Validate the uploaded file
         $request->validate([
             'file' => 'required|mimes:xlsx,xls|max:2048',

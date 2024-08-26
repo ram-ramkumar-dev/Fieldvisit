@@ -291,29 +291,31 @@ table th, table td {
          <div class="leaderboard-header">
             <h4>Leaderboard</h4>
             <div class="driver-profile">
-                  <img src="{{ asset('assets/images/user/1.jpg') }}" alt="Driver Avatar">
-                  <div class="driver-info">
-                     <h5 style="text-transform: uppercase;">
-                     @php if ($topAgent['devicetoken']) { @endphp
+               <img src="{{ asset('assets/images/user/1.jpg') }}" alt="Driver Avatar">
+               <div class="driver-info">
+                  <h5 style="text-transform: uppercase;">
+                        @php if ($topAgent['devicetoken']) { @endphp
                            <span class="d-flex align-items-center">
-                              <svg  xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">
                                     <circle cx="12" cy="12" r="8" fill="#3cb72c"></circle>
                               </svg>
                               {{ $topAgent['driver_name'] }}
                            </span>
-                           @php } else { @endphp
-                              {{ $topAgent['driver_name'] }}
-                           @php } @endphp </h5>
-                           @php
-                           $width = ($topAgent['completed'] / $totalSurveys) * 100;
-                           @endphp
+                        @php } else { @endphp
+                           {{ $topAgent['driver_name'] }}
+                        @php } @endphp
+                  </h5>
 
-                     <div class="progress-bar">
+                  @php
+                  $width = $totalSurveys > 0 ? ($topAgent['completed'] / $totalSurveys) * 100 : 0;
+                  @endphp
+
+                  <div class="progress-bar">
                         <div class="progress" style="width: {{ $width }}%;"></div>
-                     </div>
-                     
-                     <span class="progress-count">{{ $topAgent['completed'] }}/{{ $totalSurveys }}</span>
                   </div>
+
+                  <span class="progress-count">{{ $topAgent['completed'] }}/{{ $totalSurveys }}</span>
+               </div>
             </div>
          </div>  
          <div class="leaderboard-body">
