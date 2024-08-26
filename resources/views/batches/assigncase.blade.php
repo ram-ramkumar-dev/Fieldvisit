@@ -144,7 +144,7 @@
             </td>
             <td>{{ $batch->fileid }}</td>
             <td>{{ $batch->account_no  }}-{{ $batch->name }}</td>            
-            <td>{{ $batch->address }}</td>             
+            <td><?php echo nl2br(htmlspecialchars($batch->address)); ?></td>     
             <td>{{ $batch->district_la }}</td>             
             <td>{{ $batch->taman_mmid }}</td> 
             <td> 

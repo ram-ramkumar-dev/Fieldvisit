@@ -308,7 +308,7 @@ class UserController extends Controller
         }
 
         // Check in drivers table
-        $driver = DB::table('drivers')->where('username', $request->username)->first();
+        $driver = DB::table('drivers')->where('username', $request->username)->where('app_login', 1)->first();
         if ($driver && Hash::check($request->password, $driver->password)) {
             Auth::loginUsingId($driver->id, true); // 'true' means "remember the user"
             $request->session()->put('user_type', 'driver');
@@ -319,8 +319,16 @@ class UserController extends Controller
             return redirect()->intended('/');
         }
 
+        // Check if the driver exists but doesn't meet the fv_login condition
+        if ($driver && !Hash::check($request->password, $driver->password)) {
+            return back()->withErrors([
+                'password' => 'Wrong username or password',
+            ]);
+        }
+
+        // Driver does not meet the fv_login condition
         return back()->withErrors([
-            'password' => 'Wrong username or password',
+            'access' => 'You do not have access to login.',
         ]);
     }
 

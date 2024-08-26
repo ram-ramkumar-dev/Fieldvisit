@@ -8,7 +8,7 @@
                    <div class="d-flex align-items-center justify-content-between">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb p-0 mb-0">
-                                <li class="breadcrumb-item"><a href="{{ route('clients.index') }}">Client Groups</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('clientgroups.index') }}">Client Groups</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">Add Client Group</li>
                             </ol>
                         </nav>

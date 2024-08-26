@@ -125,7 +125,7 @@
             </td> 
                                             <td>{{ $client->registration_no }}</td>
                                             <td>{{ $client->phone1 }}</td>   
-                                            <td>{{ $client->address }}</td>
+                                            <td><?php echo nl2br(htmlspecialchars($client->address)); ?></td>
                                             <td>{{ $client->city }}</td>
                                             <td>{{  $client->getStateName() ?: 'N/A'  }}</td>
                                             <td>{{ $client->postcode }}</td>                 
