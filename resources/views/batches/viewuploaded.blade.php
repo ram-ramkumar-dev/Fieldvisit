@@ -118,9 +118,7 @@
         @foreach ($batchedetail as $batch)
         <tr class="white-space-no-wrap"> 
             <td>{{ $batch->fileid }}</td>
-            <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-    <?php echo htmlspecialchars($batch->address); ?>
-</td>
+            <td>{{ $batch->address }}</td>
             <td>{{ $batch->district_la }}</td>
             <td>{{ $batch->taman_mmid }}</td>
             <td>1</td>

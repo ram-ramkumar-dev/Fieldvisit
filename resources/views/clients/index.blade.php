@@ -124,9 +124,9 @@
            @php } @endphp
             </td> 
                                             <td>{{ $client->registration_no }}</td>
-                                            <td>{{ $client->phone1 }}</td>  
-                                            <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">    <?php echo htmlspecialchars($batch->address); ?></td>
-                                             <td>{{ $client->city }}</td>
+                                            <td>{{ $client->phone1 }}</td>   
+                                            <td>{{ $client->address }}</td>
+                                            <td>{{ $client->city }}</td>
                                             <td>{{  $client->getStateName() ?: 'N/A'  }}</td>
                                             <td>{{ $client->postcode }}</td>                 
                                            
