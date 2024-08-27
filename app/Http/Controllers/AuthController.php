@@ -708,6 +708,26 @@ class AuthController extends Controller
         $completedCount = $completed->count();
         $abortedCount = $aborted->count();
 
+        // Add survey details for completed records only
+        $completed = $completed->map(function($batchDetail) {
+            // Join with the surveys table and add necessary columns
+            $surveyData = Survey::where('batch_detail_id', $batchDetail->id) 
+                                ->first();
+
+            if ($surveyData) {  
+                $surveyData->photo1 = $surveyData->photo1 ? asset('storage/' . $surveyData->photo1) : null;
+                $surveyData->photo2 = $surveyData->photo2 ? asset('storage/' . $surveyData->photo2) : null; 
+                $surveyData->photo3 = $surveyData->photo3 ? asset('storage/' . $surveyData->photo3) : null;
+                $surveyData->photo4 = $surveyData->photo4 ? asset('storage/' . $surveyData->photo4) : null;
+                $surveyData->photo5 = $surveyData->photo5 ? asset('storage/' . $surveyData->photo5) : null;
+
+                // Add the survey data to the batch detail
+                $batchDetail->survey = $surveyData;
+            }
+
+            return $batchDetail;
+        });
+
         return response()->json([
             'status' => 'success',
             'message' => 'Batch details retrieved successfully.',
