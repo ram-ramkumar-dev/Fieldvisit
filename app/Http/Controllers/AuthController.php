@@ -688,7 +688,8 @@ class AuthController extends Controller
         if ($driver_lat && $driver_long) {
             // Calculate distance and sort by distance
             $batchDetails = $batchDetails->map(function($batchDetail) use ($driver_lat, $driver_long) {
-                $batchDetail->distance = $this->calculateDrivingDistance($driver_lat, $driver_long, $batchDetail->batchfile_latitude, $batchDetail->batchfile_longitude);
+                $distance = $this->calculateDrivingDistance($driver_lat, $driver_long, $batchDetail->batchfile_latitude, $batchDetail->batchfile_longitude);
+                $batchDetail->distance = round($distance, 2); // Round the distance to 2 decimal places
                 return $batchDetail;
             })->sortBy('distance')->values();
         } else {
