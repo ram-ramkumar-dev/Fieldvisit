@@ -724,6 +724,8 @@ class AuthController extends Controller
 
                 // Add the survey data to the batch detail
                 $batchDetail->survey = $surveyData;
+            }else{
+                $batchDetail->survey = '';
             }
 
             return $batchDetail;
