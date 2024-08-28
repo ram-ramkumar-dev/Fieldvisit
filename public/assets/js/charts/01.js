@@ -661,8 +661,7 @@
         }
         return series;
       }
-
-
+ 
       if(jQuery("#chart-map-column-04").length){ 
         // Initialize the map
         const map = L.map('chart-map-column-04').setView([3.1390, 101.6869], 8);
@@ -672,21 +671,46 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
         
-        // Marker data
-        // const markers = [
-        //     { lat: 3.1390, lng: 101.6869, popup: "Kuala Lumpur" },
-        //     { lat: 5.4112, lng: 100.3354, popup: "Penang" },
-        //     { lat: 1.4927, lng: 103.7414, popup: "Johor Bahru" }
-        // ]; 
-        drivers.forEach(driver => {
-          if (driver.latitude && driver.longitude) {
-           const marker = L.marker([driver.latitude, driver.longitude]).addTo(map);
-           marker.bindPopup(driver.name.charAt(0).toUpperCase() + driver.name.slice(1));
-          }
-         });
-        
-         
+        // Function to get address from lat and long using Nominatim
+        function getAddress(lat, lng, callback) {
+            const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        callback(data.display_name);
+                    } else {
+                        callback('Address not available');
+                    }
+                })
+                .catch(() => callback('Address not available'));
         }
+    
+        // Loop through driver data and add markers
+        drivers.forEach(driver => {
+            if (driver.latitude && driver.longitude) {
+                const marker = L.marker([driver.latitude, driver.longitude]).addTo(map);
+    
+                // Initially bind popup with just the name
+                marker.bindPopup(`<strong>${driver.name.charAt(0).toUpperCase() + driver.name.slice(1)}</strong><br>Loading address...`);
+    
+                // Fetch the address and update the popup
+                getAddress(driver.latitude, driver.longitude, (address) => {
+                    marker.setPopupContent(`
+                        <strong>${driver.name.charAt(0).toUpperCase() + driver.name.slice(1)}</strong><br>
+                        ${address}
+                    `);
+                });
+    
+                // Zoom in to marker's location when clicked
+                marker.on('click', function() {
+                    map.setView([driver.latitude, driver.longitude], 20); // Adjust zoom level as needed
+                });
+            }
+        });
+    }
+    
       // if(jQuery("#chart-map-column-04").length){
       //   const map = L.map('chart-map-column-04').setView([4.2105, 101.9758], 7);
       //   var statesData = {"type":"FeatureCollection","features":[
