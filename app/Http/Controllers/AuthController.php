@@ -297,6 +297,7 @@ class AuthController extends Controller
                     ->whereIn('batch_id', function($query) {
                         $query->select('id')
                             ->from('batches')
+                            ->where('status','1')
                             ->where('softdelete', '!=', '1');
                     })
                     ->pluck('batch_id')
@@ -304,7 +305,7 @@ class AuthController extends Controller
                     ->toArray();
     
         // Total counts
-        $totalBatches = Batches::whereIn('id', $batchIds)->where('softdelete', '!=', '1')->count();
+        $totalBatches = Batches::whereIn('id', $batchIds)->where('status','1')->where('softdelete', '!=', '1')->count();
         $totalBatchDetails = BatchDetail::whereIn('batch_id', $batchIds)->where('assignedto', $request->driver_id)->count();
         $totalCompletedBatchDetails = BatchDetail::whereIn('batch_id', $batchIds)
             ->where('status', 'Completed')  ->where('assignedto', $request->driver_id)
@@ -313,6 +314,7 @@ class AuthController extends Controller
         // Get the batch details where the driver is assigned
         $batches = Batches::whereIn('id', $batchIds)
             ->select('id', 'batch_no')
+            ->where('status','1')
             ->where('softdelete', '!=', '1') // Select specific columns from Batches
             ->with(['batchDetails' => function($query) use ($request) {
                 $query->select('id', 'status', 'batch_id', 'address', 'district_la', 'taman_mmid', 'state', 'post_code', 'roadname', 'assignedto', 'batchfile_latitude','batchfile_longitude') // Include 'assignedto'
@@ -383,6 +385,7 @@ class AuthController extends Controller
 
         $batches = Batches::whereHas('batchDetails', function($query) use ($driver_id, $batch_id) {
             $query->where('batches.softdelete', '!=', '1');
+            $query->where('batches.status', '1');
             $query->where('assignedto', $driver_id);
             if ($batch_id) {
                 $query->where('batch_id', $batch_id);
@@ -664,8 +667,9 @@ class AuthController extends Controller
         $driver_long = $request->driver_longitude;
         $search = $request->search; // Get the search parameter
 
-        $batchDetailsQuery = BatchDetail::where('assignedto', $driver_id)->where('status', '!=', 'soft_deleted')
-        ->select('id', 'fileid', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'state', 'post_code', 'roadname', 'assignedto', 'batchfile_latitude', 'batchfile_longitude', 'status', 'pinned_at')
+        $batchDetailsQuery = BatchDetail::where('assignedto', $driver_id)
+        ->join('batches', 'batch_details.batch_id', '=', 'batches.id')->where('batches.status', '1')
+        ->select('batch_details.id', 'fileid', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'state', 'post_code', 'roadname', 'assignedto', 'batchfile_latitude', 'batchfile_longitude', 'batch_details.status', 'pinned_at')
         ->orderBy('pinned_at', 'desc');
 
         if ($batch_id) {
