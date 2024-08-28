@@ -717,11 +717,11 @@ class AuthController extends Controller
                                 ->first();
 
             if ($surveyData) {  
-                $surveyData->photo1 = $surveyData->photo1 ? asset('storage/' . $surveyData->photo1) : null;
-                $surveyData->photo2 = $surveyData->photo2 ? asset('storage/' . $surveyData->photo2) : null; 
-                $surveyData->photo3 = $surveyData->photo3 ? asset('storage/' . $surveyData->photo3) : null;
-                $surveyData->photo4 = $surveyData->photo4 ? asset('storage/' . $surveyData->photo4) : null;
-                $surveyData->photo5 = $surveyData->photo5 ? asset('storage/' . $surveyData->photo5) : null;
+                $surveyData->photo1 = $surveyData->photo1 ? asset($surveyData->photo1) : null;
+                $surveyData->photo2 = $surveyData->photo2 ? asset($surveyData->photo2) : null; 
+                $surveyData->photo3 = $surveyData->photo3 ? asset($surveyData->photo3) : null;
+                $surveyData->photo4 = $surveyData->photo4 ? asset($surveyData->photo4) : null;
+                $surveyData->photo5 = $surveyData->photo5 ? asset($surveyData->photo5) : null;
 
                 // Add the survey data to the batch detail
                 $batchDetail->survey = $surveyData;
