@@ -1,9 +1,6 @@
 <?php 
 // config/firebase.php
-
 return [
-    'credentials' => storage_path('app/config/service-account.json'), // Adjust path as necessary
-];
-
-
+    'credentials' => public_path('config/service-account.json'), // Adjust path as necessary
+]; 
 ?>
