@@ -215,9 +215,10 @@ class BatchesController extends Controller
                     $latitude = null;
                     $longitude = null;
                 }
-  
-                // Validate row data
-               // if ($this->validateRow($row)) {
+                    $amount = str_replace(',', '', $row[5]);
+                    $amount = (float)$amount; // Convert to float
+                    // Validate row data
+                    // if ($this->validateRow($row)) {
                     // Insert valid row data into the database
                     BatchDetail::create([
                         'batch_id' => $id,
@@ -226,7 +227,7 @@ class BatchesController extends Controller
                         'ic_no' => $row[2],
                         'account_no' => $row[3],
                         'bill_no' => $row[4],
-                        'amount' => $row[5],
+                        'amount' => $amount,
                         'address' => $row[6],
                         'district_la' => $row[7],
                         'taman_mmid' => $row[8],
