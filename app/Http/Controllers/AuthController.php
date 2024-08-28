@@ -505,6 +505,7 @@ class AuthController extends Controller
             $survey->dr_code = $request->dr_code;
             $survey->property_code = $request->property_code;
             $survey->occupancy = $request->occupancy; 
+            $survey->classification = $request->classification; 
             $survey->remark = $request->remark;
             $survey->visitdate = $convertedDate;
             $survey->visittime = $request->visittime;  
