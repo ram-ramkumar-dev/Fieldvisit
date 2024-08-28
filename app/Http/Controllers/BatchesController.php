@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage; 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Services\GeocodingService;
-use App\Services\FcmNotificationService;
+use App\Services\FireBase;
 
 class BatchesController extends Controller
 {
@@ -392,8 +392,8 @@ class BatchesController extends Controller
         $driver = Driver::find($assignedTo); // Assuming assignedTo is the driver's ID
         $deviceToken = $driver->devicetoken; // Ensure this is the correct field name
 
-       // $fcmService = new FcmNotificationService();
-       // $fcmService->sendNotification($deviceToken, 'Batches Assigned', 'You have been assigned new batches.');
+        $firebase = new FireBase();
+        $firebase->sendNotification($deviceToken, 'Batches Assigned', 'You have been assigned new batches.');
 
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Batches assigned to driver successfully.'); 
