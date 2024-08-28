@@ -393,7 +393,7 @@ class BatchesController extends Controller
         $deviceToken = $driver->devicetoken; // Ensure this is the correct field name
 
         $firebase = new FireBase();
-        $firebase->sendNotification($deviceToken, 'Batches Assigned', 'You have been assigned new batches.');
+        $firebase->sendPushNotification($deviceToken, 'Batches Assigned', 'You have been assigned new batches.');
 
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Batches assigned to driver successfully.'); 
