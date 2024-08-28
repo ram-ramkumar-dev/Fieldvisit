@@ -2,7 +2,7 @@
 // config/firebase.php
 
 return [
-    'credentials' => storage_path('app/service-account.json'), // Adjust path as necessary
+    'credentials' => base_path('config/service-account.json'), // Adjust path as necessary
 ];
 
 
