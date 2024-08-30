@@ -43,14 +43,16 @@
         </div> -->
 
         <div class="col-md-4 mb-3">
-            <label class="form-label font-weight-bold text-muted text-uppercase" for="fr_city">City:</label>
-            <input type="text" class="form-control" id="fr_city" name="fr_city" value="{{ request('fr_city') }}">
+            <label class="form-label font-weight-bold text-muted text-uppercase" for="fr_district">District:</label>
+            <input type="text" class="form-control" id="fr_district" name="fr_district" value="{{ request('fr_district') }}">
         </div>
 
         <div class="col-md-4 mb-3">
             <label class="form-label font-weight-bold text-muted text-uppercase" for="fr_postcode">Postcode:</label>
-            <input type="text" class="form-control" id="fr_postcode" name="fr_postcode" value="{{ request('fr_postcode') }}">
+            
+            <input type="text" class="form-control" id="fr_postcode" name="fr_postcode" value="{{ request('fr_postcode') }}"><p>Note : you can search the postcode with comma seperated (81000, 82000)</p>
         </div>
+        
 
         <div class="col-md-4 mb-3">
             <label class="form-label font-weight-bold text-muted text-uppercase" for="fr_state">State:</label>

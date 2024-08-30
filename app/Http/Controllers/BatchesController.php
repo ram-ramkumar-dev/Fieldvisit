@@ -298,7 +298,7 @@ class BatchesController extends Controller
 
         // Initialize query
         $query = BatchDetail::query(); 
-            
+         
         // Apply filters based on request data
         $filtersApplied = false; // Flag to check if any filters are applied
  
@@ -323,25 +323,33 @@ class BatchesController extends Controller
             $query->whereIn('tamna_mmid', $request->fr_mmid);
             $filtersApplied = true;
         }
-        if ($request->filled('fr_city')) {
-            $query->where('roadname', $request->fr_city);
+        if ($request->filled('fr_district')) {    
+            $query->where('district_la', 'like', '%' . $request->fr_district . '%');
             $filtersApplied = true;
         }
         if ($request->filled('fr_postcode')) {
-            $query->where('post_code', $request->fr_postcode);
+            $postcodes = explode(',', $request->fr_postcode);
+            $postcodes = array_map('trim', $postcodes);
+            
+              // Apply each postcode as a separate where condition
+            $query->where(function($q) use ($postcodes) {
+                foreach ($postcodes as $postcode) {
+                    $q->orWhere('post_code', $postcode);
+                }
+            });
             $filtersApplied = true;
         }
         if ($request->filled('fr_state')) {
-            $query->whereIn('state', $request->fr_state);
+            $query->where('state', 'like', '%' . $request->fr_state . '%'); 
             $filtersApplied = true;
         }
        
         // Only execute the query if filters are applied
         if ($filtersApplied) {
             $query->where('batch_id', $batchId);
-            $batchDetails = $query->get(); 
+            $batchDetails = $query->get();   
         } else { 
-            $batchDetails = BatchDetail::where('batch_id', $batchId)->get();
+            $batchDetails = BatchDetail::where('batch_id', $batchId)->where('status', 'New')->get();
         } 
         return view('batches.assigncase', compact('batches','drivers', 'batchId', 'batchDetails', 'states', 'page'));
     }
