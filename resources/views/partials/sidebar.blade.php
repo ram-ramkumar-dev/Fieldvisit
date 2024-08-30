@@ -85,7 +85,7 @@
                           </ul>
                       </li>
                       @endif
-                      @if(empty($permissions) || in_array('fieldvisit', $permissions))
+                      @if(empty($permissions) || in_array('adminstration', $permissions))
                       <li class="sidebar-layout {{ in_array($page, ['Status']) ? 'active' : '' }}">
                           <a href="#admin" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
                           <i class="">

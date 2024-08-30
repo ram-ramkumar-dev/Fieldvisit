@@ -87,16 +87,19 @@
 
                             <div class="col-md-6 mb-3">
                                 <label for="permissions" class="form-label font-weight-bold text-muted text-uppercase">Module Access</label>
+                                
+                                <input type="hidden" name="permissions[]" value="null">
                                 <select name="permissions[]" id="permissions" class="multipleSelect2 form-control choicesjs" multiple="true">
                                     <option value="setting" {{ in_array('setting', old('permissions', [])) ? 'selected' : '' }}>Setting</option>
-                                    <option value="fieldvisit" {{ in_array('fieldvisit', old('permissions', [])) ? 'selected' : '' }}>Field Visit</option>
+                                    <option value="adminstration" {{ in_array('adminstration', old('permissions', [])) ? 'selected' : '' }}>Administration</option>
                                     <option value="report" {{ in_array('report', old('permissions', [])) ? 'selected' : '' }}>Report</option>  
                                 </select>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label for="Text8" class="form-label font-weight-bold text-muted text-uppercase">Supervisor Configuration</label>
-                                <select name="supervisor[]" id="supervisor" class="multipleSelect2 form-control choicesjs" multiple="true">
+                                <input type="hidden" name="supervisor[]" value="null">
+                                <select name="supervisor[]" id="supervisor" class="multipleSelect2 form-control choicesjs" multiple="true" style="text-transform: uppercase;">
                                 @foreach($drivers as $driver) 
                                     <option value="{{ $driver->name }}" {{ in_array($driver->name, old('supervisor', [])) ? 'selected' : '' }}>
                                       {{ $driver->name }}

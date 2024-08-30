@@ -98,7 +98,7 @@
                                         $permissions = old('permissions', $driver->permissions) ?: [];
                                     @endphp
                                     <option {{ in_array('setting', $permissions) ? 'selected' : '' }} value="setting">Setting</option>
-                                    <option {{ in_array('fieldvisit', $permissions) ? 'selected' : '' }} value="fieldvisit">Field Visit</option>
+                                    <option {{ in_array('adminstration', $permissions) ? 'selected' : '' }} value="adminstration">Administration</option>
                                     <option {{ in_array('report', $permissions) ? 'selected' : '' }} value="report">Report</option>
                                 </select>
                             </div>
@@ -111,7 +111,7 @@
                                         $supervisor = old('supervisor', $driver->supervisor) ?: [];
                                     @endphp
                                     @foreach($drivers as $driver)
-                                    <option  {{ in_array($driver->name, $supervisor) ? 'selected' : '' }}  value="{{ $driver->name }}">{{ $driver->name }}</option> 
+                                    <option  {{ in_array($driver->username, $supervisor) ? 'selected' : '' }}  value="{{ $driver->username }}">{{ $driver->username }}</option> 
                                      @endforeach
                                 </select>
                             </div>

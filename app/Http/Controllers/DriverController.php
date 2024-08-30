@@ -41,11 +41,34 @@ class DriverController extends Controller
             'password' => 'required',
             'password_confirmation' => 'required|same:password',
         ]);
+        $permissions = $request->input('permissions', []);
+        $supervisor = $request->input('supervisor', []);
+        
+        // Filter out any 'null' values from the array
+        $permissions = array_filter($permissions, function($value) {
+            return $value !== 'null';
+        });
 
+        // If the filtered array is empty, you can either set it to an empty array or skip saving
+        if (empty($permissions)) {
+            $permissions = []; // Set to empty array if you want to save an empty array
+        }  
+
+        // Filter out any 'null' values from the array
+        $supervisor = array_filter($supervisor, function($value) {
+            return $value !== 'null';
+        });
+ 
+        if (empty($supervisor)) {
+            $supervisor = [];  
+        }  
+         
         //Driver::create($request->all());
         $driver = new Driver($request->all());
         $driver->company_id = $companyId;
-        $driver->password = Hash::make($request->password);
+        $driver->password = Hash::make($request->password); 
+        $driver->permissions = $permissions;
+        $driver->supervisor = $supervisor; 
         $driver->app_login = $request->input('app_login', 0);
         $driver->save();
 
