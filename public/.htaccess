@@ -19,7 +19,3 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
-<Directory "/srv/users/vranger-fieldvisit/apps/vranger-fieldvisit/storage/app/public/surveyphotos">
-    AllowOverride None
-    Require all granted
-</Directory>
