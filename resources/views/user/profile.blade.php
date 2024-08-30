@@ -12,7 +12,7 @@
                   <h3 class="font-600 text-white text-center mb-0" style="text-transform:uppercase">{{ $user->name }} </h3>
                   <p class="text-white text-center mb-5" style="text-transform:uppercase">{{ $user->company_name }}</p>
                </div>
-               <div class="pro-content rounded">
+               <?php if($user->email){ ?><div class="pro-content rounded">
                   <div class="d-flex align-items-center mb-3">
                      <div class="p-icon mr-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="text-primary" width="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -21,6 +21,7 @@
                      </div>
                      <p class="mb-0 eml">{{ ucfirst($user->email) }}</p>
                   </div>
+                  <?php } ?>
                   <div class="d-flex align-items-center mb-3">
                      <div class="p-icon mr-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="text-primary" width="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
