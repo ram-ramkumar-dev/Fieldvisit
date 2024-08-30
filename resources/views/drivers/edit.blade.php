@@ -105,6 +105,7 @@
 
                             <div class="col-md-6 mb-3">
                                 <label for="Text8" class="form-label font-weight-bold text-muted text-uppercase">Supervisor Configuration</label>
+                                <input type="hidden" name="supervisor[]" value="null">
                                 <select name="supervisor[]" id="supervisor" class="multipleSelect2 form-control choicesjs" multiple="true">
                                     @php
                                         $supervisor = old('supervisor', $driver->supervisor) ?: [];

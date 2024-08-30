@@ -75,11 +75,10 @@ class DriverController extends Controller
             'name' => 'required',
            // 'email' => 'required|email|unique:drivers,email,' . $id,
             'username' => 'required|unique:drivers,username,' . $id,
-           // 'password' => 'nullable',
-
+           // 'password' => 'nullable', 
         ]);
         $permissions = $request->input('permissions', []);
-
+        $supervisor = $request->input('supervisor', []);
         //$driver = Driver::findOrFail($id);
         //$driver->update($request->all());
         $driver = Driver::findOrFail($id);
@@ -88,11 +87,29 @@ class DriverController extends Controller
             $driver->password = Hash::make($request->password);
         }
         $driver->app_login = $request->input('app_login', 0);
-        if (in_array('null', $permissions)) {
-            $permissions = null;
+
+        // Filter out any 'null' values from the array
+        $permissions = array_filter($permissions, function($value) {
+            return $value !== 'null';
+        });
+
+        // If the filtered array is empty, you can either set it to an empty array or skip saving
+        if (empty($permissions)) {
+            $permissions = []; // Set to empty array if you want to save an empty array
         } 
         // Save or update the driver with the permissions
         $driver->permissions = $permissions;
+
+        // Filter out any 'null' values from the array
+        $supervisor = array_filter($supervisor, function($value) {
+            return $value !== 'null';
+        });
+ 
+        if (empty($supervisor)) {
+            $supervisor = [];  
+        }  
+         
+        $driver->supervisor = $supervisor; 
         $driver->save();
         
         return redirect()->route('drivers.index')->with('success', 'Driver updated successfully.');

@@ -96,8 +96,8 @@
                                                 <td style="text-transform: uppercase;">{{ $driver->username }}  </td>
                                                 <td>{{ $driver->phone_number }}  </td>
                                                 <td>{{ $driver->sensitive }}  </td>
-                                                <td>{{ implode(', ', (array) $driver->permissions) }}</td>
-                                                <td>{{ implode(', ', (array) $driver->supervisor) }}</td>                   
+                                                <td style="text-transform: uppercase;">{{ implode(', ', (array) $driver->permissions) }}</td>
+                                                <td style="text-transform: uppercase;">{{ implode(', ', (array) $driver->supervisor) }}</td>                   
                                                 
                                                 <td>
                                                     <div class="d-flex align-items-center">

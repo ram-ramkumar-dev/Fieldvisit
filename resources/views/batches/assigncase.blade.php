@@ -110,14 +110,20 @@
                                             <th >
                                                 <label class="text-muted mb-0" >Address</label>
                                             </th> 
+                                            <th >
+                                                <label class="text-muted mb-0" >IC No</label>
+                                            </th> 
                                             
+                                            <th >
+                                                <label class="text-muted mb-0" >State</label>
+                                            </th> 
+                                            
+                                            <th >
+                                                <label class="text-muted mb-0" >PostCode</label>
+                                            </th> 
                                             <th >
                                                 <label class="text-muted mb-0" >District</label>
-                                            </th> 
-                                            
-                                            <th >
-                                                <label class="text-muted mb-0" >Taman</label>
-                                            </th> 
+                                            </th>  
                                             <th >
                                                 <label class="text-muted mb-0" >
                                                 Status
@@ -144,9 +150,11 @@
             </td>
             <td>{{ $batch->fileid }}</td>
             <td>{{ $batch->account_no  }}-{{ $batch->name }}</td>            
-            <td>{{ $batch->address }}</td>             
+            <td>{{ $batch->address }}</td>         
+            <td>{{ wordwrap($batch->ic_no, 10, "\u{200B}", true) }}</td>             
+            <td>{{ $batch->state }}</td>       
+            <td>{{ $batch->post_code }}</td>          
             <td>{{ $batch->district_la }}</td>             
-            <td>{{ $batch->taman_mmid }}</td> 
             <td> 
             @php 
                 if ($batch->status == 'New'){ @endphp
