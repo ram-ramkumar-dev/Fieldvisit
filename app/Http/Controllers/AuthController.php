@@ -417,7 +417,8 @@ class AuthController extends Controller
             if ($search) {
                 $batchDetailsQuery->where(function($query) use ($search) {
                     $query->where('account_no', 'like', "%{$search}%")
-                          ->orWhere('id', 'like', "%{$search}%") 
+                          //->orWhere('id', 'like', "%{$search}%") 
+                          ->orWhere('fileid', 'like', "%{$search}%") 
                           ->orWhere('name', 'like', "%{$search}%")
                           ->orWhere('address', 'like', "%{$search}%")
                           ->orWhere('taman_mmid', 'like', "%{$search}%")
@@ -679,7 +680,8 @@ class AuthController extends Controller
         if ($search) {
             $batchDetailsQuery->where(function($query) use ($search) {
                 $query->where('account_no', 'like', "%{$search}%") 
-                      ->orWhere('batch_details.id', 'like', "%{$search}%") 
+                      //->orWhere('batch_details.id', 'like', "%{$search}%") 
+                      ->orWhere('fileid', 'like', "%{$search}%") 
                       ->orWhere('name', 'like', "%{$search}%")
                       ->orWhere('address', 'like', "%{$search}%")
                       ->orWhere('taman_mmid', 'like', "%{$search}%")
