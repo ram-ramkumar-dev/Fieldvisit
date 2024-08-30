@@ -339,8 +339,15 @@ class BatchesController extends Controller
             });
             $filtersApplied = true;
         }
-        if ($request->filled('fr_state')) {
-            $query->where('state', 'like', '%' . $request->fr_state . '%'); 
+        if ($request->filled('fr_state')) { 
+            $fr_state = $request->fr_state; // This is an array
+
+            // Apply partial match for each state
+            $query->where(function ($q) use ($fr_state) {
+                foreach ($fr_state as $state) {
+                    $q->orWhere('state', 'like', '%' . $state . '%');
+                }
+            });
             $filtersApplied = true;
         }
        
@@ -351,6 +358,7 @@ class BatchesController extends Controller
         } else { 
             $batchDetails = BatchDetail::where('batch_id', $batchId)->where('status', 'New')->get();
         } 
+         
         return view('batches.assigncase', compact('batches','drivers', 'batchId', 'batchDetails', 'states', 'page'));
     }
 

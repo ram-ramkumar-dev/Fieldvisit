@@ -59,7 +59,7 @@
             <select class="multipleSelect2 form-control choicesjs" multiple="true" name="fr_state[]">
                 <option value="">Select All</option>
                 @foreach ($states as $state)
-                    <option value="{{ $state->id }}" {{ in_array($state->id, request('fr_state', [])) ? 'selected' : '' }}>
+                    <option value="{{ $state->state_name }}" {{ in_array($state->state_name, request('fr_state', [])) ? 'selected' : '' }}>
                         {{ $state->state_name }}
                     </option>
                 @endforeach
