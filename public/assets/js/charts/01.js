@@ -662,7 +662,7 @@
         return series;
       }
  
-      if(jQuery("#chart-map-column-04").length){ 
+      if (jQuery("#chart-map-column-04").length) { 
         // Initialize the map
         const map = L.map('chart-map-column-04').setView([3.1390, 101.6869], 8);
         
@@ -670,7 +670,7 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
-        
+    
         // Function to get address from lat and long using Nominatim
         function getAddress(lat, lng, callback) {
             const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
@@ -692,25 +692,36 @@
             if (driver.latitude && driver.longitude) {
                 const marker = L.marker([driver.latitude, driver.longitude]).addTo(map);
     
-                // Initially bind popup with just the name
-                marker.bindPopup(`<strong>${driver.name.charAt(0).toUpperCase() + driver.name.slice(1)}</strong><br>Loading address...`);
+                // Initially bind the name to the popup for hover
+                const namePopup = `<strong>${driver.name.charAt(0).toUpperCase() + driver.name.slice(1)}</strong>`;
+                marker.bindPopup(namePopup);
     
-                // Fetch the address and update the popup
-                getAddress(driver.latitude, driver.longitude, (address) => {
-                    marker.setPopupContent(`
-                        <strong>${driver.name.charAt(0).toUpperCase() + driver.name.slice(1)}</strong><br>
-                        ${address}
-                    `);
+                // Show name popup on mouseover
+                marker.on('mouseover', function() {
+                    marker.openPopup();
                 });
     
-                // Zoom in to marker's location when clicked
+                // Hide name popup on mouseout
+                marker.on('mouseout', function() {
+                    marker.closePopup();
+                });
+    
+                // Fetch the address and update the popup on click, then zoom in
                 marker.on('click', function() {
+                    getAddress(driver.latitude, driver.longitude, (address) => {
+                        const fullPopupContent = `
+                            <strong>${driver.name.charAt(0).toUpperCase() + driver.name.slice(1)}</strong><br>
+                            ${address}
+                        `;
+                        marker.setPopupContent(fullPopupContent);
+                        marker.openPopup(); // Reopen the popup with full content
+                    });
                     map.setView([driver.latitude, driver.longitude], 20); // Adjust zoom level as needed
                 });
             }
         });
     }
-    
+        
       // if(jQuery("#chart-map-column-04").length){
       //   const map = L.map('chart-map-column-04').setView([4.2105, 101.9758], 7);
       //   var statesData = {"type":"FeatureCollection","features":[

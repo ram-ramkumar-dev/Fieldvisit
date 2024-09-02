@@ -568,7 +568,10 @@ class AuthController extends Controller
         
         // Ensure the folder exists
         if (!Storage::exists($folderPath)) {
-            Storage::makeDirectory($folderPath, 0755, true);
+            Storage::makeDirectory($folderPath, 0775, true);
+          
+            // Set correct permissions after creating the directory
+            chmod(storage_path("app/{$folderPath}"), 0775);
         }
         
         // Define the filename with the desired format 

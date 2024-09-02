@@ -207,34 +207,20 @@ table th, table td {
                      </div>
                </div>
             </div>
-            <?php 
-             $colors  = [
-               'Red', 'Blue', 'Green', 'Yellow', 'Orange', 'Purple', 'Pink', 'Brown', 'Gray', 'Black', 'White',
-               'AliceBlue', 'AntiqueWhite', 'Aqua', 'Aquamarine', 'Azure', 'Beige', 'Bisque', 'BlanchedAlmond',
-               'BlueViolet', 'BurlyWood', 'CadetBlue', 'Chartreuse', 'Chocolate', 'Coral', 'CornflowerBlue',
-               'Cornsilk', 'Crimson', 'Cyan', 'DarkBlue', 'DarkCyan', 'DarkGoldenRod', 'DarkGray', 'DarkGreen',
-               'DarkKhaki', 'DarkMagenta', 'DarkOliveGreen', 'DarkOrange', 'DarkOrchid', 'DarkRed', 'DarkSalmon',
-               'DarkSeaGreen', 'DarkSlateBlue', 'DarkSlateGray', 'DarkTurquoise', 'DarkViolet'];
-           
-           ?>
-
             <div class="card-body-list" style="overflow: scroll;">               
             <ul class="list-style-3 mb-0" id="batchList" style="height: 275px;">
                   @foreach ($counts as $k => $batch) 
-                  <?php
-                                  $color = $colors[$k % count($colors)]; 
-                  ?>
                      <li class="p-3 list-item d-flex flex-column align-items-start">
                            <div class="d-flex justify-content-start align-items-center w-100">
                               <div class="list-style-detail mr-2">
-                                 <p class="mb-0"  style="color: {{ $color  }};">{{ ucfirst($batch->batch_no) }}</p>
+                                 <p class="mb-0">{{ ucfirst($batch->batch_no) }}</p>
                               </div>
                               <div class="list-style-action ml-auto">
-                                 <h6 class="font-weight-bold"  style="color: {{ $color  }};" id="campaignnumbers">{{ $batch->batch_details_count }}</h6>
+                                 <h6 class="font-weight-bold" id="campaignnumbers">{{ $batch->batch_details_count }}</h6>
                               </div>
                            </div>
                            <div class="w-100">
-                              <progress style=" accent-color: {{ $color  }};width: 100%;    height: 5px;" id="file" value="{{ $batch->batch_details_count }}" max="100">{{ $batch->batch_details_count }}%</progress>
+                              <progress style="width: 100%;height: 5px;" id="file" value="{{ $batch->batch_details_count }}" max="100">{{ $batch->batch_details_count }}%</progress>
                            </div>
                      </li>
                   @endforeach
@@ -669,13 +655,22 @@ var getBatchforchartData03 = '{{ route("getBatchProgressForChart03") }}';
 <script>
 
        function campaigncounts(filter){ 
-
+            var color;
+            if(filter == 'completed'){
+               color = '#3cb72c';
+            }else if(filter == 'pending'){
+               color = '#ffbb33';
+            }else if(filter == 'abort'){
+               color = '#e60000';
+            }else{
+               color = '';
+            } 
             $.ajax({
                 url: '{{ route("getCampaignPerformance") }}', // Your API endpoint
                 type: 'GET',
                 data: { filter: filter },
                 success: function(response) {
-                    updateBatchList(response.batches);
+                    updateBatchList(response.batches, color);
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching batch counts:', error);
@@ -683,17 +678,14 @@ var getBatchforchartData03 = '{{ route("getBatchProgressForChart03") }}';
             });
         }
 
-        function updateBatchList(batches) {
+        function updateBatchList(batches, color) { 
            // Hide the dropdown menu
            var dropdownMenu = document.getElementById('CampaignMenu');
             if (dropdownMenu) {
                 dropdownMenu.classList.remove('show');
             }
-            $('#batchList').empty();
-            var colors = <?php echo json_encode($colors); ?>; 
-            batches.forEach(function(batch, index) {
-            var color = colors[index % colors.length];
-            
+            $('#batchList').empty(); 
+            batches.forEach(function(batch, index) { 
             var listItem = `
                <li class="p-3 list-item d-flex flex-column align-items-start" data-batch-id="${batch.id}">
                      <div class="d-flex justify-content-start align-items-center w-100">
