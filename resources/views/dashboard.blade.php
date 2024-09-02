@@ -220,7 +220,7 @@ table th, table td {
                               </div>
                            </div>
                            <div class="w-100">
-                              <progress style="width: 100%;height: 5px;" id="file" value="{{ $batch->batch_details_count }}" max="{{ $batch->batch_details_count }}">{{ $batch->batch_details_count }}%</progress>
+                              <progress style="width: 100%;height: 5px;" id="file" value="{{ $batch->batch_details_count }}" max="100">{{ $batch->batch_details_count }}%</progress>
                            </div>
                      </li>
                   @endforeach
@@ -697,7 +697,7 @@ var getBatchforchartData03 = '{{ route("getBatchProgressForChart03") }}';
                         </div>
                      </div>
                      <div class="w-100">
-                        <progress style="accent-color: ${color}; width: 100%; height: 5px;" id="file" value="${batch.count}" max="${batch.count}">${batch.count}%</progress>
+                        <progress style="accent-color: ${color}; width: 100%; height: 5px;" id="file" value="${batch.count}" max="100">${batch.count}%</progress>
                      </div>
                </li>`;
             
