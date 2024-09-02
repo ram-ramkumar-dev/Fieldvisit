@@ -671,6 +671,7 @@ class AuthController extends Controller
         $batchDetailsQuery = BatchDetail::where('assignedto', $driver_id)
         ->join('batches', 'batch_details.batch_id', '=', 'batches.id')->where('batches.status', '1')
         ->select('batch_details.id', 'fileid', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'state', 'post_code', 'roadname', 'assignedto', 'batchfile_latitude', 'batchfile_longitude', 'batch_details.status', 'pinned_at')
+        ->orderByRaw('COALESCE(pinned_at, fileid)') // Order by pinned_at if not null, otherwise by fileid
         ->orderBy('pinned_at', 'desc');
 
         if ($batch_id) {
