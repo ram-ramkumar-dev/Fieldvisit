@@ -24,10 +24,16 @@ class FetchPermissions
 
             if ($userType == 'user') {
                 $permissions = json_decode(Auth::user()->permissions, true);
+                if ($permissions === null) {
+                    $permissions = [];
+                }
             } elseif ($userType == 'driver') {
                 $driver = \DB::table('drivers')->where('id', Auth::id())->first();
                 if ($driver) {
                     $permissions = json_decode($driver->permissions, true);
+                    if ($permissions === null) {
+                        $permissions = [];
+                    }
                 }
             }
         }

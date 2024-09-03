@@ -463,6 +463,7 @@ class ReportsController extends Controller
         $requestbatches = $request->input('batches'); 
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
+        $removeTimestamp = $request->input('remove_timestamp', false); // Default to false if not provided
 
         $companyId = Session::get('company_id');  
         //get company name 
@@ -503,6 +504,10 @@ class ReportsController extends Controller
                             $photoPath = public_path($photo);
     
                             if (file_exists($photoPath)) {
+                                // Conditionally remove timestamp from the image
+                                if ($removeTimestamp == '1') { // Dropdown sends value as string
+                                    $photoPath = $this->removeTimestamp($photoPath);
+                                }
                                 $zip->addFile($photoPath, basename($photoPath));
                             }
                         }
@@ -526,4 +531,61 @@ class ReportsController extends Controller
             ]);
         }
     }    
+
+    private function removeTimestamp($photoPath)
+    {
+        $ext = pathinfo($photoPath, PATHINFO_EXTENSION);
+        $image = null;
+
+        // Create image resource based on the file type
+        switch (strtolower($ext)) {
+            case 'jpeg':
+            case 'jpg':
+                $image = imagecreatefromjpeg($photoPath);
+                break;
+            case 'png':
+                $image = imagecreatefrompng($photoPath);
+                break;
+            case 'gif':
+                $image = imagecreatefromgif($photoPath);
+                break;
+            default:
+                return $photoPath; // Unsupported format
+        }
+
+        // Define the area to cover (bottom of the image)
+        $width = imagesx($image);
+        $height = imagesy($image);
+        $x = 0;
+        $y = $height - 100; // Adjust height according to the area to cover
+        $rectWidth = $width;
+        $rectHeight = 100; // Height of the cover area
+
+        // Define the color of the rectangle (white in this case)
+        $color = imagecolorallocate($image, 0, 0, 0);
+
+        // Draw the rectangle to cover the timestamp
+        imagefilledrectangle($image, $x, $y, $x + $rectWidth, $y + $rectHeight, $color);
+
+        // Save the image with the timestamp removed
+        $newPhotoPath = pathinfo($photoPath, PATHINFO_FILENAME) . '_no_timestamp.' . $ext;
+
+        switch (strtolower($ext)) {
+            case 'jpeg':
+            case 'jpg':
+                imagejpeg($image, $newPhotoPath);
+                break;
+            case 'png':
+                imagepng($image, $newPhotoPath);
+                break;
+            case 'gif':
+                imagegif($image, $newPhotoPath);
+                break;
+        }
+
+        // Free up memory
+        imagedestroy($image);
+
+        return $newPhotoPath;
+    }
 }

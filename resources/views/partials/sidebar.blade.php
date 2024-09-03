@@ -1,4 +1,16 @@
-        <div class="iq-sidebar  sidebar-default  ">
+<?php
+// Assuming $user is the logged-in user object
+$user_type = session('user_type'); // 'Driver' or 'User'
+if (is_string($permissions)) {
+    $permissions = json_decode($permissions, true); // Decode only if it's a JSON string
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        $permissions = []; // Set to empty array if JSON decoding fails
+    }
+}
+$permissions = $user_type === 'driver' ? $permissions : [];
+ 
+?>
+<div class="iq-sidebar  sidebar-default  ">
           <div class="iq-sidebar-logo d-flex align-items-end justify-content-between">
                <a href="{{ route('dashboard') }}" class="header-logo">
                   <img src="{{ asset('assets/images/V-Ranger_Sidebar_Text.png') }}" class="img-fluid rounded-normal light-logo" alt="logo">
@@ -36,8 +48,9 @@
                               <!--<p class="mb-0 w-10 badge badge-pill badge-primary">6</p>-->
                           </a> 
                       </li>
-                      @if(empty($permissions) || in_array('setting', $permissions))
-                      <li class="sidebar-layout {{ in_array($page, ['Drivers', 'Clientgroups', 'Clients']) ? 'active' : '' }} ">
+
+                      <?php if ($user_type === 'user'): ?>
+                        <li class="sidebar-layout {{ in_array($page, ['Drivers', 'Clientgroups', 'Clients']) ? 'active' : '' }} ">
                           <a href="#settings" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
                               <i>
                                   <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -83,10 +96,7 @@
                                   </a>
                               </li> 
                           </ul>
-                      </li>
-                      @endif
-                      @if(empty($permissions) || in_array('adminstration', $permissions))
-                      <li class="sidebar-layout {{ in_array($page, ['Status']) ? 'active' : '' }}">
+                      </li> <li class="sidebar-layout {{ in_array($page, ['Status']) ? 'active' : '' }}">
                           <a href="#admin" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
                           <i class="">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -131,9 +141,6 @@
                               </li> 
                           </ul>
                       </li>
-                      @endif
- 
-                      @if(empty($permissions) || in_array('report', $permissions))
                       <li class="sidebar-layout  {{ in_array($page, ['agentkpi', 'surveyresult']) ? 'active' : '' }}">
                           <a href="#reports" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
                               <i>
@@ -171,7 +178,145 @@
                               </li> 
                           </ul>
                       </li> 
-                      @endif  
+                      <?php elseif ($user_type === 'driver'): ?>
+                        <?php if (in_array('setting', $permissions)): ?> 
+                            <li class="sidebar-layout {{ in_array($page, ['Drivers', 'Clientgroups', 'Clients']) ? 'active' : '' }} ">
+                          <a href="#settings" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
+                              <i>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                  </svg>
+                              </i>
+                              <span class="ml-2">Settings</span>
+                              <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon iq-arrow-right arrow-active" width="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                              </svg>
+                          </a>
+                          
+                          <ul id="settings" class="submenu collapse" data-parent="#iq-sidebar-toggle">                        
+                               
+                              <li class="{{ $page == 'Drivers' ? 'active' : '' }}  sidebar-layout">
+                                  <a href="{{ route('drivers.index') }}" class="svg-icon">
+                                      <i class="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+</svg>
+
+                                      </i><span class="">Users</span>
+                                  </a>
+                              </li>
+                              <li class="{{ $page == 'Clientgroups' ? 'active' : '' }}  sidebar-layout">
+                                  <a href="{{ route('clientgroups.index') }}" class="svg-icon">
+                                      <i class="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+</svg>
+
+                                      </i><span class="">Client Groups</span>
+                                  </a>
+                              </li> 
+                              <li class="{{ $page == 'Clients' ? 'active' : '' }}  sidebar-layout">
+                                  <a href="{{ route('clients.index') }}" class="svg-icon">
+                                      <i class="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+</svg>
+
+                                      </i><span class="">Clients</span>
+                                  </a>
+                              </li> 
+                          </ul>
+                      </li> 
+                      <?php endif; ?>
+                      <?php if (in_array('adminstration', $permissions)): ?>
+ 
+                        <li class="sidebar-layout {{ in_array($page, ['Status']) ? 'active' : '' }}">
+                          <a href="#admin" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
+                          <i class="">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                                  </svg>
+                              </i>
+                              <span class="ml-2">Administration</span>
+                              <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon iq-arrow-right arrow-active" width="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                              </svg>
+                          </a>
+                          <ul id="admin" class="submenu collapse" data-parent="#iq-sidebar-toggle">                        
+                          
+                              <li class="{{ $page == 'Status' ? 'active' : '' }} sidebar-layout">
+                                  <a href="{{ route('statuses.index') }}" class="svg-icon">
+                                      <i class="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
+                                      </i><span class="">Status</span>
+                                  </a>
+                              </li> 
+                              <li class="{{ $page == 'Batches' ? 'active' : '' }} sidebar-layout">
+                                  <a href="{{ route('batches.index') }}" class="svg-icon">
+                                      <i class="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
+                                      </i><span class="">Add Batch</span>
+                                  </a>
+                              </li>
+                              <li class="{{ $page == 'ImportBatch' ? 'active' : '' }} sidebar-layout">
+                                  <a href="{{ route('batches.import') }}" class="svg-icon">
+                                      <i class="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
+                                      </i><span class="">Import Batch</span>
+                                  </a>
+                              </li> 
+                              
+                              <li class="{{ $page == 'Assign' ? 'active' : '' }} sidebar-layout">
+                                  <a href="{{ route('batches.assign') }}" class="svg-icon">
+                                      <i class="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
+                                      </i><span class="">Assign Case</span>
+                                  </a>
+                              </li> 
+                          </ul>
+                      </li>
+                      <?php endif; ?>
+            <?php if (in_array('report', $permissions)): ?>
+
+                      <li class="sidebar-layout  {{ in_array($page, ['agentkpi', 'surveyresult']) ? 'active' : '' }}">
+                          <a href="#reports" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
+                              <i>
+                                  <svg class="svg-icon" id="iq-form-1" width="18" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" style="stroke-dasharray: 74, 94; stroke-dashoffset: 0;"></path>
+                                  </svg>
+                              </i>
+                              <span class="ml-2">Reports</span>
+                              <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon iq-arrow-right arrow-active" width="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                              </svg>
+                          </a>
+                          <ul id="reports" class="submenu collapse" data-parent="#iq-sidebar-toggle">                        
+                               
+                              <li class="{{ $page == 'surveyresult' ? 'active' : '' }} sidebar-layout">
+                                  <a href="{{ route('reports.surveyresult') }}" class="svg-icon">
+                                      <i class="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
+                                      </i><span class="">Survey Result</span>
+                                  </a>
+                              </li>
+                              <li class="{{ $page == 'surveyphotos' ? 'active' : '' }} sidebar-layout">
+                                  <a href="{{ route('reports.surveyphotos') }}" class="svg-icon">
+                                      <i class="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
+                                      </i><span class="">Survey Photos</span>
+                                  </a>
+                              </li> 
+                              <li class="{{ $page == 'agentkpi' ? 'active' : '' }} sidebar-layout">
+                                  <a href="{{ route('reports.agentKpi') }}" class="svg-icon">
+                                      <i class="">
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
+                                      </i><span class="">Agent KPI</span>
+                                  </a>
+                              </li> 
+                          </ul>
+                      </li> 
+                      <?php endif; ?>
+                      <?php endif; ?> 
                   </ul>
               </nav>
               <div class="pt-5 pb-5"></div>

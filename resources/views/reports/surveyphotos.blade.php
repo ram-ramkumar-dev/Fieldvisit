@@ -24,8 +24,8 @@
                             <option {{ request('batches') == $batch->id ? 'selected' : '' }} value="{{ $batch->id }}">{{ ucfirst($batch->batch_no) }}</option>
                         @endforeach
                     </select>
-                    </div>
-                   
+                    </div>  
+                  
                         <div class="col-md-4 mb-3">
                         <div class="form-group">
                                 <label for="exampleInputdate">From</label>
@@ -37,7 +37,15 @@
                             <label for="exampleInputdate">To</label>
                             <input type="date" class="form-control" id="exampleInputdate" name ="end_date" value="{{ request('end_date') }}">
                         </div>
-                        </div>  
+                        </div>    <div class="col-md-4 mb-3">
+                    <label for="batches">Remove Timestamp:</label> 
+                    <select  class="form-control" name="remove_timestamp">
+                        <option value="">Select</option>
+                        <option {{ request('remove_timestamp') == 0 ? 'selected' : '' }} value="0">Keep Timestamp</option>
+                        <option {{ request('remove_timestamp') == 1 ? 'selected' : '' }} value="1">Remove Timestamp</option>
+                    </select>
+                    </div>
+                     
                         <div class="col-md-12 mb-3">
                          <div  >       
                         <button type="button" onclick="location.href='{{ route('reports.surveyphotos') }}'" class=" btn btn-warning">Reset</button>
