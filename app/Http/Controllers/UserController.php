@@ -123,7 +123,7 @@ class UserController extends Controller
                          ])->withCount('batchDetails')->get();
         $totalBatchDetailsCount = $data['totalbatches']->sum('batch_details_count');
         $data['totalBatchDetailsCount'] = $totalBatchDetailsCount;
-        $counts = Batches::where('company_id', $companyId)
+        $counts = Batches::where('company_id', $companyId)->where('status', 1)
                                 ->withCount([
                                     'batchDetails as completed_count' => function ($query) {
                                         $query->where('status', 'completed');
@@ -167,6 +167,7 @@ class UserController extends Controller
               ->select(DB::raw('MONTHNAME(assignedon) as month'), DB::raw('COUNT(*) as count'))
               ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
               ->where('batches.company_id', $companyId) 
+              ->where('batches.status', 1) 
               ->whereIn(DB::raw('MONTHNAME(assignedon)'), $months)
               ->where('batch_details.status', 'Completed') // Assuming there's a 'status' column with 'completed' status
               ->groupBy(DB::raw('MONTH(assignedon)'), DB::raw('MONTHNAME(assignedon)'))
@@ -179,6 +180,7 @@ class UserController extends Controller
               ->select(DB::raw('MONTHNAME(visitdate) as month'), DB::raw('COUNT(*) as count'))
               ->join('batches', 'surveys.batch_id', '=', 'batches.id')
               ->where('batches.company_id', $companyId) 
+              ->where('batches.status', 1) 
               ->whereIn(DB::raw('MONTHNAME(visitdate)'), $months)
               ->groupBy(DB::raw('MONTH(visitdate)'), DB::raw('MONTHNAME(visitdate)'))
               ->orderBy(DB::raw('MONTH(visitdate)'))
@@ -216,6 +218,7 @@ class UserController extends Controller
                 ->where('batch_details.status', 'Completed')
                 ->whereDate('batch_details.assignedon', $date)
                 ->where('batches.company_id', $companyId) 
+                ->where('batches.status', 1) 
                 ->get();
             
             $lastFourDaysData['completed'][] = $completedData->count(); 
@@ -226,6 +229,7 @@ class UserController extends Controller
                 ->where('batch_details.status', 'Pending')
                 ->whereDate('batch_details.assignedon', $date)
                 ->where('batches.company_id', $companyId) 
+                ->where('batches.status', 1) 
                 ->get();
 
             $lastFourDaysData['pending'][] = $pendingData->count(); 
@@ -235,6 +239,7 @@ class UserController extends Controller
                 ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
                 ->whereDate('batch_details.assignedon', $date)
                 ->where('batches.company_id', $companyId) 
+                ->where('batches.status', 1) 
                 ->get();
 
             $assignedCount = $assignedData->count();

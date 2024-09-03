@@ -220,7 +220,7 @@ table th, table td {
                               </div>
                            </div>
                            <div class="w-100">
-                              <progress style="width: 100%;height: 5px;" id="file" value="{{ $batch->batch_details_count }}" max="100">{{ $batch->batch_details_count }}%</progress>
+                              <progress style="width: 100%;height: 5px;" id="file" value="{{ $batch->batch_details_count }}" max="{{ $batch->batch_details_count }}">{{ $batch->batch_details_count }}%</progress>
                            </div>
                      </li>
                   @endforeach
@@ -251,13 +251,13 @@ table th, table td {
                   <div class="card-body">
                      <div class="d-flex justify-content-between align-items-center">
                         <h6 class="font-weight-bold">Active Users</h6>
-                        <div class="d-flex align-items-center"> 
-                           <!-- <select>
+                        <div class="d-flex align-items-center">
+                           <select  id="visitsperday" class="form-control" onchange="fetchvisitsperday()">
                               <option>Select</option>
                               @foreach ($users as $k => $v) 
                                  <option value="{{ $v->id }}">{{ ucfirst($v->username) }}</option>
                               @endforeach
-                           </select>  -->
+                           </select>
                         </div>
                      </div>
                      <p class="mb-0">Visits Per Day</p>
@@ -650,60 +650,8 @@ var chart01months = @json($chart01months);
 var chartData = @json($lastFourDaysData);
 
 var getBatchforchartData03 = '{{ route("getBatchProgressForChart03") }}';
-
-</script>
-<script>
-
-       function campaigncounts(filter){ 
-            var color;
-            if(filter == 'completed'){
-               color = '#3cb72c';
-            }else if(filter == 'pending'){
-               color = '#ffbb33';
-            }else if(filter == 'abort'){
-               color = '#e60000';
-            }else{
-               color = '';
-            } 
-            $.ajax({
-                url: '{{ route("getCampaignPerformance") }}', // Your API endpoint
-                type: 'GET',
-                data: { filter: filter },
-                success: function(response) {
-                    updateBatchList(response.batches, color);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching batch counts:', error);
-                }
-            });
-        }
-
-        function updateBatchList(batches, color) { 
-           // Hide the dropdown menu
-           var dropdownMenu = document.getElementById('CampaignMenu');
-            if (dropdownMenu) {
-                dropdownMenu.classList.remove('show');
-            }
-            $('#batchList').empty(); 
-            batches.forEach(function(batch, index) { 
-            var listItem = `
-               <li class="p-3 list-item d-flex flex-column align-items-start" data-batch-id="${batch.id}">
-                     <div class="d-flex justify-content-start align-items-center w-100">
-                        <div class="list-style-detail mr-2">
-                           <p class="mb-0" style="color: ${color};">${batch.batch_no.charAt(0).toUpperCase() + batch.batch_no.slice(1)}</p>
-                        </div>
-                        <div class="list-style-action ml-auto">
-                           <h6 class="font-weight-bold" style="color: ${color};" id="campaignnumbers">${batch.count}</h6>
-                        </div>
-                     </div>
-                     <div class="w-100">
-                        <progress style="accent-color: ${color}; width: 100%; height: 5px;" id="file" value="${batch.count}" max="100">${batch.count}%</progress>
-                     </div>
-               </li>`;
-            
-            $('#batchList').append(listItem);
-         });
-        }
-</script>
+var getVisitsPerDay = '{{ route("getVisitsPerDay") }}';
+var getCampaignPerformance = '{{ route("getCampaignPerformance") }}';
+</script> 
 @endsection
     <!-- Page end  -->

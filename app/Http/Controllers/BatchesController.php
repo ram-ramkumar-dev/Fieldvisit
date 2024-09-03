@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Batches;
 use App\Models\BatchDetail;
 use App\Models\Client; 
@@ -9,6 +10,7 @@ use App\Models\Driver;
 use App\Models\Status;
 use App\Models\State;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage; 
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -419,6 +421,7 @@ class BatchesController extends Controller
     public function getBatchProgressForChart03(Request $request){ 
         $batchId = $request->input('value');  
         $batch = Batches::where('id', $batchId)
+                                ->where('batches.status', 1) 
                                 ->withCount([
                                     'batchDetails as completed_count' => function ($query) {
                                         $query->where('status', 'completed');
@@ -456,23 +459,79 @@ class BatchesController extends Controller
         $companyId = Session::get('company_id');   
         // Fetch batches based on filter
         $batches = Batches::where('company_id', $companyId)
-    ->select('id', 'batch_no')
-    ->withCount(['batchDetails as batch_details_count', 'batchDetails as count' => function ($query) use ($filter) {
-        switch ($filter) {
-            case 'completed':
-                $query->where('status', 'completed');
-                break;
-            case 'pending':
-                $query->where('status', 'pending');
-                break;
-            case 'abort':
-                $query->where('status', 'aborted');
-                break;
-        }
-    }])
-    ->get();
+                            ->select('id', 'batch_no')
+                            ->where('status', 1) 
+                            ->withCount(['batchDetails as batch_details_count', 'batchDetails as count' => function ($query) use ($filter) {
+                                switch ($filter) {
+                                    case 'completed':
+                                        $query->where('status', 'completed');
+                                        break;
+                                    case 'pending':
+                                        $query->where('status', 'pending');
+                                        break;
+                                    case 'abort':
+                                        $query->where('status', 'aborted');
+                                        break;
+                                }
+                            }])
+                            ->get();
     
         return response()->json(['batches' => $batches]);
+    }
+    
+    public function getVisitsPerDay(Request $request){ 
+        $driverid = $request->input('driverid');
+    
+        $companyId = Session::get('company_id');   
+        $lastFourDaysData = [
+            'dates' => [],
+            'completed' => [],
+            'pending' => [],
+            'assigned' => []
+        ];
+
+        for ($i = 4; $i >= 1; $i--) {
+            $date = Carbon::now()->subDays($i)->format('Y-m-d');
+            $lastFourDaysData['dates'][] = Carbon::now()->subDays($i)->format('d M'); // For display
+
+            // Completed
+            $completedData = DB::table('batch_details')
+                ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+                ->where('batch_details.status', 'Completed')
+                ->where('batch_details.assignedto', $driverid) 
+                ->whereDate('batch_details.assignedon', $date)
+                ->where('batches.company_id', $companyId) 
+                ->where('batches.status', 1) 
+                ->get();
+            
+            $lastFourDaysData['completed'][] = $completedData->count(); 
+
+            // Pending
+            $pendingData = DB::table('batch_details')
+                ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+                ->where('batch_details.status', 'Pending')
+                ->where('batch_details.assignedto', $driverid) 
+                ->whereDate('batch_details.assignedon', $date)
+                ->where('batches.company_id', $companyId) 
+                ->where('batches.status', 1) 
+                ->get();
+
+            $lastFourDaysData['pending'][] = $pendingData->count(); 
+
+            // Assigned
+            $assignedData = DB::table('batch_details')
+                ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+                ->whereDate('batch_details.assignedon', $date)
+                ->where('batch_details.assignedto', $driverid) 
+                ->where('batches.company_id', $companyId) 
+                ->where('batches.status', 1) 
+                ->get();
+
+            $assignedCount = $assignedData->count();
+            $lastFourDaysData['assigned'][] = $assignedCount; 
+        } 
+        //$data['lastFourDaysData'] = $lastFourDaysData; 
+        return response()->json(['data' => $lastFourDaysData]);
     }
     
 }

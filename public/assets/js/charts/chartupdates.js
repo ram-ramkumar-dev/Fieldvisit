@@ -1,4 +1,5 @@
 var chart; // Declare chart variable globally
+var barChart;
 
 function initializeChart() {
     if (document.querySelector("#chart-apex-column-03")) {
@@ -131,10 +132,17 @@ function initializeChart() {
                     minWidth: 10,
                     maxWidth: 10
                 }
+            },
+            tooltip: {
+                y: {
+                    formatter: function (value) {
+                        return value.toFixed(0); // Converts to integer by removing decimal points
+                    }
+                }
             }
         };
 
-        var barChart = new ApexCharts(document.querySelector("#chart-apex-column-02"), options);
+        barChart = new ApexCharts(document.querySelector("#chart-apex-column-02"), options);
         barChart.render();
     }
 }
@@ -206,4 +214,107 @@ function apexChartUpdate(chart, detail) {
             foreColor: color
         }
     });
+}
+
+function updateBarChart(newData) {
+    if (barChart) { // Assuming barChart is declared globally
+        barChart.updateOptions({
+            series: [
+                {
+                    name: 'Completed',
+                    data: newData.completed
+                },
+                {
+                    name: 'Pending',
+                    data: newData.pending
+                },
+                {
+                    name: 'Assigned',
+                    data: newData.assigned
+                }
+            ],
+            xaxis: {
+                categories: newData.dates
+            }
+        });
+    } else {
+        console.error('Bar chart instance is not available');
+    }
+}
+function fetchvisitsperday() {
+    var selectElement = document.getElementById("visitsperday");
+    var selectedValue = selectElement.value;
+    $.ajax({
+        url: getVisitsPerDay,
+        type: 'GET',
+        data: { driverid: selectedValue },
+        success: function(response) {
+            var response = response.data;
+            console.log(response);
+            var newData = {
+                completed: response.completed,
+                pending: response.pending,
+                assigned: response.assigned,
+                dates: response.dates
+            };
+
+            // Update the bar chart with the new data
+            updateBarChart(newData);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching batch counts:', error);
+        }
+    });
+}
+
+
+function campaigncounts(filter){ 
+    var color;
+    if(filter == 'completed'){
+       color = '#38982c';
+    }else if(filter == 'pending'){
+       color = '#d46018';
+    }else if(filter == 'abort'){
+       color = '#e60000';
+    }else{
+       color = '';
+    } 
+    $.ajax({
+        url: getCampaignPerformance, // Your API endpoint
+        type: 'GET',
+        data: { filter: filter },
+        success: function(response) {
+            updateBatchList(response.batches, color);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching batch counts:', error);
+        }
+    });
+}
+
+function updateBatchList(batches, color) { 
+   // Hide the dropdown menu
+   var dropdownMenu = document.getElementById('CampaignMenu');
+    if (dropdownMenu) {
+        dropdownMenu.classList.remove('show');
+    }
+    $('#batchList').empty(); 
+    batches.forEach(function(batch, index) { 
+    var listItem = `
+       <li class="p-3 list-item d-flex flex-column align-items-start" data-batch-id="${batch.id}">
+             <div class="d-flex justify-content-start align-items-center w-100">
+                <div class="list-style-detail mr-2">
+                   <p class="mb-0" style="color: ${color};">${batch.batch_no.charAt(0).toUpperCase() + batch.batch_no.slice(1)}</p>
+                </div>
+                <div class="list-style-action ml-auto">
+                   <h6 class="font-weight-bold" style="color: ${color};" id="campaignnumbers">${batch.count}</h6>
+                </div>
+             </div>
+             <div class="w-100">
+                <progress style="accent-color: ${color}; width: 100%; height: 5px;" id="file" value="${batch.count}" max="${batch.batch_details_count}">${batch.count}%</progress>
+             </div>
+       </li>`;
+    
+    $('#batchList').append(listItem);
+ });
 }
