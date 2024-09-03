@@ -291,9 +291,25 @@ class AuthController extends Controller
         if (!$driver || $driver->id != $request->driver_id) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
-    
+        // Get the supervisor data
+        $supervisorData = Driver::where('id', $request->driver_id)
+        ->pluck('supervisor')
+        ->first();
+        
+         // Handle the case when supervisorData is null or unexpected format
+        if ($supervisorData === null || !is_array($supervisorData)) {
+            $supervisorArray = [];
+        } else {
+            $supervisorArray = $supervisorData;
+        }
+
+        $supervisorNames = array_values($supervisorArray);
+        $supervisedDriverIds = Driver::whereIn('name', $supervisorNames)->pluck('id')->toArray();
+        $allDriverIds = array_merge([$request->driver_id], $supervisedDriverIds);
+        $allDriverIds = array_map('intval', $allDriverIds);
+
         // Get all batch IDs assigned to the driver
-        $batchIds = BatchDetail::where('assignedto', $request->driver_id)
+        $batchIds = BatchDetail::where('assignedto', $allDriverIds)
                     ->whereIn('batch_id', function($query) {
                         $query->select('id')
                             ->from('batches')
@@ -306,9 +322,9 @@ class AuthController extends Controller
     
         // Total counts
         $totalBatches = Batches::whereIn('id', $batchIds)->where('status','1')->where('softdelete', '!=', '1')->count();
-        $totalBatchDetails = BatchDetail::whereIn('batch_id', $batchIds)->where('assignedto', $request->driver_id)->count();
+        $totalBatchDetails = BatchDetail::whereIn('batch_id', $batchIds)->whereIn('assignedto', $allDriverIds)->count();
         $totalCompletedBatchDetails = BatchDetail::whereIn('batch_id', $batchIds)
-            ->where('status', 'Completed')  ->where('assignedto', $request->driver_id)
+            ->where('status', 'Completed')  ->whereIn('assignedto', $allDriverIds)
             ->count();
     
         // Get the batch details where the driver is assigned
@@ -316,12 +332,11 @@ class AuthController extends Controller
             ->select('id', 'batch_no')
             ->where('status','1')
             ->where('softdelete', '!=', '1') // Select specific columns from Batches
-            ->with(['batchDetails' => function($query) use ($request) {
+            ->with(['batchDetails' => function($query) use ($allDriverIds) {
                 $query->select('id', 'status', 'batch_id', 'address', 'district_la', 'taman_mmid', 'state', 'post_code', 'roadname', 'assignedto', 'batchfile_latitude','batchfile_longitude') // Include 'assignedto'
-                    ->where('assignedto', $request->driver_id); // Filter by the driver
+                ->whereIn('assignedto', $allDriverIds); // Filter by the driver
             }])
             ->get();
-    
         return response()->json([
             'status' => 'success', 
             'total_batches' => $totalBatches,
@@ -383,10 +398,27 @@ class AuthController extends Controller
         $batch_id = $request->batch_id;
         $search = $request->search; // Get the search parameter
 
-        $batches = Batches::whereHas('batchDetails', function($query) use ($driver_id, $batch_id) {
+        // Get the supervisor data
+        $supervisorData = Driver::where('id', $driver_id)
+        ->pluck('supervisor')
+        ->first();
+         
+        // Handle the case when supervisorData is null or unexpected format
+        if ($supervisorData === null || !is_array($supervisorData)) {
+            $supervisorArray = [];
+        } else {
+            $supervisorArray = $supervisorData;
+        }
+ 
+        $supervisorNames = array_values($supervisorArray);
+        $supervisedDriverIds = Driver::whereIn('name', $supervisorNames)->pluck('id')->toArray();
+        $allDriverIds = array_merge([$request->driver_id], $supervisedDriverIds);
+        $allDriverIds = array_map('intval', $allDriverIds);
+
+        $batches = Batches::whereHas('batchDetails', function($query) use ($allDriverIds, $batch_id) {
             $query->where('batches.softdelete', '!=', '1');
             $query->where('batches.status', '1');
-            $query->where('assignedto', $driver_id);
+            $query->whereIn('assignedto', $allDriverIds);
             if ($batch_id) {
                 $query->where('batch_id', $batch_id);
             }
@@ -403,8 +435,8 @@ class AuthController extends Controller
             ], 404);
         }
 
-        $response = $batches->map(function ($batch) use ($driver_id, $batch_id, $search) {
-            $batchDetailsQuery = BatchDetail::where('assignedto', $driver_id)
+        $response = $batches->map(function ($batch) use ($allDriverIds, $batch_id, $search) {
+            $batchDetailsQuery = BatchDetail::whereIn('assignedto', $allDriverIds)
               //  ->where('softdelete', '!=', '1') // Exclude soft deleted details
                 ->orderBy('pinned_at', 'desc'); // Order by pinned_at
 
@@ -670,8 +702,24 @@ class AuthController extends Controller
         $driver_lat = $request->driver_latitude;
         $driver_long = $request->driver_longitude;
         $search = $request->search; // Get the search parameter
+        // Get the supervisor data
+        $supervisorData = Driver::where('id', $driver_id)
+        ->pluck('supervisor')
+        ->first();
+        
+        // Handle the case when supervisorData is null or unexpected format
+        if ($supervisorData === null || !is_array($supervisorData)) {
+            $supervisorArray = [];
+        } else {
+            $supervisorArray = $supervisorData;
+        }
 
-        $batchDetailsQuery = BatchDetail::where('assignedto', $driver_id)
+        $supervisorNames = array_values($supervisorArray);
+        $supervisedDriverIds = Driver::whereIn('name', $supervisorNames)->pluck('id')->toArray();
+        $allDriverIds = array_merge([$request->driver_id], $supervisedDriverIds);
+        $allDriverIds = array_map('intval', $allDriverIds);
+
+        $batchDetailsQuery = BatchDetail::whereIn('assignedto', $allDriverIds)
         ->join('batches', 'batch_details.batch_id', '=', 'batches.id')->where('batches.status', '1')
         ->select('batch_details.id', 'fileid', 'batch_id', 'name', 'ic_no', 'account_no', 'bill_no', 'amount', 'address', 'district_la', 'taman_mmid', 'state', 'post_code', 'roadname', 'assignedto', 'batchfile_latitude', 'batchfile_longitude', 'batch_details.status', 'pinned_at')
         ->orderByRaw('CASE WHEN pinned_at IS NULL THEN 1 ELSE 0 END, pinned_at DESC, fileid ASC'); // Conditional ordering

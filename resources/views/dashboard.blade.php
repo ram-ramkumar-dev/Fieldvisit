@@ -255,7 +255,7 @@ table th, table td {
                            <select  id="visitsperday" class="form-control" onchange="fetchvisitsperday()">
                               <option>Select</option>
                               @foreach ($users as $k => $v) 
-                                 <option value="{{ $v->id }}">{{ ucfirst($v->username) }}</option>
+                                 <option value="{{ $v->id }}">{{ ucfirst($v->name) }}</option>
                               @endforeach
                            </select>
                         </div>

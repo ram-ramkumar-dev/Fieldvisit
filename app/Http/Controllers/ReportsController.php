@@ -338,7 +338,7 @@ class ReportsController extends Controller
         $query = DB::table('batch_details')
             ->join('batches', 'batch_details.batch_id', '=', 'batches.id','left')
             ->join('surveys', 'batch_details.id', '=', 'surveys.batch_detail_id','left')
-            ->join('drivers', 'drivers.id', '=', 'batch_details.assignedto','left')
+            ->join('drivers', 'drivers.id', '=', 'surveys.user_id','left')
             ->select('surveys.*', 'batches.batch_no', 'batch_details.*', 'drivers.username as assignedto')
             ->where('batches.company_id', $companyId);
 
