@@ -125,7 +125,7 @@ $permissions = $user_type === 'driver' ? $permissions : [];
                                   </a>
                               </li>
                               <li class="{{ $page == 'ImportBatch' ? 'active' : '' }} sidebar-layout">
-                                  <a href="{{ route('batches.import') }}" class="svg-icon">
+                                  <a href="{{ route('import') }}" class="svg-icon">
                                       <i class="">
                                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
                                       </i><span class="">Import Batch</span>
@@ -133,7 +133,7 @@ $permissions = $user_type === 'driver' ? $permissions : [];
                               </li> 
                               
                               <li class="{{ $page == 'Assign' ? 'active' : '' }} sidebar-layout">
-                                  <a href="{{ route('batches.assign') }}" class="svg-icon">
+                                  <a href="{{ route('assign') }}" class="svg-icon">
                                       <i class="">
                                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
                                       </i><span class="">Assign Case</span>
@@ -259,7 +259,7 @@ $permissions = $user_type === 'driver' ? $permissions : [];
                                   </a>
                               </li>
                               <li class="{{ $page == 'ImportBatch' ? 'active' : '' }} sidebar-layout">
-                                  <a href="{{ route('batches.import') }}" class="svg-icon">
+                                  <a href="{{ route('import') }}" class="svg-icon">
                                       <i class="">
                                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
                                       </i><span class="">Import Batch</span>
@@ -267,7 +267,7 @@ $permissions = $user_type === 'driver' ? $permissions : [];
                               </li> 
                               
                               <li class="{{ $page == 'Assign' ? 'active' : '' }} sidebar-layout">
-                                  <a href="{{ route('batches.assign') }}" class="svg-icon">
+                                  <a href="{{ route('assign') }}" class="svg-icon">
                                       <i class="">
                                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
                                       </i><span class="">Assign Case</span>

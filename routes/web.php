@@ -42,8 +42,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('settings', [UserController::class, 'settings'])->name('settings')->middleware('check.permissions:settings');
     Route::get('administrative', [UserController::class, 'administrative'])->name('administrative')->middleware('check.permissions:administrative'); 
-    Route::get('/batches/import', [BatchesController::class, 'import'])->name('batches.import');
-    Route::get('/batches/assign', [BatchesController::class, 'BatchesList'])->name('batches.assign'); 
+    Route::get('/import', [BatchesController::class, 'import'])->name('import');
+    Route::get('/assign', [BatchesController::class, 'BatchesList'])->name('assign'); 
     Route::get('getBatchProgressForChart03', [BatchesController::class, 'getBatchProgressForChart03'])->name('getBatchProgressForChart03');  
     Route::get('getCampaignPerformance', [BatchesController::class, 'getCampaignPerformance'])->name('getCampaignPerformance');  
     Route::get('getVisitsPerDay', [BatchesController::class, 'getVisitsPerDay'])->name('getVisitsPerDay');  
