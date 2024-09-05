@@ -29,19 +29,22 @@
                     <option value="Completed"  {{ request('status') == "Completed" ? 'selected' : '' }}>Revisit</option> 
                     <option value="Aborted"  {{ request('status') == "Aborted" ? 'selected' : '' }}>Aborted</option>  
             </select>
-        </div>
-<!--         
-        
+        </div> 
         <div class="col-md-4 mb-3">
-            <label class="form-label font-weight-bold text-muted text-uppercase" for="fr_la">LA (District)</label>
-          
-        </div>
-
+                    <label for="agent">Agent:</label>
+                    <select class="form-control" name="agent" id="agent">
+                        <option value="">Select Agent</option>
+                        @foreach ($drivers as $agent)
+                            <option {{ request('agent') == $agent->id ? 'selected' : '' }} value="{{ $agent->id }}">{{ ucfirst($agent->username) }}</option>
+                        @endforeach
+                    </select>
+                    </div>
         <div class="col-md-4 mb-3">
-            <label class="form-label font-weight-bold text-muted text-uppercase" for="fr_mmid">MMID (Area)</label>
-            
-        </div> -->
-
+                        <div class="form-group">
+                                <label for="search">Search</label>
+                                <input type="text" class="form-control" id="search" name= "search" value="{{ request('search') }}">
+                        </div>
+        </div>
         <div class="col-md-4 mb-3">
             <label class="form-label font-weight-bold text-muted text-uppercase" for="fr_district">District:</label>
             <input type="text" class="form-control" id="fr_district" name="fr_district" value="{{ request('fr_district') }}">
@@ -64,9 +67,7 @@
                     </option>
                 @endforeach
             </select>
-        </div> 
-        <div class="col-md-4 mb-3">
-        </div>
+        </div>  
         <div class="col-md-4 mb-3">
         <button type="button" onclick="location.href='{{ route('batches.assigncase', $batchId) }}'" class="mt-2 btn btn-warning">Reset</button>
         <button type="submit" class="mt-2 btn btn-primary">Submit</button>
@@ -199,6 +200,7 @@
         </div>
     </div><div class="bottombar ">
         <nav class="row navbar navbar-expand">
+        <div class="col-sm text-center"></div> 
             <div class="col-sm-1 text-center">
                 <input type="submit" class="btn btn-sm btn-white" id="totCheck" value="Checked: 0">
             </div>

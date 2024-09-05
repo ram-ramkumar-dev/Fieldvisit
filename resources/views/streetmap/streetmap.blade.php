@@ -3,11 +3,11 @@
 @section('content') 
 <style>
         #map {
-            height: 400px;
+            height: 500px;
             width: 100%;
         }
         #pano {
-            height: 400px;
+            height: 500px;
             width: 100%;
         }
         #search-input {

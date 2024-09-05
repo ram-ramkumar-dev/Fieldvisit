@@ -17,6 +17,15 @@
                 <input type="hidden" name="action" id="action" value="generate">
                 <div class="row">
                     <div class="col-md-4 mb-3">
+                    <label for="client">Client:</label>
+                    <select class="form-control" name="client" id="client">
+                        <option value="">Select Client</option>
+                        @foreach ($clients as $client)
+                            <option {{ request('client') == $client->id ? 'selected' : '' }} value="{{ $client->id }}">{{ ucfirst($client->client_name) }}</option>
+                        @endforeach
+                    </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
                     <label for="batches">Batches:</label>
                     <select class="form-control" name="batches" id="batches">
                         <option value="">Select Batch</option>
@@ -27,9 +36,18 @@
                     </div>
                     
                     <div class="col-md-4 mb-3">
+                    <label for="agent">Agent:</label>
+                    <select class="form-control" name="agent" id="agent">
+                        <option value="">Select Agent</option>
+                        @foreach ($agents as $agent)
+                            <option {{ request('agent') == $agent->id ? 'selected' : '' }} value="{{ $agent->id }}">{{ ucfirst($agent->username) }}</option>
+                        @endforeach
+                    </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
                             <label class="form-label font-weight-bold text-muted text-uppercase" for="driver_id">Load Coulmn:</label>
                             <select class="multipleSelect2 form-control choicesjs" multiple="true" name="columns[]">
-                                            <option {{ in_array('all', request('columns', [])) ? 'selected' : '' }} value="all">((Select All))</option>
+                                            <option selected {{ in_array('all', request('columns', [])) ? 'selected' : '' }} value="all">((Select All))</option>
                                             @foreach ($columnDisplayNames as $key=>$column)
                                             
                                                 <option {{ in_array($key, request('columns', [])) ? 'selected' : '' }}  value="{{ $key }}">{{ $column }}</option>
@@ -51,9 +69,13 @@
                                     <option {{ request('status') == "Aborted" ? 'selected' : '' }} value="Aborted">Aborted</option>  
                                                             </select>
                     </div>
-                
-                    <p></p>
-                    <hr>  
+                 
+                    <div class="col-md-4 mb-3">
+                        <div class="form-group">
+                                <label for="district">District</label>
+                                <input type="text" class="form-control" id="district" name= "district" value="{{ request('district') }}">
+                        </div>
+                        </div>
                         <div class="col-md-4 mb-3">
                         <div class="form-group">
                                 <label for="exampleInputdate">From</label>

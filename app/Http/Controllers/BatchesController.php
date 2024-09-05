@@ -303,7 +303,6 @@ class BatchesController extends Controller
          
         // Apply filters based on request data
         $filtersApplied = false; // Flag to check if any filters are applied
- 
         if ($request->filled('batch_no')) {
             if (in_array('selectall', $request->batch_no)) {
                 $query->whereIn('batch_id', $batches->pluck('id')); 
@@ -311,20 +310,26 @@ class BatchesController extends Controller
                 $query->whereIn('batch_id', $request->batch_no);
             }
             $filtersApplied = true;
-        }
-        if ($request->filled('fr_la')) {
-            $query->whereIn('district_la', $request->fr_la);
+        } 
+        if ($request->filled('agent')) {
+            $query->where('assignedto', $request->agent);
             $filtersApplied = true;
         }
-        
         if ($request->filled('status')) {
             $query->where('status', $request->status);
             $filtersApplied = true;
+        } 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            // Using AND logic by combining search filters inside the same where group
+            $query->where(function ($q) use ($search) {
+                $q->where('account_no', 'like', "%{$search}%")
+                  ->orWhere('fileid', 'like', "%{$search}%")
+                  ->orWhere('name', 'like', "%{$search}%")
+                  ->orWhere('address', 'like', "%{$search}%");
+            });
         }
-        if ($request->filled('fr_mmid')) {
-            $query->whereIn('tamna_mmid', $request->fr_mmid);
-            $filtersApplied = true;
-        }
+
         if ($request->filled('fr_district')) {    
             $query->where('district_la', 'like', '%' . $request->fr_district . '%');
             $filtersApplied = true;
@@ -336,7 +341,7 @@ class BatchesController extends Controller
               // Apply each postcode as a separate where condition
             $query->where(function($q) use ($postcodes) {
                 foreach ($postcodes as $postcode) {
-                    $q->orWhere('post_code', $postcode);
+                    $q->orWhere('post_code', 'like', $postcode . '%');
                 }
             });
             $filtersApplied = true;

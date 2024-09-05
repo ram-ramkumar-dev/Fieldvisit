@@ -38,9 +38,8 @@
                             <input type="date" class="form-control" id="exampleInputdate" name ="end_date" value="{{ request('end_date') }}">
                         </div>
                         </div>    <div class="col-md-4 mb-3">
-                    <label for="batches">Remove Timestamp:</label> 
-                    <select  class="form-control" name="remove_timestamp">
-                        <option value="">Select</option>
+                    <label for="batches">Remove Timestamp ( Only for Download ):</label> 
+                    <select  class="form-control" name="remove_timestamp"> 
                         <option {{ request('remove_timestamp') == 0 ? 'selected' : '' }} value="0">Keep Timestamp</option>
                         <option {{ request('remove_timestamp') == 1 ? 'selected' : '' }} value="1">Remove Timestamp</option>
                     </select>

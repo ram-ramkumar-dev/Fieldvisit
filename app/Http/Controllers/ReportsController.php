@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\BatchDetail;
 use App\Models\Batches;
+use App\Models\Client;
 use App\Models\Driver;
 use App\Models\Survey;
 use Carbon\Carbon;
@@ -227,7 +228,9 @@ class ReportsController extends Controller
         // Fetch batches and statuses for the dropdowns
         $companyId = Session::get('company_id');   
         // Fetch batches based on filter
-        $batches = Batches::where('company_id', $companyId)->get();
+        $batches = Batches::where('company_id', $companyId)->get();  
+        $clients = Client::where('company_id', $companyId)->get();
+        $agents = Driver::where('company_id', $companyId)->get();
        // $statuses = DB::table('account_statuses')->get();
        $columnDisplayNames = [
             'batch_no' => 'File Name',
@@ -264,7 +267,7 @@ class ReportsController extends Controller
         ];
         
         $columns = array(); 
-        return view('reports.survey', compact('page','batches','columns', 'columnDisplayNames'));
+        return view('reports.survey', compact('page','batches', 'clients', 'agents', 'columns', 'columnDisplayNames'));
     }
 
     public function generateReport(Request $request)
@@ -272,7 +275,10 @@ class ReportsController extends Controller
         $action = $request->input('action');
         $page = "surveyresult";
         $requestbatches = $request->input('batches');
+        $requestclient = $request->input('client'); 
+        $requestagent = $request->input('agent');
         $status = $request->input('status');
+        $requestdistrict = $request->input('district');
         $columns = $request->input('columns', []); 
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
@@ -346,6 +352,18 @@ class ReportsController extends Controller
             $query->where('batch_details.batch_id', $requestbatches);
         }
 
+        if (!empty($requestclient)) {
+            $query->where('batches.client_id', $requestclient);
+        }
+
+        if (!empty($requestagent)) {
+            $query->where('surveys.user_id', $requestagent);
+        }
+        
+        if (!empty($requestdistrict)) { 
+            $query->where('batch_details.district_la', 'like', '%' . $requestdistrict . '%');
+        }
+        
         if ($startDate && $endDate) {
             $query->whereBetween('surveys.visitdate', [$startDate, $endDate]);
         } 
@@ -416,7 +434,9 @@ class ReportsController extends Controller
         } else {
             // Default behavior to generate report view
             
-            $batches = Batches::where('company_id', $companyId)->get();
+            $batches = Batches::where('company_id', $companyId)->get(); 
+            $clients = Client::where('company_id', $companyId)->get();
+            $agents = Driver::where('company_id', $companyId)->get();
             return view('reports.survey', [
                 'reportData' => $data->map(function ($item) use ($columns) {
                     $filteredItem = [];
@@ -426,7 +446,9 @@ class ReportsController extends Controller
                     return (object) $filteredItem;
                 }),
                 'page' => $page,
-                'batches' => $batches, 
+                'batches' => $batches,  
+                'clients' => $clients, 
+                'agents' => $agents, 
                 'status' => $status,
                 'columns' => $columns,
                 'columnDisplayNames' => $columnDisplayNames,

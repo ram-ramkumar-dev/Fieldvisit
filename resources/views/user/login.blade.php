@@ -7,7 +7,7 @@
             <div class="col-md-5">
     <div class="card ">
         <div class="card-header p-0"> 
-            <img src="../assets/images/V-Ranger_350x150.png" class="img-fluid w-100" alt="logo" style="background:black;">
+            <img src="../assets/images/V-Ranger_350x150.png" class="img-fluid w-100" alt="logo" style="background:black;" loading="lazy">
         </div>
         <div class="card-body">
             <h3 class="mb-3 font-weight-bold text-center">Sign In</h3> 
