@@ -40,7 +40,12 @@ class UserController extends Controller
     }
 
     public function dashboard()
-    {       
+    {      
+        // Check if the logged-in user is a superadmin
+        if (!session()->has('is_superadmin') || session('is_superadmin') !== false) {
+            // Redirect to login page or an error page if not a superadmin
+            return redirect('login')->withErrors(['access' => 'You do not have permission to access this page.']);
+        }
         $companyId = Session::get('company_id'); 
         
         $data['users'] =  Driver::where(array('company_id'=>$companyId,'status'=>1))->get(); 
@@ -110,12 +115,17 @@ class UserController extends Controller
         // Extract the top agent using array_shift
         $topAgent = array_shift($list);
         
-        // Calculate the total surveys for the top agent
-        $totalSurveys = $topAgent['completed'] + $topAgent['pending'];
-        
+        // Check if $topAgent is not null before trying to access its elements
+        if ($topAgent) {
+            // Calculate the total surveys for the top agent
+            $totalSurveys = $topAgent['completed'] + $topAgent['pending'];
+        } else {
+            // Handle the case when there is no top agent (e.g., list is empty)
+            $totalSurveys = 0; // or handle it accordingly
+        }        
         // Pass the remaining data to the view
         $data['list'] = $list;
-        $data['topAgent'] = $topAgent;
+        $data['topAgent'] = $topAgent; 
         $data['totalSurveys'] = $totalSurveys;
         $data['totalbatches'] = Batches::where([
                                      'company_id' => $companyId,
@@ -144,108 +154,15 @@ class UserController extends Controller
         $data['totalAborted'] = $counts->sum('aborted_count'); 
         $data['totalAssigned'] = $counts->sum('assign_count'); 
         $data['page'] = 'Dashboard';
-        $data['counts'] = $counts; 
+        $data['counts'] = $counts;   
+        // Prepare chart data (monthly and last 4 days)
+        $chart01Data = $this->prepareChart01Data($companyId);
+        $lastFourDaysData = $this->getLastFourDaysData($companyId);
 
-        //chart01 data
-          // Array of months
-          $months = [];
-
-          // Get the current date
-          $now = Carbon::now();
-          
-          // Iterate over the last 6 months including the current month
-          for ($i = 0; $i < 6; $i++) {
-              // Get the month for the iteration and format it as 'M' (e.g., 'Jan', 'Feb')
-              $months[] = $now->copy()->subMonths($i)->format('F'); // Including the year for clarity
-          }
-          
-          // Reverse the array to show the most recent month first
-          $months = array_reverse($months); 
- 
-          // Query for 'completed' counts from 'batch_details' by month
-          $completedCounts = DB::table('batch_details')
-              ->select(DB::raw('MONTHNAME(assignedon) as month'), DB::raw('COUNT(*) as count'))
-              ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
-              ->where('batches.company_id', $companyId) 
-              ->where('batches.status', 1) 
-              ->whereIn(DB::raw('MONTHNAME(assignedon)'), $months)
-              ->where('batch_details.status', 'Completed') // Assuming there's a 'status' column with 'completed' status
-              ->groupBy(DB::raw('MONTH(assignedon)'), DB::raw('MONTHNAME(assignedon)'))
-              ->orderBy(DB::raw('MONTH(assignedon)'))
-              ->pluck('count', 'month')
-              ->toArray(); 
-
-          // Query for 'visit' counts from 'survey' by month
-          $visitCounts = DB::table('surveys')
-              ->select(DB::raw('MONTHNAME(visitdate) as month'), DB::raw('COUNT(*) as count'))
-              ->join('batches', 'surveys.batch_id', '=', 'batches.id')
-              ->where('batches.company_id', $companyId) 
-              ->where('batches.status', 1) 
-              ->whereIn(DB::raw('MONTHNAME(visitdate)'), $months)
-              ->groupBy(DB::raw('MONTH(visitdate)'), DB::raw('MONTHNAME(visitdate)'))
-              ->orderBy(DB::raw('MONTH(visitdate)'))
-              ->pluck('count', 'month')
-              ->toArray();
-  
-          // Ensure all months are represented, even if counts are zero
-          $completed = [];
-          $visit = [];
-  
-        foreach ($months as $month) {
-            $completed[] = $completedCounts[$month] ?? 0;
-            $visit[] = $visitCounts[$month] ?? 0;
-        }
-        $data['chart01completed'] = $completed;
-        $data['chart01visit'] = $visit;
-        $data['chart01months'] = $months;
- 
-        //chart03 data
-   
-        $lastFourDaysData = [
-            'dates' => [],
-            'completed' => [],
-            'pending' => [],
-            'assigned' => []
-        ];
-
-        for ($i = 4; $i >= 1; $i--) {
-            $date = Carbon::now()->subDays($i)->format('Y-m-d');
-            $lastFourDaysData['dates'][] = Carbon::now()->subDays($i)->format('d M'); // For display
-
-            // Completed
-            $completedData = DB::table('batch_details')
-                ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
-                ->where('batch_details.status', 'Completed')
-                ->whereDate('batch_details.assignedon', $date)
-                ->where('batches.company_id', $companyId) 
-                ->where('batches.status', 1) 
-                ->get();
-            
-            $lastFourDaysData['completed'][] = $completedData->count(); 
-
-            // Pending
-            $pendingData = DB::table('batch_details')
-                ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
-                ->where('batch_details.status', 'Pending')
-                ->whereDate('batch_details.assignedon', $date)
-                ->where('batches.company_id', $companyId) 
-                ->where('batches.status', 1) 
-                ->get();
-
-            $lastFourDaysData['pending'][] = $pendingData->count(); 
-
-            // Assigned
-            $assignedData = DB::table('batch_details')
-                ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
-                ->whereDate('batch_details.assignedon', $date)
-                ->where('batches.company_id', $companyId) 
-                ->where('batches.status', 1) 
-                ->get();
-
-            $assignedCount = $assignedData->count();
-            $lastFourDaysData['assigned'][] = $assignedCount; 
-        } 
-        $data['lastFourDaysData'] = $lastFourDaysData; 
+        $data['chart01completed'] = $chart01Data['chart01completed'];
+        $data['chart01visit'] = $chart01Data['chart01visit'];
+        $data['chart01months'] = $chart01Data['chart01months'];
+        $data['lastFourDaysData'] = $lastFourDaysData;                     
         return view('dashboard', $data);
     }
 
@@ -308,8 +225,17 @@ class UserController extends Controller
             $request->session()->put('user_name', $user->username);
             $request->session()->put('user_id', $user->id); 
             $request->session()->put('company_id', $user->company_id);
+            $request->session()->put('is_superadmin', false);
+            // Check if the user is a superadmin
+            if ($user->groups === 1) {  // Assuming you have a role or similar column
+                $request->session()->put('is_superadmin', true);
+                $request->session()->regenerate();  
+                return redirect('/superadmindashboard');
+            }
+
+            // Redirect to normal user dashboard
             $request->session()->regenerate();
-            return redirect()->intended('/');
+            return redirect('/dashboard');
         }
 
         // Check in drivers table
@@ -335,6 +261,17 @@ class UserController extends Controller
         return back()->withErrors([
             'access' => 'You do not have access to login.',
         ]);
+    }
+
+    public function superadmindashboard(){
+        // Check if the logged-in user is a superadmin
+        if (!session()->has('is_superadmin') || session('is_superadmin') !== true) {
+            // Redirect to login page or an error page if not a superadmin
+            return redirect('login')->withErrors(['access' => 'You do not have permission to access this page.']);
+        }
+        $data['title'] = 'Superadmin Dashboard';
+        $data['page'] = 'dashboard';
+        return view('superadmin/dashboard', $data);
     }
 
     public function password()
@@ -384,5 +321,111 @@ class UserController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/');
+    } 
+
+    private function prepareChart01Data($companyId)
+    { 
+          // Array of months
+          $months = [];
+
+          // Get the current date
+          $now = Carbon::now();
+          
+          // Iterate over the last 6 months including the current month
+          for ($i = 0; $i < 6; $i++) {
+              // Get the month for the iteration and format it as 'M' (e.g., 'Jan', 'Feb')
+              $months[] = $now->copy()->subMonths($i)->format('F'); // Including the year for clarity
+          }
+          
+          // Reverse the array to show the most recent month first
+          $months = array_reverse($months); 
+ 
+          // Query for 'completed' counts from 'batch_details' by month
+          $completedCounts = DB::table('batch_details')
+              ->select(DB::raw('MONTHNAME(assignedon) as month'), DB::raw('COUNT(*) as count'))
+              ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+              ->where('batches.company_id', $companyId) 
+              ->where('batches.status', 1) 
+              ->whereIn(DB::raw('MONTHNAME(assignedon)'), $months)
+              ->where('batch_details.status', 'Completed') // Assuming there's a 'status' column with 'completed' status
+              ->groupBy(DB::raw('MONTH(assignedon)'), DB::raw('MONTHNAME(assignedon)'))
+              ->orderBy(DB::raw('MONTH(assignedon)'))
+              ->pluck('count', 'month')
+              ->toArray(); 
+
+          // Query for 'visit' counts from 'survey' by month
+          $visitCounts = DB::table('surveys')
+              ->select(DB::raw('MONTHNAME(visitdate) as month'), DB::raw('COUNT(*) as count'))
+              ->join('batches', 'surveys.batch_id', '=', 'batches.id')
+              ->where('batches.company_id', $companyId) 
+              ->where('batches.status', 1) 
+              ->whereIn(DB::raw('MONTHNAME(visitdate)'), $months)
+              ->groupBy(DB::raw('MONTH(visitdate)'), DB::raw('MONTHNAME(visitdate)'))
+              ->orderBy(DB::raw('MONTH(visitdate)'))
+              ->pluck('count', 'month')
+              ->toArray();
+  
+          // Ensure all months are represented, even if counts are zero
+          $completed = [];
+          $visit = [];
+  
+        foreach ($months as $month) {
+            $completed[] = $completedCounts[$month] ?? 0;
+            $visit[] = $visitCounts[$month] ?? 0;
+        }
+        $data['chart01completed'] = $completed;
+        $data['chart01visit'] = $visit;
+        $data['chart01months'] = $months;
+ 
+       return $data;
+    }
+
+    private function getLastFourDaysData($companyId)
+    { 
+        $lastFourDaysData = [
+            'dates' => [],
+            'completed' => [],
+            'pending' => [],
+            'assigned' => []
+        ];
+
+        for ($i = 4; $i >= 1; $i--) {
+            $date = Carbon::now()->subDays($i)->format('Y-m-d');
+            $lastFourDaysData['dates'][] = Carbon::now()->subDays($i)->format('d M'); // For display
+
+            // Completed
+            $completedData = DB::table('batch_details')
+                ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+                ->where('batch_details.status', 'Completed')
+                ->whereDate('batch_details.assignedon', $date)
+                ->where('batches.company_id', $companyId) 
+                ->where('batches.status', 1) 
+                ->get();
+            
+            $lastFourDaysData['completed'][] = $completedData->count(); 
+
+            // Pending
+            $pendingData = DB::table('batch_details')
+                ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+                ->where('batch_details.status', 'Pending')
+                ->whereDate('batch_details.assignedon', $date)
+                ->where('batches.company_id', $companyId) 
+                ->where('batches.status', 1) 
+                ->get();
+
+            $lastFourDaysData['pending'][] = $pendingData->count(); 
+
+            // Assigned
+            $assignedData = DB::table('batch_details')
+                ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+                ->whereDate('batch_details.assignedon', $date)
+                ->where('batches.company_id', $companyId) 
+                ->where('batches.status', 1) 
+                ->get();
+
+            $assignedCount = $assignedData->count();
+            $lastFourDaysData['assigned'][] = $assignedCount; 
+        } 
+        return $lastFourDaysData; 
     }
 }

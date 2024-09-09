@@ -33,7 +33,7 @@
                             <label class="form-label font-weight-bold text-muted text-uppercase"for="name">Name:</label>
                             <input type="text" class="form-control" name="name" required value="{{ old('name') }}">
                             @error('name')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                         </div>
                         
@@ -42,7 +42,7 @@
                             <textarea class="form-control" name="description" >{{ old('description') }}</textarea>
                             
                             @error('description')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>

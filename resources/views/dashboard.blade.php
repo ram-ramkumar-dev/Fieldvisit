@@ -235,8 +235,16 @@ table th, table td {
                <div class="card bg-primary">
                    <div class="card-body">
                        <div class="d-flex align-items-center">
+                       @php
+                           // Check if $totalBatchDetailsCount is zero before calculating the percentage
+                           if ($totalBatchDetailsCount > 0) {
+                              $percentage = ($totalCompleted / $totalBatchDetailsCount) * 100;
+                           } else {
+                              $percentage = 0; // or any fallback value you prefer when totalBatchDetailsCount is zero
+                           }
+                        @endphp
                            <div class="fit-icon-2 text-info text-center">
-                               <div id="circle-progress-01" class="circle-progress-01 circle-progress circle-progress-light" data-min-value="0" data-max-value="100" data-value="{{     $percentage = ($totalCompleted / $totalBatchDetailsCount) * 100 }}" data-type="percent"></div>
+                               <div id="circle-progress-01" class="circle-progress-01 circle-progress circle-progress-light" data-min-value="0" data-max-value="100" data-value="{{ $percentage }}" data-type="percent"></div>
                            </div>
                            <div class="ml-3">
                                <h5 class="text-white font-weight-bold">{{ $totalCompleted }} <small> / {{ $totalBatchDetailsCount }}</small></h5>
@@ -279,28 +287,53 @@ table th, table td {
             <div class="driver-profile">
                <img src="{{ asset('assets/images/user/1.jpg') }}" alt="Driver Avatar">
                <div class="driver-info">
-                  <h5 style="text-transform: uppercase;">
-                        @php if ($topAgent['devicetoken']) { @endphp
-                           <span class="d-flex align-items-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="12" r="8" fill="#3cb72c"></circle>
-                              </svg>
-                              {{ $topAgent['driver_name'] }}
-                           </span>
-                        @php } else { @endphp
-                           {{ $topAgent['driver_name'] }}
-                        @php } @endphp
-                  </h5>
+               <h5 style="text-transform: uppercase;">
+    @php 
+        // Check if $topAgent is not null and handle the case where it's null
+        if (isset($topAgent) && $topAgent) {
+            // Check if 'devicetoken' exists and is not empty
+            if (!empty($topAgent['devicetoken'])) { 
+    @endphp
+                <span class="d-flex align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="8" fill="#3cb72c"></circle>
+                    </svg>
+                    {{ $topAgent['driver_name'] }}
+                </span>
+    @php 
+            } else { 
+    @endphp
+                {{ $topAgent['driver_name'] }}
+    @php 
+            }
+        } else { 
+            // Handle the case where $topAgent is null
+    @endphp
+            <span>No agent found</span>
+    @php 
+        } 
+    @endphp
+</h5>
 
-                  @php
-                  $width = $totalSurveys > 0 ? ($topAgent['completed'] / $totalSurveys) * 100 : 0;
-                  @endphp
+@php
+    // Ensure $topAgent is not null and has a 'completed' key
+    if (isset($topAgent) && isset($topAgent['completed'])) {
+        // Calculate the total surveys only if $totalSurveys is greater than zero
+        $width = $totalSurveys > 0 ? ($topAgent['completed'] / $totalSurveys) * 100 : 0;
+    } else {
+        $width = 0;
+        $totalSurveys = 0;
+    }
+@endphp
 
-                  <div class="progress-bar">
-                        <div class="progress" style="width: {{ $width }}%;"></div>
-                  </div>
+<div class="progress-bar">
+    <div class="progress" style="width: {{ $width }}%;"></div>
+</div>
 
-                  <span class="progress-count">{{ $topAgent['completed'] }}/{{ $totalSurveys }}</span>
+<span class="progress-count">
+    {{ isset($topAgent['completed']) ? $topAgent['completed'] : 0 }}/{{ $totalSurveys }}
+</span>
+
                </div>
             </div>
          </div>  

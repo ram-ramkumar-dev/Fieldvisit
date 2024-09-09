@@ -38,7 +38,7 @@
                                 @endforeach
                             </select>
                             @error('client_id')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                         </div>
                         
@@ -46,7 +46,7 @@
                             <label class="form-label font-weight-bold text-muted text-uppercase"for="batch_no">Batch No:</label>
                             <input type="text" class="form-control" name="batch_no" required value="{{ old('batch_no') }}">
                             @error('batch_no')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                         </div>
                         
@@ -59,7 +59,7 @@
                                 @endforeach
                             </select>
                             @error('status_code')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                         </div>
                         
@@ -72,7 +72,7 @@
                                 <option value ='0'>Inactive</option>
                             </select>
                             @error('status')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror 
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>

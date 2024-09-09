@@ -33,7 +33,7 @@
                             <label class="form-label font-weight-bold text-muted text-uppercase"for="client_name">Name:</label>
                             <input type="text" class="form-control" name="client_name" required value="{{ old('client_name') }}">
                             @error('client_name')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                         </div>
                         <div class="col-md-6 mb-3">
@@ -45,7 +45,7 @@
                                 @endforeach
                             </select>
                             @error('client_group_id')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                         </div>
                         <div class="col-md-6 mb-3">
@@ -53,7 +53,7 @@
                             <input type="text" class="form-control" name="registration_no" required value="{{ old('client_name') }}">
                             
                             @error('registration_no')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                         </div>
                         <div class="col-md-6 mb-3">
@@ -61,7 +61,7 @@
                             <textarea class="form-control" name="address" required>{{ old('client_name') }}</textarea>
                             
                             @error('address')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                         </div>
                         <div class="col-md-6 mb-3">
@@ -69,7 +69,7 @@
                             <input type="text" class="form-control" name="city" required value="{{ old('client_name') }}">
                             
                             @error('city')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                         </div>
                         <div class="col-md-6 mb-3">
@@ -82,7 +82,7 @@
                                 @endforeach
                             </select>
                             @error('state')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                         </div>
                         <div class="col-md-6 mb-3">
@@ -90,7 +90,7 @@
                             <input type="text" class="form-control" name="postcode" required value="{{ old('client_name') }}">
                             
                             @error('postcode')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                         </div>
                         <div class="col-md-6 mb-3">
@@ -98,7 +98,7 @@
                             <input type="text" class="form-control" name="phone1" required value="{{ old('phone1') }}">
                             
                             @error('phone1')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                         </div>
                         <div class="col-md-6 mb-3">
@@ -114,7 +114,7 @@
                                 <option value ='0'>Inactive</option>
                             </select>
                             @error('status')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror 
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>

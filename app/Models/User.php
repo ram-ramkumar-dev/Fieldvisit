@@ -19,5 +19,11 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'company_id'
     ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
 }

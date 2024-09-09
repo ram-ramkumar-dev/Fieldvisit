@@ -3,6 +3,8 @@
 use App\Http\Controllers\BatchesController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientGroupController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CompanyUsersController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\StatusController;
@@ -30,9 +32,12 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('clientgroups', ClientGroupController::class);
     Route::resource('clients', ClientController::class);
     Route::resource('drivers', DriverController::class);
+    Route::resource('companies', CompanyController::class);
+    Route::resource('companyusers', CompanyUsersController::class);
     Route::resource('statuses', StatusController::class);
     Route::get('streetmap', [DriverController::class, 'streetmap'])->name('drivers/streetmap');
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard'); 
+    Route::get('/superadmindashboard', [UserController::class, 'superadmindashboard'])->name('superadmindashboard'); 
     Route::get('profile', [UserController::class, 'profile'])->name('profile');
     //Route::get('/users', [UserController::class, 'users'])->name('users');
     //Route::get('/clients', [UserController::class, 'clients'])->name('clients');

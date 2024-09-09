@@ -34,7 +34,7 @@
                                 <label for="Text1" class="form-label font-weight-bold text-muted text-uppercase">Full Name</label>
                                 <input type="text" required class="form-control" id="name" name="name" placeholder="Enter Full Name" value="{{ old('name', $driver->name) }}">
                                 @error('name')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                             </div>
                              
@@ -42,35 +42,35 @@
                                 <label for="Text2" class="form-label font-weight-bold text-muted text-uppercase">IC Number</label>
                                 <input type="text" required class="form-control" id="ic_number"  name="ic_number" placeholder="Enter IC Number"  value="{{ old('ic_number', $driver->ic_number) }}">
                                 @error('ic_number')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="Text3" class="form-label font-weight-bold text-muted text-uppercase">Phone Number</label>
                                 <input type="text" required class="form-control" id="phone_number"  name="phone_number" placeholder="Enter Phone Number"  value="{{ old('phone_number', $driver->phone_number) }}">
                                 @error('phone_number')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="Text4" class="form-label font-weight-bold text-muted text-uppercase">Username</label>
                                 <input type="text" required class="form-control" autocomplete="off" name="username" id="username" value="{{ old('username', $driver->username) }}" placeholder="Enter Username" style="text-transform: uppercase;">
                                 @error('username')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="Text5" class="form-label font-weight-bold text-muted text-uppercase">Password</label>
                                 <input  type="password"  name="password" autocomplete="off" id="password" class="form-control"   placeholder="Enter Password">
                                 @error('password')
-                                <div>{{ $message }}</div>
+                                <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                  @enderror
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="Text5"  class="form-label font-weight-bold text-muted text-uppercase">Confirm Password</label>
                                 <input type="password" name="password_confirmation" class="form-control"   placeholder="Enter Confirm Password" id="password_confirmation">
                                 @error('password_confirmation')
-                                    <div>{{ $message }}</div>
+                                    <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                 @enderror
                             </div> 
                             <div class="col-md-6 mb-3">

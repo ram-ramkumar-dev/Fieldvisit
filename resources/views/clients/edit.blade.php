@@ -83,7 +83,7 @@
                                     <option value ='0' {{ $client->status == 0 ? 'selected' : '' }}>Inactive</option>
                                 </select>
                                 @error('status')
-                                        <div>{{ $message }}</div>
+                                        <div class="alert alert-danger"><p>{{ $message }}</p></div>
                                     @enderror 
                             </div>
                             <button type="submit" class="btn btn-primary">Submit</button>

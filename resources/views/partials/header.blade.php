@@ -6,7 +6,7 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                       </svg>
                   </div>
-                  <b>ITG TELECOMMUNICATIONS SDN BHD (281745) </b>
+                  <b style="text-transform: uppercase;">{{ $companyName }}</b>
                   <div class="d-flex align-items-center">
                       <div class="change-mode">
                           <div class="custom-control custom-switch custom-switch-icon custom-control-inline">
