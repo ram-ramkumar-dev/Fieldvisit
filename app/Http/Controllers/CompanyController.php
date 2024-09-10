@@ -4,10 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class CompanyController extends Controller
 {
+    public function __construct()
+    {
+        // Use middleware to ensure session is available before constructor
+        $this->middleware(function ($request, $next) {
+            // Access session data here
+            $isSuperAdmin = session('is_superadmin'); 
+          // Check if the user is not a super admin
+            if (!$isSuperAdmin) { 
+                return redirect()->route('home');
+            }
+
+            return $next($request);
+        });
+    }
+    
     public function index()
     {
         $page = "Company";  

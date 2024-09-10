@@ -10,6 +10,21 @@ use Illuminate\Support\Facades\Hash;
 
 class CompanyUsersController extends Controller
 {
+    public function __construct()
+    {
+        // Use middleware to ensure session is available before constructor
+        $this->middleware(function ($request, $next) {
+            // Access session data here
+            $isSuperAdmin = session('is_superadmin'); 
+          // Check if the user is not a super admin
+            if (!$isSuperAdmin) { 
+                return redirect()->route('home');
+            }
+
+            return $next($request);
+        });
+    }
+    
     public function index()
     {
         $page = "CompanyUsers";
