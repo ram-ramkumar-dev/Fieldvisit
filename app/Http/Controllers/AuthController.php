@@ -891,22 +891,22 @@ class AuthController extends Controller
 
         // Format the status counts for each other driver
         $otherDriversStatus = Driver::whereIn('id', $otherDrivers)->get()->map(function ($driver) use ($otherDriversStatusCounts) {
-            $statusCounts = $otherDriversStatusCounts->get($driver->id, collect([
+            $statusCounts = $otherDriversStatusCounts->get($driver->id, (object)[
                 'assigned_count' => 0,
                 'pending_count' => 0,
                 'completed_count' => 0,
-            ]));
-
+            ]);
+        
             return [
                 'driver_id' => $driver->id,
                 'driver_name' => $driver->name,
                 'status_counts' => [
-                    'pending' => $statusCounts->pending_count ?? 0,
+                    'pending' => $statusCounts->pending_count ?? 0, // Access properties directly
                     'assigned' => $statusCounts->assigned_count ?? 0,
                     'completed' => $statusCounts->completed_count ?? 0,
                 ],
             ];
-        });
+        });        
 
         // Get status counts for the logged-in driver
         $loggedInDriverStatusCounts = DB::table('batch_details')

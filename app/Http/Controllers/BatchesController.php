@@ -502,9 +502,10 @@ class BatchesController extends Controller
             // Completed
             $completedData = DB::table('batch_details')
                 ->join('batches', 'batch_details.batch_id', '=', 'batches.id')
+                ->join('surveys', 'surveys.batch_id', '=', 'batches.id')
                 ->where('batch_details.status', 'Completed')
                 ->where('batch_details.assignedto', $driverid) 
-                ->whereDate('batch_details.assignedon', $date)
+                ->whereDate('surveys.visitdate', $date)
                 ->where('batches.company_id', $companyId) 
                 ->where('batches.status', 1) 
                 ->get();
