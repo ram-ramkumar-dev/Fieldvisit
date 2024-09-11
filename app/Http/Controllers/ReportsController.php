@@ -15,7 +15,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use Illuminate\Support\Facades\Storage;
-use ZipArchive;
+use ZipArchive;   
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing as WorksheetDrawing;
 
 class ReportsController extends Controller
 {
@@ -374,7 +375,7 @@ class ReportsController extends Controller
             } 
         }  
         $data = $query->get();
-         
+        
         if ($action === 'export') {
             // Create new Spreadsheet object
             $spreadsheet = new Spreadsheet();
@@ -384,7 +385,6 @@ class ReportsController extends Controller
             $col = 1;
             foreach ($columns as $column) {
                 $sheet->setCellValueByColumnAndRow($col, 1, $columnDisplayNames[$column] ?? $column);
-                // Set column width for headers
                 $sheet->getColumnDimensionByColumn($col)->setAutoSize(true);
                 $col++;
             }
@@ -398,21 +398,26 @@ class ReportsController extends Controller
                     if (in_array($column, ['photo1', 'photo2', 'photo3', 'photo4', 'photo5'])) {
                         // Handle images
                         if ($value && file_exists(public_path($value))) {
-                            $drawing = new Drawing();
+                            $filePath = public_path($value);
+                            $dimensions = getImageDimensions($filePath);
+
+                            $drawing = new WorksheetDrawing();
                             $drawing->setName($column)
                                     ->setDescription($column)
-                                    ->setPath(public_path($value)) // Path to the image
+                                    ->setPath($filePath)
                                     ->setCoordinates($this->getExcelCellCoordinate($col, $row)) // Convert column and row to Excel cell reference 
-                                    ->setHeight(120); // Set the height of the image
-                         
-                            // Adjust row height to fit the image in portrait mode
-                            $sheet->getRowDimension($row)->setRowHeight(150);
+                                    ->setHeight(120) // Adjust height as needed
+                                    ->setWorksheet($sheet);
 
-                            // Optionally, adjust the column width as well
-                            $sheet->getColumnDimensionByColumn($col)->setWidth(150);
-                            $drawing->setWorksheet($sheet);
+                            // Adjust row height to fit the image
+                            $rowHeight = $dimensions['height'] * 0.75; // Adjust factor if needed
+                            $sheet->getRowDimension($row)->setRowHeight($rowHeight);
+
+                            // Adjust column width based on image width
+                            $colWidth = $dimensions['width'] * 0.075; // Adjust factor if needed
+                            $sheet->getColumnDimensionByColumn($col)->setWidth($colWidth);
                         } else {
-                            // Handle missing image case by optionally using a placeholder or leaving it blank
+                            // Handle missing image case
                             $sheet->setCellValueByColumnAndRow($col, $row, '-'); // Optionally add a message
                         }
                     } else {
@@ -456,15 +461,22 @@ class ReportsController extends Controller
         }
     }
     
-    protected function getExcelCellCoordinate($col, $row)
+    private function getExcelCellCoordinate($column, $row)
     {
-        $columnLetter = '';
-        while ($col > 0) {
-            $mod = ($col - 1) % 26;
-            $columnLetter = chr(65 + $mod) . $columnLetter;
-            $col = (int)(($col - $mod) / 26);
+        // Convert column index to Excel column letter
+        $letters = '';
+        while ($column > 0) {
+            $column--;
+            $letters = chr($column % 26 + 65) . $letters;
+            $column = (int)($column / 26);
         }
-        return $columnLetter . $row;
+        return $letters . $row;
+    }
+   
+    // Function to get image dimensions
+    function getImageDimensions($filePath) {
+        list($width, $height) = getimagesize($filePath);
+        return ['width' => $width, 'height' => $height];
     }
 
     public function surveyphotos()
