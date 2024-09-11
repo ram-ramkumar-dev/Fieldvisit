@@ -7,6 +7,7 @@ use App\Models\BatchDetail;
 use App\Models\Batches;
 use App\Models\Client;
 use App\Models\Driver;
+use App\Models\Status;
 use App\Models\Survey;
 use Carbon\Carbon;
 use DB;
@@ -228,7 +229,8 @@ class ReportsController extends Controller
         // Fetch batches and statuses for the dropdowns
         $companyId = Session::get('company_id');   
         // Fetch batches based on filter
-        $batches = Batches::where('company_id', $companyId)->get();  
+        $batches = Batches::where('company_id', $companyId)->get();           
+        $batchstatus = Status::where('company_id', $companyId)->get();  
         $clients = Client::where('company_id', $companyId)->get();
         $agents = Driver::where('company_id', $companyId)->get();
        // $statuses = DB::table('account_statuses')->get();
@@ -267,7 +269,7 @@ class ReportsController extends Controller
         ];
         
         $columns = array(); 
-        return view('reports.survey', compact('page','batches', 'clients', 'agents', 'columns', 'columnDisplayNames'));
+        return view('reports.survey', compact('page', 'batchstatus', 'batches', 'clients', 'agents', 'columns', 'columnDisplayNames'));
     }
 
     public function generateReport(Request $request)
@@ -277,6 +279,7 @@ class ReportsController extends Controller
         $requestbatches = $request->input('batches');
         $requestclient = $request->input('client'); 
         $requestagent = $request->input('agent');
+        $requestbatchstatus = $request->input('batchstatus');
         $status = $request->input('status');
         $requestdistrict = $request->input('district');
         $columns = $request->input('columns', []); 
@@ -356,6 +359,13 @@ class ReportsController extends Controller
             $query->where('batches.client_id', $requestclient);
         }
 
+        if (!empty($requestbatchstatus)) {
+            $query->where(function ($query) use ($requestbatchstatus) {
+                $query->where('batches.status_code', 'LIKE', '%'.$requestbatchstatus.'%')
+                      ->orWhere('batches.status_code', 'LIKE', '%All%');
+            });
+        }
+
         if (!empty($requestagent)) {
             $query->where('surveys.user_id', $requestagent);
         }
@@ -379,16 +389,16 @@ class ReportsController extends Controller
             // Create new Spreadsheet object
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
-
+        
             // Add header
             $col = 1;
             foreach ($columns as $column) {
                 $sheet->setCellValueByColumnAndRow($col, 1, $columnDisplayNames[$column] ?? $column);
                 // Set column width for headers
-                $sheet->getColumnDimensionByColumn($col)->setAutoSize(true);
+                $sheet->getColumnDimensionByColumn($col)->setAutoSize(false); // Disable auto-size for manual control
                 $col++;
             }
-
+        
             // Add data
             $row = 2;
             foreach ($data as $item) {
@@ -404,12 +414,13 @@ class ReportsController extends Controller
                                     ->setPath(public_path($value)) // Path to the image
                                     ->setCoordinates($this->getExcelCellCoordinate($col, $row)) // Convert column and row to Excel cell reference 
                                     ->setHeight(120); // Set the height of the image
-                         
+                            
                             // Adjust row height to fit the image in portrait mode
-                            $sheet->getRowDimension($row)->setRowHeight(150);
-
-                            // Optionally, adjust the column width as well
-                            $sheet->getColumnDimensionByColumn($col)->setWidth(150);
+                            $sheet->getRowDimension($row)->setRowHeight(180); // Increase row height to fit image
+                            
+                            // Adjust column width to fit the image (note: this might not always work perfectly for images)
+                            $sheet->getColumnDimensionByColumn($col)->setWidth(25); // Set a reasonable width
+                            
                             $drawing->setWorksheet($sheet);
                         } else {
                             // Handle missing image case by optionally using a placeholder or leaving it blank
@@ -422,13 +433,13 @@ class ReportsController extends Controller
                 }
                 $row++;
             }
-
+        
             // Write to a temporary file
             $writer = new Xlsx($spreadsheet);
             $fileName = 'SurveyReport_' . now()->format('Ymd_His') . '.xlsx';
             $filePath = storage_path('app/public/' . $fileName);
             $writer->save($filePath);
-
+        
             // Return response to download the file
             return response()->download($filePath)->deleteFileAfterSend(true);
         } else {
@@ -436,7 +447,8 @@ class ReportsController extends Controller
             
             $batches = Batches::where('company_id', $companyId)->get(); 
             $clients = Client::where('company_id', $companyId)->get();
-            $agents = Driver::where('company_id', $companyId)->get();
+            $agents = Driver::where('company_id', $companyId)->get();    
+            $batchstatus = Status::where('company_id', $companyId)->get();  
             return view('reports.survey', [
                 'reportData' => $data->map(function ($item) use ($columns) {
                     $filteredItem = [];
@@ -446,7 +458,8 @@ class ReportsController extends Controller
                     return (object) $filteredItem;
                 }),
                 'page' => $page,
-                'batches' => $batches,  
+                'batches' => $batches, 
+                'batchstatus' => $batchstatus, 
                 'clients' => $clients, 
                 'agents' => $agents, 
                 'status' => $status,

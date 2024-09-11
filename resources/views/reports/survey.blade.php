@@ -76,6 +76,16 @@
                                 <input type="text" class="form-control" id="district" name= "district" value="{{ request('district') }}">
                         </div>
                         </div>
+                        
+                    <div class="col-md-4 mb-3">
+                    <label for="batchstatus">Status:</label>
+                    <select class="form-control" name="batchstatus" id="batchstatus">
+                        <option value="">Select Status</option>
+                        @foreach ($batchstatus as $status)
+                            <option {{ request('batchstatus') == $status->id ? 'selected' : '' }} value="{{ $status->id }}">{{ ucfirst($status->description) }}</option>
+                        @endforeach
+                    </select>
+                    </div>
                         <div class="col-md-4 mb-3">
                         <div class="form-group">
                                 <label for="exampleInputdate">From</label>
