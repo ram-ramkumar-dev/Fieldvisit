@@ -54,49 +54,52 @@ class UserController extends Controller
         $statusCountsByDriver = [];
         foreach ($data['users'] as $driver) {
             $statusCountsByDriver[$driver->id] = [
-                    'id' => $driver->id,
-                    'driver_name' => $driver->name,
-                    'devicetoken' => $driver->devicetoken, 
-                    'pending' => 0,
-                    'completed' => 0,
-                    'aborted' => 0,
-                    'all' => 0,
-                    'assigned' => 0 
-                ];
+                'id' => $driver->id,
+                'driver_name' => $driver->name,
+                'devicetoken' => $driver->devicetoken, 
+                'pending' => 0,
+                'completed' => 0,
+                'aborted' => 0,
+                'all' => 0,
+                'assigned' => 0 
+            ];
         }
 
         // Query to get the status counts grouped by driver
         $batchDetailsByDriver = BatchDetail::select('assignedto', 'status', DB::raw('COUNT(*) as status_count'))
-        ->whereIn('assignedto', $data['users']->pluck('id'))
-        ->groupBy('assignedto', 'status')
-        ->get();
-        
+            ->whereIn('assignedto', $data['users']->pluck('id'))
+            ->groupBy('assignedto', 'status')
+            ->get();
+
         // Populate the status counts
         foreach ($batchDetailsByDriver as $detail) {
             switch ($detail->status) {
                 case 'Pending':
-                $statusCountsByDriver[$detail->assignedto]['pending'] = $detail->status_count;
-                break;
+                    $statusCountsByDriver[$detail->assignedto]['pending'] = $detail->status_count;
+                    break;
                 case 'Completed':
-                $statusCountsByDriver[$detail->assignedto]['completed'] = $detail->status_count;
-                break;
+                    $statusCountsByDriver[$detail->assignedto]['completed'] = $detail->status_count;
+                    break;
                 case 'Aborted':
-                $statusCountsByDriver[$detail->assignedto]['aborted'] = $detail->status_count;
-                break;
-                }
-                 // Sum up all statuses to get the total count
-                $statusCountsByDriver[$detail->assignedto]['all'] += $detail->status_count;
+                    $statusCountsByDriver[$detail->assignedto]['aborted'] = $detail->status_count;
+                    break;
+            }
+            // Sum up all statuses to get the total count
+            $statusCountsByDriver[$detail->assignedto]['all'] += $detail->status_count;
         }
+
         // Query to get the assigned count for each driver
         $assignedCounts = BatchDetail::select('assignedto', DB::raw('COUNT(*) as assigned_count'))
-                        ->whereIn('assignedto', $data['users']->pluck('id'))
-                        ->whereNotNull('assignedto') // Make sure the 'assignedto' column is not null
-                        ->groupBy('assignedto')
-                        ->get();
+            ->whereIn('assignedto', $data['users']->pluck('id'))
+            ->whereNotNull('assignedto') // Make sure the 'assignedto' column is not null
+            ->groupBy('assignedto')
+            ->get();
+
         // Populate the assigned counts
         foreach ($assignedCounts as $assigned) {
             $statusCountsByDriver[$assigned->assignedto]['assigned'] = $assigned->assigned_count;
         }
+
         // Calculate the score for each driver (completed / assigned * 100)
         foreach ($statusCountsByDriver as $driverId => $counts) {
             $assigned = $counts['assigned'] ?? 0;
@@ -109,23 +112,20 @@ class UserController extends Controller
                 $statusCountsByDriver[$driverId]['score'] = 0;
             }
         }
+
         // Sort the list by completed surveys in descending order
         $list = collect($statusCountsByDriver)->sortByDesc('score')->values()->all();
-        
-        // Extract the top agent using array_shift
-        $topAgent = array_shift($list);
-        
-        // Check if $topAgent is not null before trying to access its elements
-        if ($topAgent) {
-            // Calculate the total surveys for the top agent
-            $totalSurveys = $topAgent['completed'] + $topAgent['pending'];
-        } else {
-            // Handle the case when there is no top agent (e.g., list is empty)
-            $totalSurveys = 0; // or handle it accordingly
-        }        
-        // Pass the remaining data to the view
-        $data['list'] = $list;
-        $data['topAgent'] = $topAgent; 
+
+        // Extract the top agent without removing them from the list
+        $topAgent = $list[0] ?? null; // Safely get the first element if it exists
+
+        // Calculate the total surveys for the top agent
+        $totalSurveys = $topAgent ? ($topAgent['assigned']) : 0;
+
+        // Pass the list and top agent to the view
+        $data['list'] = $list; // Complete list including the top agent
+        $data['topAgent'] = $topAgent; // Top agent separately identified
+
         $data['totalSurveys'] = $totalSurveys;
         $data['totalbatches'] = Batches::where([
                                      'company_id' => $companyId,
