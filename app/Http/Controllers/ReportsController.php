@@ -25,7 +25,7 @@ class ReportsController extends Controller
         list($width, $height) = getimagesize($filePath);
         return ['width' => $width, 'height' => $height];
     }
-    
+
     public function agentKpi()
     {
         $page = 'agentkpi';
@@ -405,7 +405,7 @@ class ReportsController extends Controller
                         // Handle images
                         if ($value && file_exists(public_path($value))) {
                             $filePath = public_path($value);
-                            $dimensions = getImageDimensions($filePath);
+                            $dimensions = $this->getImageDimensions($filePath);
 
                             $drawing = new WorksheetDrawing();
                             $drawing->setName($column)
