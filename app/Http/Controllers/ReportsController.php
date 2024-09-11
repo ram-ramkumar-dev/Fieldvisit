@@ -20,6 +20,12 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Drawing as WorksheetDrawing;
 
 class ReportsController extends Controller
 {
+    // Function to get image dimensions
+    function getImageDimensions($filePath) {
+        list($width, $height) = getimagesize($filePath);
+        return ['width' => $width, 'height' => $height];
+    }
+    
     public function agentKpi()
     {
         $page = 'agentkpi';
@@ -472,13 +478,7 @@ class ReportsController extends Controller
         }
         return $letters . $row;
     }
-   
-    // Function to get image dimensions
-    function getImageDimensions($filePath) {
-        list($width, $height) = getimagesize($filePath);
-        return ['width' => $width, 'height' => $height];
-    }
-
+    
     public function surveyphotos()
     {
         $page = "surveyphotos";
