@@ -245,7 +245,8 @@ class UserController extends Controller
             $request->session()->put('user_type', 'driver');
             $request->session()->put('user_name', $driver->username);
             $request->session()->put('user_id', $driver->id);
-            $request->session()->put('company_id', $driver->company_id);
+            $request->session()->put('company_id', $driver->company_id); 
+            $request->session()->put('is_superadmin', false);
             $request->session()->regenerate();
             return redirect()->intended('/');
         }
