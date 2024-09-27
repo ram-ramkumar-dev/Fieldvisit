@@ -83,7 +83,7 @@ class CompanyUsersController extends Controller
             'email' => 'required|email|unique:users,email,' . $companyuser->id,
             'username' => 'required|unique:users,username,' . $companyuser->id, 
             'company_id' => 'required',
-            'password' => 'nullable|min:6|confirmed',
+            //'password' => 'nullable|min:6|confirmed',
         ]); 
 
         // Update user except for password

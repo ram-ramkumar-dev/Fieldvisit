@@ -28,8 +28,8 @@
                     <div class="col-lg-12">
                         <div class="form-group">
                             <label class="text-secondary">Username <span class="text-danger">*</span></label>
-                            <input class="form-control" type="text" name="username" value="{{ old('username') }}" placeholder="Enter Email">
-                        </div>
+                            <input class="form-control" type="text" name="username" value="{{ old('username') }}" style="text-transform: uppercase;" placeholder="Enter Username">
+                        </div> 
                     </div>  
                     <div class="col-lg-12 mt-2">
                         <div class="form-group">

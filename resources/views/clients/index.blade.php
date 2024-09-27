@@ -106,7 +106,7 @@
                                     @foreach($clients as $client) 
                                         <tr class="white-space-no-wrap"> 
                                             <td>{{ $client->id }}</td>
-                                            <td>{{ $client->clientgroup->name }}</td>
+                                            <td>{{  optional($client->clientgroup)->name ?? '' }}</td>
                                             <td>{{ $client->client_name }}</td>
                                             <td> 
             @php 
